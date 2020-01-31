@@ -9,6 +9,7 @@
 #endif
 
 #define	MAX_TAGS_REPORT	1024
+#define MAX_ANT_CNT		128
 
 struct llrp_taginfo
 {
@@ -45,6 +46,9 @@ protected:
     IReader *handle;                    // point to Ireader object
     int     executor_start_flag;
     uint8_t ttagrbuf[512];
+    int		m_antcount;
+    uint16_t m_antlist[MAX_ANT_CNT];
+    uint16_t m_antpower[MAX_ANT_CNT];
 };
 
 void printAntList(void);

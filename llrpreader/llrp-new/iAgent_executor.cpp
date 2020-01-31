@@ -26,6 +26,7 @@ IAgent_Executor::IAgent_Executor():
 		fd[i] = -1;
 	}
 	executor_start_flag = 0;
+	m_antcount = 0;
 
 }
 

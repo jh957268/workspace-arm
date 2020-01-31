@@ -48,7 +48,7 @@ IAgent_Executor::main( OwTask * )
 
 		while (	executor_start_flag != 0 )
 		{
-#if 0			
+
 			for (int i = 0; i < m_antcount; i++)
 			{
 				int antID = m_antlist[i];
@@ -56,20 +56,21 @@ IAgent_Executor::main( OwTask * )
 				status = IReaderApiReadTagsMetaDataRSSI(handle, antID, m_antpower[antID], &tagCount, (struct taginfo_rssi *)&ttagrbuf[9]);
 				if (status != IREADER_SUCCESS)
 				{
-					Console_Printf("Read Tags Fails"NL);
-					OSSleep(200);
+					DBG_PRINT(DEBUG_INFO,"Read Tags Fails" NL);
+					OwTask::sleep(2);
 					continue;
 				}
 				if (tagCount == 0)
 				{
 					continue;
 				}
-				
+#if 0
 				// Now report the tags through network interface.
 				if (callbackFunctionPtr != 0)
 				{
 					callbackFunctionPtr(ttagrbuf, tagCount, antID );
 				}
+#endif
 				if ((executor_start_flag & 0xf0000) != 0)
 				{
 					// This is from cli command, execute one loop
@@ -77,8 +78,8 @@ IAgent_Executor::main( OwTask * )
 					break;
 				}				
 			}
-			OSSleep(2);
-#endif
+			OwTask::sleep(2);
+
 			for (int j = 0; j < MAX_TX_SOCKET; j++)
 			{
 				int iResult;

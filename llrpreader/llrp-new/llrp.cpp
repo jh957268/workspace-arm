@@ -120,8 +120,8 @@ int main(int argc, char* argv[])
 	{
 		exit(-1);
 	}
-	GPIO::getInstance(0, 77);
-	GPIO::getInstance(1, 78);
+	GPIO::getInstance(0, 11);
+	GPIO::getInstance(1, 74);
 
 	if (LLRP_MntServer::initRegistry() == -1)
 	{

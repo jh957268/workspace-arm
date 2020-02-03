@@ -299,7 +299,7 @@ process_show_ant_list
 	ArgvType  &argv
 )
 {
-	void * iReaderHandle;
+	IReader * iReaderHandle;
 
 	if (argv.size() != 2)
 	{
@@ -307,7 +307,7 @@ process_show_ant_list
 		return -1;
 	}
 	DBG_PRINT(DEBUG_INFO,"Initialize iReader %s, please wait..."NL, argv[1]);
-	iReaderHandle = IReaderApiInit((char *)argv[1], REGION_USA);
+	iReaderHandle = IReader::getInstance();;
 
 	if ( 0 == iReaderHandle)
 	{
@@ -326,7 +326,7 @@ process_show_ant_list
 		if (IREADER_SUCCESS != status)
 		{
 			DBG_PRINT(DEBUG_INFO,"Rescan iReader Channel fails, close iReader Handler."NL);
-			IReaderApiClose(iReaderHandle);
+			// IReaderApiClose(iReaderHandle);    never close iReader
 			return (status);
 		}
 	}
@@ -336,7 +336,7 @@ process_show_ant_list
 
 	if (IREADER_SUCCESS != status)
 	{
-		IReaderApiClose(iReaderHandle);
+		// IReaderApiClose(iReaderHandle);       never close IReader
 		return status;
 	}
 	DBG_PRINT(DEBUG_INFO,"Connected antennas List:"NL);
@@ -346,8 +346,7 @@ process_show_ant_list
 		DBG_Printf("%d ", antList[i]);
 	}
 	DBG_Printf(" }"NL);
-	IReaderApiClose(iReaderHandle);
-
+	// IReaderApiClose(iReaderHandle);             never close IReader
 	return 0;
 }
 

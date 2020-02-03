@@ -248,9 +248,9 @@ Int32 __cdecl IReaderApiSyncChannel(void * handle, int channel)
 
     IF_ERROR_RETURN(IReaderHandleValid(handle));
 	((IReader *)handle)->IReaderTakeMutex();
-    //IF_ERROR_RETURN(((MuxClient *)handle)->SelectModule(MUX_MODULE));
+    IF_ERROR_RETURN(((MuxClient *)handle)->SelectModule(MUX_MODULE));
     IF_ERROR_RETURN(((IReader *)handle)->IReaderRescanSlave(channel - 1));
-    //IF_ERROR_RETURN(((MuxClient *)handle)->SelectModule(READER_MODULE));
+    IF_ERROR_RETURN(((MuxClient *)handle)->SelectModule(READER_MODULE));
 	((IReader *)handle)->IReaderGiveMutex();
     return IREADER_SUCCESS;
 

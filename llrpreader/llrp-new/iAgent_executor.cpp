@@ -7,9 +7,6 @@
 uint8_t	read_antList[MAXANT];
 int		read_antCount;
 
-extern uint8_t	m_antpower[MAXANT];
-extern uint8_t	m_antlist[];
-extern int		m_antcount;
 
 void executor_task(void);
 

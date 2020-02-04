@@ -67,39 +67,43 @@ int  Muxserial::Connect(void)
     	   printf("%s Opened Successfully\n ", port);
 	}
 
-	tcflush(serial_handle, -TCIOFLUSH);
 	/*---------- Setting the Attributes of the serial port using termios structure --------- */
 
 #if 1
 	struct termios SerialPortSettings;	/* Create the structure                          */
+	struct termios oldtio;
 
-	if (tcgetattr(serial_handle, &SerialPortSettings) < 0)	/* Get the current attributes of the Serial port */
+	if (tcgetattr(serial_handle, &oldtio) < 0)	/* Get the current attributes of the Serial port */
 	{
 	    perror("Can't get port settings");
 	    return -1;
 	}
+	bzero(&SerialPortSettings, sizeof(SerialPortSettings));
 	//cfsetispeed(&SerialPortSettings,B115200); /* Set Read  Speed as 9600                       */
 	//cfsetospeed(&SerialPortSettings,B115200); /* Set Write Speed as 9600                       */
 
-	SerialPortSettings.c_cflag &= ~PARENB;   /* Disables the Parity Enable bit(PARENB),So No Parity   */
-	SerialPortSettings.c_cflag &= ~CSTOPB;   /* CSTOPB = 2 Stop bits,here it is cleared so 1 Stop bit */
-	SerialPortSettings.c_cflag &= ~CSIZE;	 /* Clears the mask for setting the data size             */
-	SerialPortSettings.c_cflag |=  CS8;      /* Set the data bits = 8                                 */
+	//SerialPortSettings.c_cflag &= ~PARENB;   /* Disables the Parity Enable bit(PARENB),So No Parity   */
+	//SerialPortSettings.c_cflag &= ~CSTOPB;   /* CSTOPB = 2 Stop bits,here it is cleared so 1 Stop bit */
+	//SerialPortSettings.c_cflag &= ~CSIZE;	 /* Clears the mask for setting the data size             */
+	//SerialPortSettings.c_cflag |=  CS8;      /* Set the data bits = 8                                 */
 
-	SerialPortSettings.c_cflag &= ~CRTSCTS;       /* No Hardware flow Control                         */
-	SerialPortSettings.c_cflag |=  B115200 | CREAD | CLOCAL; /* Enable receiver,Ignore Modem Control lines       */
+	// SerialPortSettings.c_cflag &= ~CRTSCTS;       /* No Hardware flow Control                         */
+	SerialPortSettings.c_cflag =  B115200 | CREAD | CLOCAL | CS8; /* Enable receiver,Ignore Modem Control lines       */
 
 
-	SerialPortSettings.c_iflag &= ~(IXON | IXOFF | IXANY);          /* Disable XON/XOFF flow control both i/p and o/p */
-	SerialPortSettings.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);  /* Non Cannonical mode, raw mode                            */
+	SerialPortSettings.c_iflag = IGNPAR;          /* Disable XON/XOFF flow control both i/p and o/p */
+	/* set input mode (non-canonical, no echo,...) */
+	SerialPortSettings.c_lflag = 0;  /* Non Cannonical mode, raw mode                            */
 
-	SerialPortSettings.c_oflag &= ~OPOST;/*No Output Processing*/
+	SerialPortSettings.c_oflag = 0;/*No Output Processing*/
 
 	// block for up till 128 characters
 	SerialPortSettings.c_cc[VMIN] = 0;
 
-	// 0.1 seconds read timeout
-	SerialPortSettings.c_cc[VTIME] = 1;
+	// 0.3 seconds read timeout
+	SerialPortSettings.c_cc[VTIME] = 3;
+
+    tcflush(serial_handle, TCIFLUSH);
 
 	if((tcsetattr(serial_handle,TCSANOW,&SerialPortSettings)) != 0) /* Set the attributes to the termios structure*/
 	{

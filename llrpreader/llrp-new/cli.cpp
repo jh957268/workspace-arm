@@ -325,10 +325,11 @@ process_show_ant_list
 		status = IReaderApiSyncChannel(iReaderHandle, i);
 		if (IREADER_SUCCESS != status)
 		{
-			DBG_PRINT(DEBUG_INFO,"Rescan iReader Channel fails, close iReader Handler."NL);
+			DBG_PRINT(DEBUG_INFO,"Rescan iReader Channel %d fails, close iReader Handler." NL, i);
 			// IReaderApiClose(iReaderHandle);    never close iReader
 			return (status);
 		}
+		DBG_PRINT(DEBUG_INFO,"Rescan iReader Channel %d success." NL, i);
 	}
 
 	int antCount, antList[256];

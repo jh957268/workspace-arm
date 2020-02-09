@@ -141,7 +141,7 @@ void test_iReader(int antID, int pwr, int test_loop)
 	}
 
 	printf("Total tags read = %d"NL, total_tag_read);
-	IReaderApiClose(handle);
+	// IReaderApiClose(handle);     never close IREADER
 }
 
 //std::vector<std::string *>	cmdList;

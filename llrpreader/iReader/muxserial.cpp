@@ -100,8 +100,8 @@ int  Muxserial::Connect(void)
 	// block for up till 128 characters
 	SerialPortSettings.c_cc[VMIN] = 0;
 
-	// 0.3 seconds read timeout
-	SerialPortSettings.c_cc[VTIME] = 3;
+	// 3 seconds read timeout, change to 3 seconds, or it will timeout when do a rescan, if slaves are attached
+	SerialPortSettings.c_cc[VTIME] = 30;
 
     tcflush(serial_handle, TCIFLUSH);
 

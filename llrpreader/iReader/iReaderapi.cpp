@@ -128,8 +128,8 @@ void * __cdecl IReaderApiInit(char *remote, int region)
 	error = devHandle->IReaderInit(remote, region);
 
     for (i = 0; i < 256; i++)
-	    devHandle->IReaderSetPowerLevel(i, 2500, 0);  // setup dedfault power level 25dBm
-	devHandle->IReaderTagSearchTimeout(80);     // default 80ms
+	    devHandle->IReaderSetPowerLevel(i, DEFAULT_TX_POWER, 0);  // setup dedfault power level 25dBm
+	devHandle->IReaderTagSearchTimeout(DEFAULT_TAG_SEARCH_TIME);     // default 80ms
     
 	// devHandle->IReaderGetAntMap();      //  setup the antenna map at iReader object 
 	devHandle->IReaderCreateMutex(); 

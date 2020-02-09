@@ -458,7 +458,7 @@ int IReader::MSG_receiveMsgObj(MsgObj *hMsg)
 
   #define	GETCHAR(head) do {						\
 	  int val; \
-	if ((val = Ser2->getChar((head))) != 1)					\
+	if ((val = Ser1->getChar((head))) != 1)					\
 	   return(val); \
   } while (0)
 
@@ -517,8 +517,8 @@ int IReader::sendmsg(unsigned char *buf)
 	docrc(buf, len);
     for (ntry = 0; ntry < 3; ntry++)
     {
-    	Ser2->clearRcv();
-        Ser2->sendArray((unsigned char *)buf, len);
+    	Ser1->clearRcv();
+        Ser1->sendArray((unsigned char *)buf, len);
 
 	    retv = MSG_receiveMsgObj(&m_rxMsg);
         if (retv == SOCKET_ERROR)

@@ -91,10 +91,11 @@ class IReader : public MuxClient
 			m_tagserachtimeout = DEFAULT_TAG_SEARCH_TIME;
 
 		}
+					 IReader();
 					 ~IReader();
 		static 		 IReader*	getInstance(int inst);
-		int           IReaderInit(char *ipaddr, int region);
-		int           IReaderConnect(void);
+		int           IReaderInit(void);
+		int           IReaderConnect(char *remote);
 		int           IReaderDisconnect(void);
 		int           IReaderSetRegion(int region);
 		int           IReaderSetPowerLevel(int antid, int pwr, int doset);

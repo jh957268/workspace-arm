@@ -4,6 +4,7 @@
 //#include <process.h>
 //#include <conio.h>
 
+#include "define.h"
 #include "muxclient.h"
 #include "muxerror.h"
 
@@ -51,8 +52,6 @@ MuxClient::~MuxClient()
 
 int  MuxClient::Connect(void)
 {
-	int retval;
-
 #if 0
 	if ((retval = WSAStartup(0x202,&wsaData)) != 0) {
 		WSACleanup();
@@ -421,90 +420,6 @@ void MuxClient::Disconnect(void)
 		closesocket(socket_handle2);
 	socket_handle2 = -1;
 
-}
-
-
-int MuxClient::MuxActive(int flag, unsigned char *buff, int *ilen)
-{
-	int rcvlen, num_try, error;
-    int result;
-	fd_set readset;
-	struct timeval tv;
-
-	tv.tv_usec = 0;
-	tv.tv_sec = 0;
-	while (1)
-	{
-		// empty the UDP queue
-		FD_ZERO(&readset);
-		FD_SET(socket_handle2, &readset);
-		result = select(socket_handle2 + 1, &readset, NULL, NULL, &tv);
-		if (result == 0)
-			break;
-		recv(socket_handle2, (char *)receive_buffer, 16, 0);
-	}
-	memset((char *)send_buffer,0,sizeof(send_buffer));
-	tv.tv_sec = 3;
-	send_buffer[0] = flag;
-	for (num_try = 0; num_try < 3; num_try++)
-	{
-		if (send(socket_handle2, (char *)send_buffer, 9, 0) != 9)
-		{
-	    	// fprintf(stderr, "Error transmitting data.\n");
-	    	// closesocket(socket_handle1);
-	    	// WSACleanup();
-	    	return (-1);
-		}
-		FD_ZERO(&readset);
-		FD_SET(socket_handle2, &readset);
-		result = select(socket_handle2 + 1, &readset, NULL, NULL, &tv);
-		if (result == 0)
-			continue;
-		rcvlen = recv(socket_handle2, (char *)receive_buffer, 16, 0);
-		if (rcvlen == SOCKET_ERROR) 
-		{
-			error = WSAGetLastError();
-			if (error == WSAEWOULDBLOCK)
-				continue;
-			else
-			{
-				// closesocket(socket_handle1);
-				// WSACleanup();
-				return -1;
-			}
-		}
-		else
-		{
-			// confirm the response
-			memmove(buff, receive_buffer, rcvlen);
-			*ilen = rcvlen;
-			return 0;
-		}
-	}
-	return -1;
-}
-
-int MuxClient::SetIOActiveHigh(void)
-{
-	send_buffer[0] = 0x1A;
-	send_buffer[1] = 0x07;
-	send_buffer[5] = 0x00;
-	if (SendCommand() == -1 || receive_buffer[1] != 0)
-		return (-1);
-	return 0;
-}
-
-int MuxClient::SelectModule(E_MODULE module)
-{
-	send_buffer[0] = 0x1B;
-	send_buffer[1] = 0x07;
-	if (module ==  MUX_MODULE)
-		send_buffer[5] = 0x00;
-	else
-		send_buffer[5] = 0x07;
-	if (SendCommand() == -1 || receive_buffer[1] != send_buffer[5])
-		return (-1);
-	return 0;
 }
 
 int MuxClient::SendCommand(void)

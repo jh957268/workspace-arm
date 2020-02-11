@@ -83,6 +83,7 @@ class IReader : public MuxClient
 		int           IReaderConnect(void);
 		int           IReaderDisconnect(void);
 		int           IReaderSetRegion(int region);
+		int           IReaderGetRegion(void){return m_region;}
 		int           IReaderSetPowerLevel(int antid, int pwr, int doset);
 		int           IReaderSetWritePowerLevel(int pwr);
 		int           IReaderGetPowerLevel(int antid, int *pwr);

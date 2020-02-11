@@ -19,12 +19,12 @@ static char debug_buffer[128];
 
 #define OutputDebugString
 
-#if 0
-IReader::IReader(char *server_ip)
+
+IReader::IReader()
 {
     memset((void *)m_antlist, 0x00, sizeof(m_antlist));
 }
-#endif
+
 
 IReader::~IReader()
 {
@@ -49,20 +49,20 @@ IReader
 
 } // LLRP_MntServer:getInstance()
 
-int  IReader::IReaderInit(char *ipaddr, int region)
+int  IReader::IReaderInit(void)
 {
 
 	for(int i = 0; i < MAXANT; i++)
-		m_antpower[i] = 2500;
+		m_antpower[i] = DEFAULT_TX_POWER;
 
     return (IREADER_SUCCESS);
 }
 
-int  IReader::IReaderConnect(void)
+int  IReader::IReaderConnect(char *remote)
 {
     int ret;
     
-    ret = Connect();
+    ret = Connect(remote);
     return (ret);
 }
 

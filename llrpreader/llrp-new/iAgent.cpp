@@ -321,5 +321,21 @@ IAgent::setConnection
 
 int IAgent::get_bytes(uint8_t *buff, int req_len)
 {
+	int result;
+	int remain = req_len;
+
+	while (remain)
+	{
+		result = ::recv(clientSocket, (char *)&buff[req_len - remain], remain, 0);
+		if (result < 0)
+		{
+			return result;
+		}
+		if (result == remain)
+		{
+			break;
+		}
+		remain -= result;
+	}
 	return (req_len);
 }

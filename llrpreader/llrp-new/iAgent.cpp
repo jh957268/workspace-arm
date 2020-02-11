@@ -130,7 +130,10 @@ int IAgent::iAgent_ProcessMsgObj(iMsgObj *hMsg)
 			break;
 		case 0x87:
 			iAgent_StartExecutor(hMsg);
-			break;		
+			break;
+		case 0x91:
+			iAgent_GetRegion(hMsg);
+			break;
 		default:
 			break;
 	}
@@ -160,6 +163,18 @@ void IAgent::iAgent_GetAntBitMap(iMsgObj *hMsg)
 	IReaderApiGetAntBitMap(&buff[7]);
 	cc3000_send_packet(buff, 39 );
 #endif
+}
+
+void IAgent::iAgent_GetRegion(iMsgObj *hMsg)
+{
+	uint8_t buff [12] = {HDR1, HDR2, 0x00, 3, 0xff, 0xfd, 0x00, 0x00};
+
+	int region = IReader::getInstance()->IReaderGetRegion();
+	buff[5] = ~buff[3];
+	buff[6] = hMsg->opCode;
+	buff[7] = region & 0xff;
+	buff[8] = (region >> 8) & 0xff;
+	sendMessage(buff, 9);
 }
 
 void IAgent::iAgent_ReadTags(iMsgObj *hMsg)
@@ -271,6 +286,26 @@ IAgent::sendMessage
 		DBG_PRINT(DEBUG_INFO, "IAgent[%d]:: sendMessage failed with error: %d"NL, id, iResult );
 
 		disconnect();
+	}
+	return (iResult);
+//	SPrintf( "AkMntAgent[%d]:: Msg sent"NL, id );
+
+} // IAgent::sendMessage()
+
+int
+IAgent::sendMessage
+(
+	uint8_t*  buff,
+	int 	  len
+)
+{
+	int  iResult = ::send( clientSocket, buff, len, 0 );
+
+	if ( iResult == SOCKET_ERROR )
+	{
+		DBG_PRINT(DEBUG_INFO, "IAgent[%d]:: sendMessage failed with error: %d"NL, id, iResult );
+
+		return (SOCKET_ERROR);
 	}
 	return (iResult);
 //	SPrintf( "AkMntAgent[%d]:: Msg sent"NL, id );

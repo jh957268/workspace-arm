@@ -720,7 +720,7 @@ int IReader::MSG_receiveMsgObj(MsgObj *hMsg)
 		//OutputDebugString(debug_buffer);
 		return (bytesRead);
 	}
- 	for(i=0; i<hMsg->dataLen - 1; i++)
+ 	for(i=0; i<hMsg->dataLen - 1; i++)   // -1 because opcode is read where opcode is included in len
   	{
 		bytesRead = getChar(&hMsg->data[i]);
 		if ( 1 != bytesRead)

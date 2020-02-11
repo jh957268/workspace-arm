@@ -77,31 +77,20 @@ Int32 IReaderHandleEmptySlot(void * handle)
 	return (error);
 }
 
-IReader * __cdecl IReaderApiCretae(char *remote)
+void * __cdecl IReaderApiCreate(void)
 {
-	IReader *devHandle = 0;
-#if 0
-	int i, result;
+	int i;
 	IReader *devHandle;
-	WSADATA wsaData;
-    WORD wVersionRequested;
 
 	if (iReaderInit == 0)
 	{
 		for (i = 0; i < MAX_IREADER_DEVICES; i++)
 			iReaderHandle[i] = (void *)NULL;
-
-    	wVersionRequested = MAKEWORD(2, 2);
-
-		if ((result = WSAStartup(wVersionRequested,&wsaData)) != 0) {
-			WSACleanup();
-			return NULL;
-		}
-
 		iReaderInit = 1;
 	}
-    
-	devHandle = new IReader(remote);
+
+	devHandle = new IReader();
+
 	if (devHandle != NULL)
 	{
 		for (i = 0; i < MAX_IREADER_DEVICES; i++)
@@ -111,7 +100,7 @@ IReader * __cdecl IReaderApiCretae(char *remote)
 		}
 		if (i >= MAX_IREADER_DEVICES)
 		{
-			free(devHandle);
+			delete(devHandle);
 			devHandle = NULL;
 		}
 		else
@@ -119,32 +108,24 @@ IReader * __cdecl IReaderApiCretae(char *remote)
 			iReaderHandle[i] = (void *)devHandle;
 		}
 	}
-#endif
-	return(devHandle);
+
+	return((void *)devHandle);
 }
 
 //static char debug_buffer[128];
-IReader * __cdecl IReaderApiInit(char *remote_ip, int len, int region)
+IReader * __cdecl IReaderApiInit(void)
 {
 	int i;
 	IReader *devHandle;
 	int error = IREADER_SUCCESS;
-	char remote[20];
 
-	if (len > 15)
-	{
-		return ((UInt32)NULL);
-	}
-	memmove(remote, remote_ip, len);
-	remote[len] = 0;
-
-    devHandle = (IReader *)IReaderApiCretae(remote);
+    devHandle = (IReader *)IReaderApiCreate();
     if (NULL == devHandle)
     {
 	    return((UInt32)NULL); 
     }
     
-	error = devHandle->IReaderInit(remote, region);
+	error = devHandle->IReaderInit();
 
     if (error != IREADER_SUCCESS)
 	{
@@ -163,7 +144,7 @@ IReader * __cdecl IReaderApiInit(char *remote_ip, int len, int region)
 	return(devHandle);
 }
 
-Int32 __cdecl IReaderApiConnect(void * handle)
+Int32 __cdecl IReaderApiConnect(void * handle, char *remote)
 {
 	int error;
 	IReader *devHandle;
@@ -172,7 +153,7 @@ Int32 __cdecl IReaderApiConnect(void * handle)
 	if (error == IREADER_SUCCESS)
 	{
 		devHandle = (IReader *)handle;
-		error = devHandle->IReaderConnect();
+		error = devHandle->IReaderConnect(remote);
 	}
 	return(error); 
 }

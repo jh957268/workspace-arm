@@ -8,7 +8,7 @@
 #include "muxclient.h"
 #include "muxerror.h"
 
-#define SERVER_CONTROL_PORT		10001
+#define SERVER_CONTROL_PORT		6084
 #define SERVER_DATA_PORT		10002
 
 MuxClient::MuxClient(char *server_ip)
@@ -37,6 +37,12 @@ MuxClient::MuxClient(char *server_ip)
 
 }
 
+MuxClient::MuxClient()
+{
+    socket_handle    = -1;
+    socket_handle1    = -1;
+}
+
 MuxClient::~MuxClient()
 {
     if (socket_handle != -1)
@@ -50,7 +56,7 @@ MuxClient::~MuxClient()
     socket_handle2 = -1;
 }
 
-int  MuxClient::Connect(void)
+int  MuxClient::Connect(char *server_ip)
 {
 #if 0
 	if ((retval = WSAStartup(0x202,&wsaData)) != 0) {
@@ -77,7 +83,15 @@ int  MuxClient::Connect(void)
 	}
 #endif
 
-	socket_handle = socket(AF_INET,SOCK_STREAM,0); /* Open a socket */
+	unsigned long addr;
+
+	addr = inet_addr(server_ip);
+	memset(&server,0,sizeof(server));
+	server.sin_addr.s_addr = addr;
+	server.sin_family = AF_INET;
+	server.sin_port = htons(SERVER_CONTROL_PORT);
+
+	socket_handle = ::socket(AF_INET,SOCK_STREAM,0); /* Open a socket */
 	if (socket_handle == INVALID_SOCKET ) {
 		//		WSAGetLastError());
         //WSACleanup();
@@ -93,6 +107,7 @@ int  MuxClient::Connect(void)
 	int bOptLen = sizeof(BOOL);
 	setsockopt(socket_handle, IPPROTO_TCP, TCP_NODELAY,  (char*)&bOptVal, bOptLen);
 
+#if 0
 #ifdef USING_TCP
 	socket_handle1 = ::socket(AF_INET,SOCK_STREAM,0); /* Open a socket */
 	if (socket_handle1 == INVALID_SOCKET ) {
@@ -116,6 +131,7 @@ int  MuxClient::Connect(void)
 	}
 	bind(socket_handle1,(struct sockaddr *)&server1,sizeof(server1));
 
+#endif
 #endif
 
     //SelectModule(MUX_MODULE);
@@ -231,7 +247,9 @@ int MuxClient::getChar(unsigned char *buff)
       		/* The socket_fd has data available to be read */
       		result = recv(socket_handle, (char *)cache_buffer, 1024, 0);
       		if ((result == SOCKET_ERROR) || (result < 0))
+      		{
                 return(SOCKET_ERROR);
+      		}
       		if (result == 0)
       		{
          		/* This means the other side closed the socket */

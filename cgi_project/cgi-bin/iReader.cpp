@@ -94,6 +94,27 @@ int  IReader::IReaderSetRegion(int region)
 	}
 }
 
+int  IReader::IReaderGetRegion(int *region)
+{
+	int ret;
+	int reg;
+	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x01, 0xFF, 0xFE, 0x91};  // 0x91 get region
+    // retrieve the list from mux again
+
+	ret = sendmsg(buf);
+
+	if (m_rxMsg.opCode != 0x91 || ret != RFID_CMD_SUCCESS)
+	{
+		return (IREADER_COMMAND_FAIL);
+	}
+
+	reg = m_rxMsg.data[0] | (m_rxMsg.data[1] << 8);
+	*region = reg;
+
+    return (IREADER_SUCCESS);
+}
+
+
 int  IReader::IReaderSetPowerLevel(int antid, int pwr, int doset)
 {
 	int ret;

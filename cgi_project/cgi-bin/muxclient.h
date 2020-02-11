@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #ifdef WINDOWS
 #include <winsock2.h>
@@ -61,6 +62,7 @@ class MuxClient
 		void          Disconnect       (void);
 		int			  SendCommand	   (void);
 		void          flushRcvBuffer   (void);
+		void		  closesocket	   (int fd){::close(fd);}
 };
 
 #endif

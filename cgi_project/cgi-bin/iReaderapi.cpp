@@ -33,8 +33,6 @@ Int32 IReaderHandleValid(void * handle)
 	int i;
 	int error = IREADER_SUCCESS;
 
-	IReader *devHandle = (IReader *)handle;
-
 	if (iReaderInit == 0)
 	{
 		return (IREADER_NOT_INTIALIZED);

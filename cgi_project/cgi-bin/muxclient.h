@@ -54,8 +54,9 @@ class MuxClient
 
 	public:
 					  MuxClient(char *server_ip);
+					  MuxClient();
 					 ~MuxClient();
-		int           Connect          (void);
+		int           Connect          (char *remote);
 		int           sendChar         (char ch);
     	int     	  sendArray        (uint8_t *buffer, int len);
 		int			  getChar          (unsigned char *ch);

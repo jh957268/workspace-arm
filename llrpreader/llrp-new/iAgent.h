@@ -62,8 +62,10 @@ private:
     void iAgent_ReadTagsRSSI(iMsgObj *hMsg);
     void iAgent_SetTxPower(iMsgObj *hMsg);
     void iAgent_StartExecutor(iMsgObj *hMsg);
+    void iAgent_GetRegion(iMsgObj *hMsg);
     void iAgent_CallBack(uint8_t *tReadBuf, int itReadCnt, int antID);
     int sendMessage(const char *msg);
+    int sendMessage(uint8_t *buff, int len);
     void disconnect(void);
 
     int get_bytes(uint8_t *buff, int req_len);

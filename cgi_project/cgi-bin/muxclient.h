@@ -19,6 +19,7 @@
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
 
+typedef int BOOL;
 typedef int SOCKET;
 typedef int WSADATA;
 

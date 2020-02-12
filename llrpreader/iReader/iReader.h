@@ -75,7 +75,7 @@ class IReader : public MuxClient
 		IReader(char *server_ip): MuxClient(server_ip)
 		{
     		memset((void *)m_antlist, 0x00, sizeof(m_antlist));
-			m_region = 0;
+			m_region = 3;
 		}
 					 ~IReader();
 		static 		 IReader*	getInstance(void);

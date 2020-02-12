@@ -8,6 +8,7 @@ int main(void)
 {
 	IReader *handle;
 	int ret;
+	int region;
 	const char *cgi_env = getenv("QUERY_STRING");
 
 	// parse the cgi_env
@@ -19,14 +20,25 @@ int main(void)
 		printf("Create IReader Fails");
 		exit(-1);
 	}
-	ret = IReaderApiConnect(handle, "127.0.0.1");
+	ret = IReaderApiConnect(handle, (char *)"127.0.0.1");
 	if (IREADER_SUCCESS != ret)
 	{
 		printf("Connect IReader Fails");
 		exit(-1);
 	}
+	ret = IReaderApiGetRegion(handle, &region);
+	if (IREADER_SUCCESS != ret)
+	{
+		printf("0");
+	}
+	else
+	{
+		printf("%d", region);
+	}
+	IReaderApiClose(handle);
 
-
+	return 0;
+#if 0
     setvbuf(stdout, NULL, _IOLBF, 0);
     while ( 1)
     {
@@ -38,4 +50,5 @@ int main(void)
 	printf("data1: current time iiis %ld\r\n\r\n", seconds);
         sleep(2);
      }
+#endif
 }

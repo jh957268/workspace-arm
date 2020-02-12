@@ -40,7 +40,8 @@ MuxClient::MuxClient(char *server_ip)
 MuxClient::MuxClient()
 {
     socket_handle    = -1;
-    socket_handle1    = -1;
+    socket_handle1   = -1;
+    socket_handle2   = -1;
 }
 
 MuxClient::~MuxClient()

@@ -38,11 +38,11 @@
                 </tr>
             	<tr>
                     <td class="label"><label for="username">iReader Region</label></td>
-                    <td class="input"><input type="text" name="ipaddress1" value="$%ipaddress1%$" /></td>
+                    <td class="input"><input type="text" name="ipaddress1" id="myHeader" value="$%ipaddress1%$" /></td>
                 </tr>
                 <tr>
                     <td class="label"><label for="password">Tag Search Timeout(ms)</label></td>
-                    <td class="input"><input type="text" name="subnetmask1" value="$%subnetmask1%$" /></td>
+                    <td class="input"><input type="text" name="subnetmask1" id="myHeader1" value="$%subnetmask1%$" /></td>
                 </tr>
                 <tr>
                     <td></td>
@@ -60,6 +60,30 @@
     </tr>
 </table>
 </form>
+
+<script>
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("myHeader").value =
+      this.responseText;
+    }
+  };
+  xhttp.open("GET", "cgi-bin/rfid_test.cgi?s=C&o=1", true);
+  xhttp.send();
+
+
+  var xhttp1 = new XMLHttpRequest();
+  xhttp1.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("myHeader1").value =
+      this.responseText;
+    }
+  };
+  xhttp1.open("GET", "cgi-bin/rfid_test1.cgi?s=C&o=1", true);
+  xhttp1.send();
+</script>
+
 </body>
 </html>
 

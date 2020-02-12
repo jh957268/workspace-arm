@@ -43,6 +43,7 @@ IAgent::main
 
 	while (true)
 	{
+#if 0
 		OwTask::sleep(1000);
         now = time(NULL);
         sprintf(data, "the server time is %ld\r\n\r\n",now);
@@ -50,11 +51,12 @@ IAgent::main
         {
         	break;
         }
-
-#if 0
-		if (iAgent_receiveMsgObj(&t_rxMsg) != 0)
-			continue;
-
+#endif
+#if 1
+		if (iAgent_receiveMsgObj(&t_rxMsg) <= 0)
+		{
+			break;
+		}
 		// Now process the receive message
 		iAgent_ProcessMsgObj(&t_rxMsg);
 #endif
@@ -70,25 +72,36 @@ int IAgent::iAgent_receiveMsgObj(iMsgObj *hMsg)
 	uint8_t  soh;
 	uint8_t  datalen[2];
 	uint16_t xdatalen;
-	int rcv_len;
+	int rcv_len, retval = 0;
 
 	#define	GETCHAR(head) do {	 \
-		get_bytes(head, 1);		\
+		retval = get_bytes(head, 1);		\
 	} while (0)
 
 	while(1)
 	{
 		GETCHAR(&soh);
-
+		if (retval < 0)
+		{
+			return (retval);
+		}
 		if(soh != HDR1)
 		{
 			continue;
 		}
 		GETCHAR(&soh);
+		if (retval < 0)
+		{
+			return (retval);
+		}
 		if (HDR2 != soh)
 			continue;
 			
-		get_bytes(datalen, 2);
+		retval = get_bytes(datalen, 2);
+		if (retval < 0)
+		{
+			return (retval);
+		}
 		hMsg->dataLen = ((datalen[0] << 8) | datalen[1]);
 		get_bytes(datalen, 2);
 		xdatalen = ((datalen[0] << 8) | datalen[1]);
@@ -104,9 +117,16 @@ int IAgent::iAgent_receiveMsgObj(iMsgObj *hMsg)
 	}
 
 	GETCHAR(&hMsg->opCode);
-	get_bytes(&hMsg->data[0], hMsg->dataLen - 1);		// -1 because opcode is read above
-	
-	return (0);
+	if (retval <= 0)
+	{
+		return (retval);
+	}
+	retval = get_bytes(&hMsg->data[0], hMsg->dataLen - 1);		// -1 because opcode is read above
+	if (retval < 0)
+	{
+		return (retval);
+	}
+	return (1);
 }
 
 int IAgent::iAgent_ProcessMsgObj(iMsgObj *hMsg)
@@ -172,8 +192,8 @@ void IAgent::iAgent_GetRegion(iMsgObj *hMsg)
 	int region = IReader::getInstance()->IReaderGetRegion();
 	buff[5] = ~buff[3];
 	buff[6] = hMsg->opCode;
-	buff[7] = region & 0xff;
-	buff[8] = (region >> 8) & 0xff;
+	buff[7] = (region >> 8) & 0xff;   // upper byte first
+	buff[8] = (region) & 0xff;
 	sendMessage(buff, 9);
 }
 
@@ -362,6 +382,8 @@ int IAgent::get_bytes(uint8_t *buff, int req_len)
 	while (remain)
 	{
 		result = ::recv(clientSocket, (char *)&buff[req_len - remain], remain, 0);
+
+		printf("recv result = %d\n", result);
 		if (result < 0)
 		{
 			return result;

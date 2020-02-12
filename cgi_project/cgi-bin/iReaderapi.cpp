@@ -254,7 +254,7 @@ Int32 __cdecl IReaderApiClose(void * handle)
 		devHandle->IReaderDisconnect();
 		IReaderHandleEmptySlot(handle);
 		devHandle->IReaderCloseMutex();
-		free((void *)handle);
+		delete(devHandle);
 		// devHandle->IReaderCloseMutex();
 	}
 	return(error); 
@@ -292,7 +292,7 @@ Int32 __cdecl IReaderApiSetRegion(void * handle, int region)
 	return(error); 
 }
 
-Int32 __cdecl IReaderApiSetRegion(void * handle, int *region)
+Int32 __cdecl IReaderApiGetRegion(void * handle, int *region)
 {
 	int error;
 	IReader *devHandle;

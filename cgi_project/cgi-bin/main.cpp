@@ -20,10 +20,11 @@ int main(void)
 		printf("Create IReader Fails");
 		exit(-1);
 	}
-	ret = IReaderApiConnect(handle, (char *)"127.0.0.1");
+	ret = IReaderApiConnect(handle, (char *)"10.10.100.100");
 	if (IREADER_SUCCESS != ret)
 	{
 		printf("Connect IReader Fails");
+		IReaderApiClose(handle);
 		exit(-1);
 	}
 	ret = IReaderApiGetRegion(handle, &region);

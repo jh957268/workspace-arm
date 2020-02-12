@@ -29,9 +29,7 @@ typedef struct MsgObj
 {
 	u16	dataLen;
 	u8  opCode;
-	u8 	crc;
-	u8  cr;
-	u8  lf;
+	u8 	dummy;
 	u8  data[MSG_MAX_DATA_LENGTH];
 } MsgObj;
 

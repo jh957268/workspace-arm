@@ -108,7 +108,7 @@ int  IReader::IReaderGetRegion(int *region)
 		return (IREADER_COMMAND_FAIL);
 	}
 
-	reg = m_rxMsg.data[0] | (m_rxMsg.data[1] << 8);
+	reg = (m_rxMsg.data[0] << 8) | (m_rxMsg.data[1]);
 	*region = reg;
 
     return (IREADER_SUCCESS);

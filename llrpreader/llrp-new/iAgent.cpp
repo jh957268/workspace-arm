@@ -385,13 +385,14 @@ int IAgent::get_bytes(uint8_t *buff, int req_len)
 
 	if (remain == 0)
 	{
-		return 1;
+		return 1;   // XXX, should not call this if req_len is 0, now this is workaround
 	}
 	while (remain)
 	{
 		result = ::recv(clientSocket, (char *)&buff[req_len - remain], remain, 0);
 
-		printf("recv result = %d\n", result);
+		// printf("recv result = %d\n", result);
+		// since it is blocking socket, it returns 0 if remote close the socket, send FIN, or -1 if error
 		if (result <= 0)
 		{
 			return result;

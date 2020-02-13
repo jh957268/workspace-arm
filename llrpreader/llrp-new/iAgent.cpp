@@ -39,7 +39,7 @@ IAgent::main
 )
 {
 	time_t now;
-	char data[128];
+	//char data[128];
 
 	while (true)
 	{
@@ -62,7 +62,7 @@ IAgent::main
 #endif
 		
 	}
-
+	::close(clientSocket);
 	idle = true;  // Once this is set to true, other connection (from LLRP_Mntserver) may use this object before the
 	              // phtread exit if preemption "can" happen
 }
@@ -81,7 +81,7 @@ int IAgent::iAgent_receiveMsgObj(iMsgObj *hMsg)
 	while(1)
 	{
 		GETCHAR(&soh);
-		if (retval < 0)
+		if (retval <= 0)
 		{
 			return (retval);
 		}
@@ -90,7 +90,7 @@ int IAgent::iAgent_receiveMsgObj(iMsgObj *hMsg)
 			continue;
 		}
 		GETCHAR(&soh);
-		if (retval < 0)
+		if (retval <= 0)
 		{
 			return (retval);
 		}
@@ -98,12 +98,16 @@ int IAgent::iAgent_receiveMsgObj(iMsgObj *hMsg)
 			continue;
 			
 		retval = get_bytes(datalen, 2);
-		if (retval < 0)
+		if (retval <= 0)
 		{
 			return (retval);
 		}
 		hMsg->dataLen = ((datalen[0] << 8) | datalen[1]);
 		get_bytes(datalen, 2);
+		if (retval <= 0)
+		{
+			return (retval);
+		}
 		xdatalen = ((datalen[0] << 8) | datalen[1]);
 		xdatalen = ~xdatalen;
 		if (hMsg->dataLen != xdatalen)
@@ -122,7 +126,7 @@ int IAgent::iAgent_receiveMsgObj(iMsgObj *hMsg)
 		return (retval);
 	}
 	retval = get_bytes(&hMsg->data[0], hMsg->dataLen - 1);		// -1 because opcode is read above
-	if (retval < 0)
+	if (retval <= 0)
 	{
 		return (retval);
 	}
@@ -379,12 +383,16 @@ int IAgent::get_bytes(uint8_t *buff, int req_len)
 	int result;
 	int remain = req_len;
 
+	if (remain == 0)
+	{
+		return 1;
+	}
 	while (remain)
 	{
 		result = ::recv(clientSocket, (char *)&buff[req_len - remain], remain, 0);
 
 		printf("recv result = %d\n", result);
-		if (result < 0)
+		if (result <= 0)
 		{
 			return result;
 		}

@@ -203,7 +203,7 @@ Int32 __cdecl IReaderApiClose(void * handle)
 		devHandle->IReaderDisconnect();
 		IReaderHandleEmptySlot(handle);
 		devHandle->IReaderCloseMutex();
-		free((void *)handle);
+		delete(devHandle);
 		// devHandle->IReaderCloseMutex();
 	}
 	return(error); 

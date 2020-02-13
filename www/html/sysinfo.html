@@ -8,7 +8,7 @@
 
 <body id="lan">
 
-<form action="lan.htm" method="get">
+<form action="wan.htm" method="get">
  <table cellspacing="0" cellpadding="0">
 	<tr>
     	<td class="head" colspan="2">Item-Level Tracking Made Easy...</td>
@@ -35,10 +35,18 @@
         	<table cellspacing="0" cellpadding="0">
             	<tr>
                 	<th colspan="2">System Settings</th>
-                </tr>
+              </tr>
             	<tr>
                     <td class="label"><label for="username">iReader Region</label></td>
-                    <td class="input"><input type="text" name="ipaddress1" id="myHeader" value="$%ipaddress1%$" /></td>
+                    <td class="input">
+                      <select id="myHeader" size="1">
+                        <option value="0">JAPAN</option>
+                        <option value="1">KOREA</option>
+                        <option value="2">USA</option>
+                        <option value="3">CHINA</option>
+                        <option value="4">CANADA</option>  
+                      </select>
+                    </td>
                 </tr>
                 <tr>
                     <td class="label"><label for="password">Tag Search Timeout(ms)</label></td>
@@ -62,6 +70,9 @@
 </form>
 
 <script>
+
+ function loadDoc()
+ { 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -82,6 +93,24 @@
   };
   xhttp1.open("GET", "cgi-bin/rfid_test1.cgi?s=C&o=1", true);
   xhttp1.send();
+ }
+
+ function loadField(url, id)
+ { 
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById(id).value =
+      this.responseText;
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.send();
+ }
+
+loadField('cgi-bin/rfid_test.cgi', 'myHeader');
+loadField('cgi-bin/rfid_test1.cgi', 'myHeader1');
+
 </script>
 
 </body>

@@ -125,6 +125,11 @@ int IAgent::iAgent_receiveMsgObj(iMsgObj *hMsg)
 	{
 		return (retval);
 	}
+	if (0 == (hMsg->dataLen - 1))
+	{
+		// No need to read more
+		return (1);
+	}
 	retval = get_bytes(&hMsg->data[0], hMsg->dataLen - 1);		// -1 because opcode is read above
 	if (retval <= 0)
 	{

@@ -98,7 +98,25 @@
   
   var row;
   var cell0;
-  for (tbl_idx = 1; tbl_idx <= 16; tbl_idx++)
+  var tbl_idx = 1;
+  row = tablea.insertRow(tbl_idx);
+  if ( tbl_idx === 0 || (tbl_idx && !(tbl_idx%2)))
+  {
+	row.style.backgroundColor = "#cbccc6";
+  }
+  else
+  {
+	row.style.backgroundColor = "#DFEFE9";	
+  } 
+  for (i = 0; i< 16; i++)
+  {
+	cell0 = row.insertCell(i);
+	cell0.innerHTML = i+1;
+		//cell1.innerHTML = 'JOO1 Test';
+		//cell2.innerHTML = 'JOO2 Test';
+		//cell3.innerHTML = 'JOO3 Test';
+  }  
+  for (tbl_idx = 2; tbl_idx <= 17; tbl_idx++)
   {
 	row = tablea.insertRow(tbl_idx);
   //alert("Table row inserted!");
@@ -119,7 +137,7 @@
 		//var cell2 = row.insertCell(2);
 		//var cell3 = row.insertCell(3);
 
-		cell0.innerHTML = '&#128225;<b>ANT</b>';
+		cell0.innerHTML = '&#128225;<b>25dBm</b>';
 		//cell1.innerHTML = 'JOO1 Test';
 		//cell2.innerHTML = 'JOO2 Test';
 		//cell3.innerHTML = 'JOO3 Test';

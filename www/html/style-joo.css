@@ -12,7 +12,8 @@ table {
 }
 td {
 	vertical-align: top;
-	border: 1px solid black;
+	text-align: center;
+	border: 1px solid white;
 	padding: 5px;
 }
 td.head {

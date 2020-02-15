@@ -34,6 +34,7 @@ int process_help(ArgvType  &argv);
 int process_show_ant_list(ArgvType  &argv);
 int process_rescan_slave(ArgvType &argv);
 int process_show_slave_status(ArgvType &argv);
+int process_quit(ArgvType &argv);
 
 struct cli_function
 {
@@ -51,6 +52,7 @@ struct cli_function	cli_function_list[] =
 	{"show_ant_list", process_show_ant_list, "show_ant_list <ip_address>"},
 	{"rescan_slave", process_rescan_slave, "rescan_slave <ip_address> <rf_port"},
 	{"show_slave_status", process_show_slave_status, "show_slave_status <ip_address>"},
+	{"quit", process_quit, "quit"},
 	{"help", process_help, "help"}
 };
 
@@ -274,6 +276,22 @@ process_rescan_slave
 
 	int rfport = atoi(argv[2]);
 	rescan_slave(argv[1], rfport);
+	return 0;
+}
+
+int
+process_quit
+(
+	ArgvType  &argv
+)
+{
+	if (argv.size() != 1)
+	{
+		DBG_PRINT(DEBUG_WARNING, "%s"NL, pcMSG_INVALID_NUM_ARGS);
+		return -1;
+	}
+
+	exit(0);
 	return 0;
 }
 

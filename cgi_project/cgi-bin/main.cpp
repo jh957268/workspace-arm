@@ -1,8 +1,10 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 
 #include "iReaderapi.h"
+char antmap[300];
 
 int main(void) 
 {
@@ -13,6 +15,26 @@ int main(void)
 
 	// parse the cgi_env
 
+	if (cgi_env)
+	{
+		if (!strcmp(cgi_env, "antmap=1"))
+		{
+			memset(antmap, 0, 300);
+			for (int i = 0; i < 256; i++)
+			{
+				if (i & 1)
+				{
+					strcat(antmap, "1");
+				}
+				else
+				{
+					strcat(antmap, "0");
+				}
+			}
+			printf("%s", antmap);
+			return 0;
+		}
+	}
 	handle = IReaderApiInit();
 
 	if (NULL == handle)
@@ -20,14 +42,21 @@ int main(void)
 		printf("Create IReader Fails");
 		exit(-1);
 	}
-	ret = IReaderApiConnect(handle, (char *)"10.10.100.100");
+	ret = IReaderApiConnect(handle, (char *)"127.0.0.1");
 	if (IREADER_SUCCESS != ret)
 	{
 		printf("Connect IReader Fails");
 		IReaderApiClose(handle);
 		exit(-1);
 	}
-	ret = IReaderApiGetRegion(handle, &region);
+	if (!strcmp(cgi_env, "region=1"))
+	{
+		ret = IReaderApiGetRegion(handle, &region);
+	}
+	else
+	{
+		ret = IReaderApiGetSearchTimeout(handle, &region);
+	}
 	if (IREADER_SUCCESS != ret)
 	{
 		printf("0");

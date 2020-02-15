@@ -17,6 +17,7 @@ extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiGetAntList(void *handl
 extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiGetScanAntList(void *handle, int *antCount, int *antList);
 extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiSetRegion(void *handle, int region);
 extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiGetRegion(void *handle, int *region);
+extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiGetSearchTimeout(void *handle, int *timeout);
 extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiSyncChannel(void *handle, int region);
 extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiReadTags(void *handle, int *tagcount, struct taginfo *tagrbuf);
 extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiReadTagsAtomic(void *handle, int antid, int *tagcount, struct taginfo *tagrbuf);

@@ -10,6 +10,15 @@ table {
 	padding: 0px;
 	margin: 0;
 }
+
+table.b {
+	border: 0px;
+	width: 800px;
+	padding: 0px;
+	margin: 0;
+	table-layout: fixed;
+}
+
 td {
 	vertical-align: top;
 	text-align: center;

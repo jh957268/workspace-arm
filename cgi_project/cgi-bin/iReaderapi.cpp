@@ -309,6 +309,23 @@ Int32 __cdecl IReaderApiGetRegion(void * handle, int *region)
 	return(error);
 }
 
+Int32 __cdecl IReaderApiGetSearchTimeout(void * handle, int *region)
+{
+	int error;
+	IReader *devHandle;
+
+	error = IReaderHandleValid(handle);
+	((IReader *)handle)->IReaderTakeMutex();
+	if (error == IREADER_SUCCESS)
+	{
+		devHandle = (IReader *)handle;
+		error = devHandle->IReaderGetSearchTimeout(region);
+
+	}
+	((IReader *)handle)->IReaderGiveMutex();
+	return(error);
+}
+
 Int32 __cdecl IReaderApiSyncChannel(void * handle, int channel)
 {
 	if (channel < 1 || channel > 8)

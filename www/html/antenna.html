@@ -11,7 +11,7 @@
 <form action="wan.htm" method="get">
  <table cellspacing="0" cellpadding="0">
 	<tr>
-    	<td class="head" colspan="2">Item-Level Tracking Made Easy...</td>
+    	<td class="head" colspan="2">&nbsp;&nbsp;Item-Level Tracking Made Easy...</td>
     </tr>
 	<tr>
     	<td colspan="2" class="pgtitle">iReader-989 Configurations Version 1.0.0.0</td>
@@ -32,7 +32,7 @@
             </ul>
         </td>
         <td>
-        	<table id="add_table" cellspacing="0" cellpadding="0">
+        	<table id="ant_table" cellspacing="0" cellpadding="0">
             	<tr>
                 	<th colspan="16">Connected Antennas</th>
 				</tr>		
@@ -86,7 +86,38 @@
 
  //var tbl_idx = 1;
  //alert("Table  find1!");
-	var tablea = document.getElementById("add_table");
+ 
+function displayAntennaMap(antstr)
+{
+	var atable = document.getElementById("ant_table");
+	var trow;
+	var cell;
+	var cell_idx = 0;
+	for (tbl_row = 2; tbl_row <= 17; tbl_row++)
+	{
+		trow = atable.insertRow(tbl_row);
+		if ( tbl_row == 0 || (tbl_row && !(tbl_row%2)))
+		{
+			trow.style.backgroundColor = "#cbccc6";
+		}
+		else
+		{
+			trow.style.backgroundColor = "#DFEFE9";	
+		}
+
+		for (i = 0; i< 16; i++)
+		{
+			cell = trow.insertCell(i);
+			if (antstr.charAt(cell_idx) == '1')
+			{
+				cell.innerHTML = '&#128225;<b>25dBm</b>';
+			}
+			cell_idx++;
+		}
+	}
+}
+ 
+  var tablea = document.getElementById("ant_table");
   if (tablea )
   { 
     //alert("Table found!");
@@ -100,7 +131,7 @@
   var cell0;
   var tbl_idx = 1;
   row = tablea.insertRow(tbl_idx);
-  if ( tbl_idx === 0 || (tbl_idx && !(tbl_idx%2)))
+  if ( tbl_idx == 0 || (tbl_idx && !(tbl_idx%2)))
   {
 	row.style.backgroundColor = "#cbccc6";
   }

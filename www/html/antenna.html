@@ -116,7 +116,19 @@ function displayAntennaMap(antstr)
 		}
 	}
 }
- 
+
+ function loadAntennaMap()
+ { 
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      displayAntennaMap(this.responseText);
+    }
+  }
+  xhttp.open("GET", "cgi-bin/antennamap.cgi", true);
+  xhttp.send();
+ }
+
   var tablea = document.getElementById("ant_table");
   if (tablea )
   { 
@@ -147,35 +159,9 @@ function displayAntennaMap(antstr)
 		//cell2.innerHTML = 'JOO2 Test';
 		//cell3.innerHTML = 'JOO3 Test';
   }  
-  for (tbl_idx = 2; tbl_idx <= 17; tbl_idx++)
-  {
-	row = tablea.insertRow(tbl_idx);
-  //alert("Table row inserted!");
-	if ( tbl_idx === 0 || (tbl_idx && !(tbl_idx%2)))
-	{
-		// row.style.backgroundColor = "#DFEFE9";
-		row.style.backgroundColor = "#cbccc6";
-	}
-	else
-	{
-		row.style.backgroundColor = "#DFEFE9";	
-	}
-
-	for (i = 0; i< 16; i++)
-	{
-		cell0 = row.insertCell(i);
-		//var cell1 = row.insertCell(1);
-		//var cell2 = row.insertCell(2);
-		//var cell3 = row.insertCell(3);
-
-		cell0.innerHTML = '&#128225;<b>25dBm</b>';
-		//cell1.innerHTML = 'JOO1 Test';
-		//cell2.innerHTML = 'JOO2 Test';
-		//cell3.innerHTML = 'JOO3 Test';
-	}
-  }
-  tablea.rows[5].cells[10].innerHTML='&#128225;<b>ANT</b>';
+  // tablea.rows[5].cells[10].innerHTML='&#128225;<b>ANT</b>';
   alert("Table row inserted end!");
+  loadAntennaMap();
 </script>
 
 </body>

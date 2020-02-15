@@ -76,6 +76,7 @@ class IReader : public MuxClient
 		{
     		memset((void *)m_antlist, 0x00, sizeof(m_antlist));
 			m_region = 3;
+			m_tagserachtimeout = DEFAULT_TAG_SEARCH_TIME;
 		}
 					 ~IReader();
 		static 		 IReader*	getInstance(void);
@@ -84,6 +85,7 @@ class IReader : public MuxClient
 		int           IReaderDisconnect(void);
 		int           IReaderSetRegion(int region);
 		int           IReaderGetRegion(void){return m_region;}
+		int           IReaderGetSearchTimeout(void){return m_tagserachtimeout;}
 		int           IReaderSetPowerLevel(int antid, int pwr, int doset);
 		int           IReaderSetWritePowerLevel(int pwr);
 		int           IReaderGetPowerLevel(int antid, int *pwr);

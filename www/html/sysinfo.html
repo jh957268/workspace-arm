@@ -14,13 +14,13 @@
     	<td class="head" colspan="2">Item-Level Tracking Made Easy...</td>
     </tr>
 	<tr>
-    	<td colspan="2" class="pgtitle">iReader-989 Configurations Version 1.0.0.0</td>
+    	<td colspan="2" class="pgtitle">iReader-989 WEB GUI Version 1.0.0.0</td>
     </tr>
     <tr>
     	<td valign="top">
         	<ul>
-            <li><a href="lan.htm" id="lan">System</a></li>
-            <li><a href="wan.htm" id="wan">WAN/Internet</a></li>
+            <li><a href="sysinfo.html" id="lan">System</a></li>
+            <li><a href="antenna.html" id="wan">Antenna Status</a></li>
             <li><a href="" id="password">Password</a></li>
             <li><a href="" id="dhcpserver">DHCP Server</a></li>
             <li><a href="" id="portforwarding">Port Forwarding</a></li>
@@ -108,8 +108,9 @@
   xhttp.send();
  }
 
-loadField('cgi-bin/rfid_test.cgi', 'myHeader');
-loadField('cgi-bin/rfid_test1.cgi', 'myHeader1');
+loadField('cgi-bin/execgi-bin.cgi?region=1', 'myHeader');
+loadField('cgi-bin/execgi-bin.cgi?region=0', 'myHeader1');
+//loadField('cgi-bin/rfid_test1.cgi', 'myHeader1');
 
 </script>
 

@@ -11,6 +11,7 @@
 #define	MAX_TAGS_REPORT	1024
 #define MAX_ANT_CNT		128
 
+#if 0
 struct llrp_taginfo
 {
 	UINT8		tagid[TAGIDLEN];
@@ -21,6 +22,7 @@ struct llrp_taginfo
 	__time64_t	firstSeenTime;
 	__time64_t	lastSeenTime;
 };
+#endif
 
 #define MAX_TX_SOCKET   4
 
@@ -41,7 +43,6 @@ public:
 
 protected:
     static IAgent_Executor* spInstance; ///< Points to the instance
-
     int     fd[MAX_TX_SOCKET];
     IReader *handle;                    // point to Ireader object
     int     executor_start_flag;

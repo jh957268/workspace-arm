@@ -40,6 +40,15 @@
 					<th style="width:20%">Count</th>					
 				</tr>		
             </table>
+        	<table class="b" cellspacing="0" cellpadding="0">
+				<tr>			
+					<td colspan="4">
+						<input type=button style="{width:120px;}" value="Start Tag Read" onClick="startTagInfoSSe()" />
+						<input type=button style="{width:120px;}" value="Stop Tag Read" onClick="stopTagInfoSSe()" />
+						<input type=button style="{width:120px;}" value="Tag Read Once" onClick="readTagInfoOnce()" />
+					</td>
+                </tr>			
+             </table>			
         </td>
     </tr>
 </table>
@@ -93,11 +102,18 @@ function displayTagInfo(tagInfo)
 	tagCount++;
 }
 
+var source;
+var isOpenOnce = false;
 function startTagInfoSSe()
 {
+	if (isOpenOnce == true)
+	{
+		return;
+	}
+	 //alert("Start SSE now!");
 	if(typeof(EventSource) !== "undefined") 
 	{
-		var source = new EventSource("/cgi-bin/taginfo_sse.cgi");
+		source = new EventSource("/cgi-bin/taginfo_sse.cgi");
 
 		source.onmessage = function(event) 
 		{
@@ -107,6 +123,25 @@ function startTagInfoSSe()
 		}
 	} else {
 		document.getElementById("result").innerHTML = "Sorry, your browser does not support server-sent events...";
+	}
+	isOpenOnce = true;
+}
+
+function stopTagInfoSSe()
+{
+  // alert("Close SSE now!");
+	if (isOpenOnce == true) 
+	{
+		source.close();
+	}
+	isOpenOnce = false;
+}
+
+function readTagInfoOnce()
+{
+	if (isOpenOnce == true)
+	{
+		return;
 	}
 }
 
@@ -123,7 +158,7 @@ function startTagInfoSSe()
  //displayTagInfo(tagInfo3); 
  //displayTagInfo(tagInfo4);   
   //loadAntennaMap();
-  startTagInfoSSe();
+  //startTagInfoSSe();
 </script>
 
 </body>

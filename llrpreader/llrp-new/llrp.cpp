@@ -9,6 +9,7 @@
 #include "CWatchDogFeeder.h"
 #include "iReaderapi.h"
 #include "llrp_MntServer.h"
+#include "iAgent_executor.h"
 #include "debug_print.h"
 #include "muxserial.h"
 #include "gpio.h"
@@ -128,8 +129,12 @@ int main(int argc, char* argv[])
 		exit(-1);
 	}
 
+	// !!! Make sure IREADER object is created first at IReaderApiInit
 	LLRP_MntServer *pLLRP_MntServer = LLRP_MntServer::getInstance(0);
 	pLLRP_MntServer->run();
+
+	IAgent_Executor *pIAgent_Executor = IAgent_Executor::getInstance();
+	pIAgent_Executor->run();
 
 	// int prio = OwTask::getPriority();
 	unsigned int pid = pthread_self();    // cannot use unsigned int, pthread_self returns 64-bit value

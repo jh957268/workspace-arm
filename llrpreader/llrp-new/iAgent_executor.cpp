@@ -4,11 +4,7 @@
 
 // static uint8_t ttagrbuf[512];
 
-uint8_t	read_antList[MAXANT];
-int		read_antCount;
-
-
-void executor_task(void);
+IAgent_Executor* IAgent_Executor::spInstance = 0;
 
 //=============================================================================
 // Constructor
@@ -32,7 +28,7 @@ IAgent_Executor::main( OwTask * )
 {
 	uint32_t evt_flag;
 	Int32 status;
-	int tagCount;
+	int tagCount, len;
 
 	handle = IReader::getInstance();
 	while (1)
@@ -78,16 +74,20 @@ IAgent_Executor::main( OwTask * )
 			}
 			OwTask::sleep(2);
 
+			len = tagCount * sizeof(struct taginfo_rssi);
 			for (int j = 0; j < MAX_TX_SOCKET; j++)
 			{
 				int iResult;
 
-				if (fd[j] != -1)
+				if (fd[j] == -1)
 				{
-					iResult = ::send( fd[j], (const char *)ttagrbuf, strlen((char *)ttagrbuf), 0 );
+					continue;
 				}
 
-				if ( iResult == SOCKET_ERROR )
+				iResult = ::send( fd[j], (const char *)ttagrbuf, len, 0 );
+
+
+				if ( iResult != len )
 				{
 					DBG_PRINT(DEBUG_INFO, "IAgent_executor sendMessage failed with error: %d" NL, iResult );
 
@@ -170,3 +170,19 @@ int GetAntBitMap(int idx)
 
 }
 #endif
+
+IAgent_Executor
+*IAgent_Executor::getInstance
+(
+	void
+)
+{
+	if ( 0 == spInstance )
+	{
+		spInstance = new IAgent_Executor();
+	}
+
+	return( spInstance );
+
+} // LLRP_MntServer:getInstance()
+

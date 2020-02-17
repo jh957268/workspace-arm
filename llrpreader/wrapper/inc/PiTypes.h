@@ -55,7 +55,7 @@ enum PiUnitType
 };
 
 //-----------------------------------------------------------------------------
-typedef long long PiTime;          ///< Specifying time in milliseconds
+typedef int PiTime;          ///< Specifying time in milliseconds
 static const PiTime PI_FOREVER = -1; ///< infinite amount of time
 
 //-----------------------------------------------------------------------------

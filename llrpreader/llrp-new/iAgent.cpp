@@ -189,8 +189,8 @@ void IAgent::iAgent_SetAntPort(iMsgObj *hMsg)
 
 void IAgent::iAgent_GetAntBitMap(iMsgObj *hMsg)
 {
-	uint8_t buff [264] = {HDR1, HDR2, 0x01, 7, 0xfe, 0xfd, 0x00, 0x00};
-	int antCount, antList[32];
+	uint8_t buff [264] = {HDR1, HDR2, 0x01, 1, 0xfe, 0xfd, 0x00, 0x00};
+	int antCount, antList[64];
 	int status;
 
 	buff[5] = ~buff[3];	

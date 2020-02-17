@@ -55,7 +55,33 @@ int main(void)
 	{
 		memset(antmap, 0, 270);
 		ret = IReaderApiGetAntMap(handle, antmap);
+
+		for (int i = 0; i < 256; i++)
+		{
+			antmap[i] += 0x30;
+		}
+#if 0
+		for (int i = 0; i < 256; i++)
+		{
+			if ((antmap[i] != '0') && (antmap[i] != '1'))
+			{
+				antmap[i] = '0';
+			}
+#if 0
+			if (i & 1)
+			{
+				strcat(antmap, "1");
+			}
+			else
+			{
+				strcat(antmap, "0");
+			}
+#endif
+		}
+#endif
+		antmap[256] = 0;
 		printf("%s", antmap);
+		IReaderApiClose(handle);
 		return 0;
 	}
 	if (!strcmp(cgi_env, "region=1"))

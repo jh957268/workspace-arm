@@ -8,6 +8,7 @@
 
 #include  "iReaderapi.h"
 #include  "debug_print.h"
+#include  "iAgent_executor.h"
 
 #include <iostream>
 
@@ -276,26 +277,22 @@ void IAgent::iAgent_SetTxPower(iMsgObj *hMsg)
 void IAgent::iAgent_StartExecutor(iMsgObj *hMsg)
 {
 	uint8_t buff [] = {HDR1, HDR2, 0x00, 0x02, 0xff, 0xfd, 0x00, 0x00};
-#if 0
+
 	int flag = hMsg->data[0];
 	
 	if (flag != 0)
 	{
-		executorSetStartFlag(0x00001);			// start the executor
-		executorSetCallback(iAgent_CallBack);
-		OSEvtPost(&executor_evt_flag, 0x01);
+		IAgent_Executor::getInstance()->start_executor(clientSocket);
 	}
 	else
 	{
-		executorSetStartFlag(0x10000);			// stop the executor
-		//executorSetCallback(printTagInfo);
-		//OSEvtPost(&executor_evt_flag, 0x01);
+		IAgent_Executor::getInstance()->stop_executor(clientSocket);
 	}
 	
 	buff[6] = hMsg->opCode;
 
-	cc3000_send_packet(buff, buff[3] + 6 );
-#endif
+	sendMessage(buff, 8);     // should be 7
+
 }
 
 void IAgent::iAgent_CallBack(uint8_t *tReadBuf, int itReadCnt, int antID)

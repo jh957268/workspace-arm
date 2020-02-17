@@ -189,24 +189,29 @@ void IAgent::iAgent_SetAntPort(iMsgObj *hMsg)
 
 void IAgent::iAgent_GetAntBitMap(iMsgObj *hMsg)
 {
-	uint8_t buff [40] = {HDR1, HDR2, 0x00, 33, 0xff, 0xfd, 0x00, 0x00};
+	uint8_t buff [264] = {HDR1, HDR2, 0x01, 7, 0xfe, 0xfd, 0x00, 0x00};
+	int antCount, antList[32];
+	int status;
 
-#if 0
 	buff[5] = ~buff[3];	
+	buff[4] = ~buff[2];
 	buff[6] = hMsg->opCode;
+	memset(&buff[7], 0x0, 256);
+
 	IReader *handle = IReader::getInstance();
 
 	status = IReaderApiGetAntList(handle, &antCount, antList);
 
-	if (IREADER_SUCCESS != status)
+	if (IREADER_SUCCESS == status)
 	{
-		// IReaderApiClose(iReaderHandle);       never close IReader
-		return status;
+		for (int i = 0; i < antCount; i++)
+		{
+			// ant no start from 1
+			buff[6 + antList[i]] = '1';
+		}
+
 	}
-	IReaderApiGetAntList
-	IReaderApiGetAntBitMap(&buff[7]);
-#endif
-	sendMessage(buff, 39 );
+	sendMessage(buff, 263 );
 
 }
 

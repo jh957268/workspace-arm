@@ -21,7 +21,7 @@ extern "C" {
 #endif
 
 #define MSG_MAX_PACKET_LEN    	256
-#define MSG_MAX_DATA_LENGTH		186
+#define MSG_MAX_DATA_LENGTH		512
 #define MSG_CRC_INIT			0xFF
 #define MSG_CCITT_CRC_POLY		0x1021
 

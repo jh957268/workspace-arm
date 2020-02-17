@@ -190,12 +190,24 @@ void IAgent::iAgent_SetAntPort(iMsgObj *hMsg)
 void IAgent::iAgent_GetAntBitMap(iMsgObj *hMsg)
 {
 	uint8_t buff [40] = {HDR1, HDR2, 0x00, 33, 0xff, 0xfd, 0x00, 0x00};
+
 #if 0
 	buff[5] = ~buff[3];	
 	buff[6] = hMsg->opCode;
+	IReader *handle = IReader::getInstance();
+
+	status = IReaderApiGetAntList(handle, &antCount, antList);
+
+	if (IREADER_SUCCESS != status)
+	{
+		// IReaderApiClose(iReaderHandle);       never close IReader
+		return status;
+	}
+	IReaderApiGetAntList
 	IReaderApiGetAntBitMap(&buff[7]);
-	cc3000_send_packet(buff, 39 );
 #endif
+	sendMessage(buff, 39 );
+
 }
 
 void IAgent::iAgent_GetRegion(iMsgObj *hMsg)

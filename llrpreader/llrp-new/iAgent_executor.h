@@ -2,6 +2,7 @@
 #define __EXECUTOR_H__
 
 #include "OwTask.h"
+#include "OwSemaphore.h"
 #include "iReaderapi.h"
 
 #ifndef TAGIDLEN
@@ -38,12 +39,15 @@ public:
     ///
     void	main(OwTask*);
     static  IAgent_Executor*	getInstance(void);
+    static	int				semaphoreTake(int timeout);
+    static	int				semaphoreGive();
     void    start_executor(int fd);
     void    stop_executor(int fd);
 
 protected:
     static IAgent_Executor* spInstance; ///< Points to the instance
-    int     fd[MAX_TX_SOCKET];
+    static OwSemaphore 		*m_hSem;
+    int     clientFd[MAX_TX_SOCKET];
     IReader *handle;                    // point to Ireader object
     int     executor_start_flag;
     uint8_t ttagrbuf[512];

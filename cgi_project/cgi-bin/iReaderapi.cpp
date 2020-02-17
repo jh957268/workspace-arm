@@ -158,7 +158,7 @@ Int32 __cdecl IReaderApiConnect(void * handle, char *remote)
 	return(error); 
 }
 
-Int32 __cdecl IReaderApiGetAntMap(void * handle)
+Int32 __cdecl IReaderApiGetAntMap(void * handle, char *map)
 {
 	int error;
 	IReader *devHandle;
@@ -168,7 +168,7 @@ Int32 __cdecl IReaderApiGetAntMap(void * handle)
 	if (error == IREADER_SUCCESS)
 	{
 		devHandle = (IReader *)handle;
-		error = devHandle->IReaderGetAntMap();
+		error = devHandle->IReaderGetAntMap(map);
 		
 	}
 	((IReader *)handle)->IReaderGiveMutex();

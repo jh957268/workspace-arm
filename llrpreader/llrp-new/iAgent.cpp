@@ -191,7 +191,7 @@ void IAgent::iAgent_GetAntBitMap(iMsgObj *hMsg)
 {
 	uint8_t buff [264] = {HDR1, HDR2, 0x01, 1, 0xfe, 0xfd, 0x00, 0x00};
 	int antCount, antList[64];
-	int status;
+	int status = IREADER_SUCCESS;
 
 	buff[5] = ~buff[3];	
 	buff[4] = ~buff[2];
@@ -201,13 +201,16 @@ void IAgent::iAgent_GetAntBitMap(iMsgObj *hMsg)
 	IReader *handle = IReader::getInstance();
 
 	status = IReaderApiGetAntList(handle, &antCount, antList);
+	//antCount = 2;      for testing
+	//antList[0] = 1;
+	//antList[1] = 9;
 
 	if (IREADER_SUCCESS == status)
 	{
 		for (int i = 0; i < antCount; i++)
 		{
 			// ant no start from 1
-			buff[6 + antList[i]] = '1';
+			buff[6 + antList[i]] = 1;
 		}
 
 	}

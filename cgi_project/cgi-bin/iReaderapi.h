@@ -9,7 +9,7 @@
 
 extern "C" __declspec( dllexport )IReader * __cdecl IReaderApiInit(void);
 extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiConnect(void * handle, char *remote);
-extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiGetAntMap(void *handle);
+extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiGetAntMap(void *handle, char *map);
 extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiSetAntScanMap(void *handle, unsigned char *ant_map);
 extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiGetAntScanMap(void *handle, unsigned char *ant_map);
 extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiClose(void *handle);

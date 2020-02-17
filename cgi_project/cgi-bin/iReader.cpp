@@ -549,6 +549,26 @@ int  IReader::IReaderGetAntMap(void)
     return (IREADER_SUCCESS);
 }
 
+int  IReader::IReaderGetAntMap(char *map)
+{
+	int m, ret;
+  	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x01, 0xFF, 0xFE, 0x8B};  // use antenna porrt 0
+    // retrieve the list from mux again
+
+	m_antcount = 0;
+	// SelectModule(MUX_MODULE);
+	ret = sendmsg(buf);
+
+	if (m_rxMsg.opCode != 0x8B || ret != RFID_CMD_SUCCESS)
+	{
+		return (IREADER_COMMAND_FAIL);
+	}
+
+	memmove(map, &m_rxMsg.data[0], 256);
+    return (IREADER_SUCCESS);
+}
+
+
 int  IReader::IReaderSetAntScanMap(uint8_t *ant_map)
 {
 	int m, error, ret;

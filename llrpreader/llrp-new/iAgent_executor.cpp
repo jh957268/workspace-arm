@@ -5,6 +5,7 @@
 // static uint8_t ttagrbuf[512];
 
 IAgent_Executor* IAgent_Executor::spInstance = 0;
+OwSemaphore*	 IAgent_Executor::m_hSem = 0;
 
 //=============================================================================
 // Constructor
@@ -16,25 +17,27 @@ IAgent_Executor::IAgent_Executor():
 
 	for (int i = 0; i < MAX_TX_SOCKET; i++)
 	{
-		fd[i] = -1;
+		clientFd[i] = -1;
 	}
 	executor_start_flag = 0;
 	m_antcount = 0;
+	m_hSem = new OwSemaphore(1);
 
 }
 
 void
 IAgent_Executor::main( OwTask * )
 {
-	uint32_t evt_flag;
 	Int32 status;
 	int tagCount, len;
+	int retval;
 
 	handle = IReader::getInstance();
 	while (1)
 	{
 		// OSEvtPend( &executor_evt_flag, 0x01, &evt_flag, EVENT_ANY, OS_WAIT);
-		if (!executor_start_flag)
+		retval = semaphoreTake(PI_FOREVER);
+		if (OK != retval)
 		{
 			OwTask::sleep(2);
 			continue;
@@ -72,28 +75,28 @@ IAgent_Executor::main( OwTask * )
 					break;
 				}				
 			}
-			OwTask::sleep(2);
 
 			len = tagCount * sizeof(struct taginfo_rssi);
 			for (int j = 0; j < MAX_TX_SOCKET; j++)
 			{
 				int iResult;
 
-				if (fd[j] == -1)
+				if (clientFd[j] == -1)
 				{
 					continue;
 				}
 
-				iResult = ::send( fd[j], (const char *)ttagrbuf, len, 0 );
+				iResult = ::send( clientFd[j], (const char *)ttagrbuf, len, 0 );
 
 
 				if ( iResult != len )
 				{
 					DBG_PRINT(DEBUG_INFO, "IAgent_executor sendMessage failed with error: %d" NL, iResult );
 
-					fd[j] = -1;
+					clientFd[j] = -1;
 				}
 			}
+			OwTask::sleep(2);
 		}
 	}
 }
@@ -101,13 +104,30 @@ IAgent_Executor::main( OwTask * )
 void
 IAgent_Executor::start_executor(int fd)
 {
+	executor_start_flag = 1;
 
+	for (int i = 0; i < MAX_TX_SOCKET; i++)
+	{
+		if (clientFd[i] == -1)
+		{
+			clientFd[i] = fd;
+		}
+	}
+	semaphoreGive();
 }
 
 void
 IAgent_Executor::stop_executor(int fd)
 {
+	executor_start_flag = 0;
 	
+	for (int i = 0; i < MAX_TX_SOCKET; i++)
+	{
+		if (clientFd[i] == fd)
+		{
+			clientFd[i] = -1;
+		}
+	}
 }
 
 #if 0
@@ -185,4 +205,24 @@ IAgent_Executor
 	return( spInstance );
 
 } // LLRP_MntServer:getInstance()
+
+int
+IAgent_Executor::semaphoreTake(int timeout)
+{
+	int error = IREADER_SUCCESS;
+
+	m_hSem->take( timeout );
+
+	return (error);
+}
+
+int
+IAgent_Executor::semaphoreGive()
+{
+	int error = IREADER_SUCCESS;
+
+	error = m_hSem->give();
+
+	return (error);
+}
 

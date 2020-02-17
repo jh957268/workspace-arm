@@ -689,7 +689,7 @@ int IReader::MSG_receiveMsgObj(MsgObj *hMsg)
 {
   s32 bytesRead;
   u8  soh;
-  u8  i;
+  u16  i;
   //bool retVal;
   u8  datalen[2];
   u16 xdataLen;

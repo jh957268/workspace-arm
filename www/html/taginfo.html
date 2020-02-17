@@ -113,7 +113,7 @@ function startTagInfoSSe()
 	 //alert("Start SSE now!");
 	if(typeof(EventSource) !== "undefined") 
 	{
-		source = new EventSource("/cgi-bin/taginfo_sse.cgi");
+		source = new EventSource("/cgi-bin/execgi-bin.cgi?readtag=1");
 
 		source.onmessage = function(event) 
 		{

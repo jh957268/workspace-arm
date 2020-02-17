@@ -15,6 +15,7 @@ int main(void)
 
 	// parse the cgi_env
 
+#if 0
 	if (cgi_env)
 	{
 		if (!strcmp(cgi_env, "antmap=1"))
@@ -35,6 +36,7 @@ int main(void)
 			return 0;
 		}
 	}
+#endif
 	handle = IReaderApiInit();
 
 	if (NULL == handle)
@@ -48,6 +50,13 @@ int main(void)
 		printf("Connect IReader Fails");
 		IReaderApiClose(handle);
 		exit(-1);
+	}
+	if (!strcmp(cgi_env, "antmap=1"))
+	{
+		memset(antmap, 0, 270);
+		ret = IReaderApiGetAntMap(handle, antmap);
+		printf("%s", antmap);
+		return 0;
 	}
 	if (!strcmp(cgi_env, "region=1"))
 	{

@@ -117,6 +117,7 @@ class IReader : public MuxClient
 		int  		  IReaderGetAntList(int *antCount, int *antList);
 		int  		  IReaderGetScanAntList(int *antCount, int *antList);
 		int           IReaderGetAntMap(void);
+		int           IReaderGetAntMap(char *map);
 		int           IReaderSetAntScanMap(uint8_t *ant_map);
 		int           IReaderGetAntScanMap(uint8_t *ant_map);
 		int           IReaderRescanSlave(Int32 chn);

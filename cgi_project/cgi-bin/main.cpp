@@ -84,7 +84,18 @@ int main(void)
 		IReaderApiClose(handle);
 		return 0;
 	}
-	if (!strcmp(cgi_env, "region=1"))
+	else if (!strcmp(cgi_env, "readtag=1"))
+	{
+		ret = IReaderApiStartExecutor(handle, 1);
+		if (IREADER_SUCCESS != ret)
+		{
+			IReaderApiClose(handle);
+			return 0;
+		}
+
+		// Ireader read asyn tags
+	}
+	else if (!strcmp(cgi_env, "region=1"))
 	{
 		ret = IReaderApiGetRegion(handle, &region);
 	}

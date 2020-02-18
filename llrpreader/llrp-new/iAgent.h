@@ -40,6 +40,8 @@ public:
 	{
 		return id;
 	}
+	
+	static int iAgent_CallBack(int fd, uint8_t *tReadBuf, int itReadCnt, int antID);
 
 private:
 
@@ -64,7 +66,6 @@ private:
     void iAgent_StartExecutor(iMsgObj *hMsg);
     void iAgent_GetRegion(iMsgObj *hMsg);
     void iAgent_GetSearchTimeout(iMsgObj *hMsg);
-    void iAgent_CallBack(uint8_t *tReadBuf, int itReadCnt, int antID);
     int sendMessage(const char *msg);
     int sendMessage(uint8_t *buff, int len);
     void disconnect(void);

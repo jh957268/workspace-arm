@@ -1,6 +1,7 @@
 #define EXECUTOR_SRC
 #include "iAgent_executor.h"
 #include "debug_print.h"
+#include "iAgent.h"
 
 // static uint8_t ttagrbuf[512];
 
@@ -29,7 +30,7 @@ void
 IAgent_Executor::main( OwTask * )
 {
 	Int32 status;
-	int tagCount, len;
+	int tagCount;
 	int retval;
 
 	handle = IReader::getInstance();
@@ -74,29 +75,27 @@ IAgent_Executor::main( OwTask * )
 					executor_start_flag = 0;
 					break;
 				}				
-			}
 
-			len = tagCount * sizeof(struct taginfo_rssi);
-			for (int j = 0; j < MAX_TX_SOCKET; j++)
-			{
-				int iResult;
-
-				if (clientFd[j] == -1)
+				for (int j = 0; j < MAX_TX_SOCKET; j++)
 				{
-					continue;
+					int iResult;
+
+					if (clientFd[j] == -1)
+					{
+						continue;
+					}
+
+					iResult = IAgent::iAgent_CallBack(clientFd[j], ttagrbuf, tagCount, antID);
+
+					if ( iResult != tagCount )
+					{
+						DBG_PRINT(DEBUG_INFO, "IAgent_executor sendMessage failed with error: %d" NL, iResult );
+
+						clientFd[j] = -1;
+					}
 				}
-
-				iResult = ::send( clientFd[j], (const char *)ttagrbuf, len, 0 );
-
-
-				if ( iResult != len )
-				{
-					DBG_PRINT(DEBUG_INFO, "IAgent_executor sendMessage failed with error: %d" NL, iResult );
-
-					clientFd[j] = -1;
-				}
+				OwTask::sleep(10);
 			}
-			OwTask::sleep(2);
 		}
 	}
 }

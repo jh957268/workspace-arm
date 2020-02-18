@@ -315,23 +315,31 @@ void IAgent::iAgent_StartExecutor(iMsgObj *hMsg)
 
 }
 
-void IAgent::iAgent_CallBack(uint8_t *tReadBuf, int itReadCnt, int antID)
+int IAgent::iAgent_CallBack(int fd, uint8_t *tReadBuf, int itReadCnt, int antID)
 {
-#if 0
-	tReadBuf[6] = 0x88;
+	int len;
+	
+	tReadBuf[6] = 0xAB;				// Aync Tag data indicator
 	tReadBuf[7] = antID;
 	tReadBuf[8] = itReadCnt;
-	tReadBuf[3] = 3 + (itReadCnt * TAGLEN_RSSI);
+	tReadBuf[3] = 3 + (itReadCnt * TAGLEN_RSSI);   // 3 is for data indicator, antID, itReadCnt
 	tReadBuf[5] = ~tReadBuf[3];
 	tReadBuf[0] = HDR1;
 	tReadBuf[1] = HDR2;
-	tReadBuf[2] = 0x00;
+	tReadBuf[2] = 0x00;								// This assumes the packet side is less then 256 bytes, i.e, < 10 tags
 	tReadBuf[4] = 0xff;
 	//if (cc3000_send_packet(tReadBuf, tReadBuf[3] + 6 ) == 0)
 	//	return;
 	//OSSleep(100);
-    cc3000_send_packet(tReadBuf, tReadBuf[3] + 6 );
-#endif
+	
+	len = tReadBuf[3] + 6;
+	int iResult = ::send( fd, tReadBuf, len, 0 );
+	
+	if (iResult == len)
+	{
+		return itReadCnt;
+	}
+	return -1;
 }
 
 int

@@ -292,7 +292,7 @@ int  IReader::IReaderGetTagsMetaDataRSSI(int *antID, int *tagcount, struct tagin
 		return IREADER_SUCCESS;		// timout and no data available
 	}
 
-	if ((m_rxMsg_1.opCode != 0x88) || (retv != RFID_CMD_SUCCESS))
+	if ((m_rxMsg_1.opCode != 0xAB) || (retv != RFID_CMD_SUCCESS))
 	{
 		return (IREADER_COMMAND_FAIL);
 	}

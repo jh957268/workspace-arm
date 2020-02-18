@@ -44,6 +44,10 @@ IAgent_Executor::main( OwTask * )
 			continue;
 		}
 
+		m_antcount = 1;  // test only
+		m_antlist[0] = 1;
+		m_antpower[1] = 2500;
+		m_antpower[0] = 2500;
 		while (	executor_start_flag != 0 )
 		{
 

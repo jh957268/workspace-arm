@@ -35,14 +35,17 @@
         	<table class="b" id="ant_table" cellspacing="0" cellpadding="0">
             	<tr>
                 	<th style="width:10%">Tag No.</th>
-					<th style="width:50%">EPC Data</th>
-					<th style="width:30%">Last Seen Time</th>
-					<th style="width:20%">Count</th>					
+					<th style="width:40%">EPC Data</th>
+					<th style="width:10%">PC Bits</th>
+					<th style="width:10%">RSSI</th>
+					<th style="width:10%">Ant. ID</th>					
+					<th style="width:20%">Last Seen Time</th>					
+					<th style="width:10%">Count</th>					
 				</tr>		
             </table>
         	<table class="b" cellspacing="0" cellpadding="0">
 				<tr>			
-					<td colspan="4">
+					<td colspan="7">
 						<input type=button style="{width:120px;}" value="Start Tag Read" onClick="startTagInfoSSe()" />
 						<input type=button style="{width:120px;}" value="Stop Tag Read" onClick="stopTagInfoSSe()" />
 						<input type=button style="{width:120px;}" value="Tag Read Once" onClick="readTagInfoOnce()" />
@@ -63,17 +66,18 @@ function displayTagInfo(tagInfo)
 	var trow;
 	var cell;
 	
-	const [epcData, timeSeen] = tagInfo.split('~');
+	const [epcData, pcbits, rssi, antid, timeSeen] = tagInfo.split('~');
  
 	for (tbl_row = 1; tbl_row <= tagCount; tbl_row++)
 	{
-		if ( atable.rows[tbl_row].cells[1].innerHTML.localeCompare(epcData) == 0)
+		if ( (atable.rows[tbl_row].cells[1].innerHTML.localeCompare(epcData) == 0) && (atable.rows[tbl_row].cells[4].innerHTML.localeCompare(antid) == 0))
 		{
-			atable.rows[tbl_row].cells[2].innerHTML = timeSeen;
-			
-			var cnt = 1*atable.rows[tbl_row].cells[3].innerHTML;
+			atable.rows[tbl_row].cells[5].innerHTML = timeSeen;
+			atable.rows[tbl_row].cells[2].innerHTML = pcbits;
+			atable.rows[tbl_row].cells[3].innerHTML = rssi;		
+			var cnt = 1*atable.rows[tbl_row].cells[6].innerHTML;
 			cnt = cnt+1;
-			atable.rows[tbl_row].cells[3].innerHTML = cnt;
+			atable.rows[tbl_row].cells[6].innerHTML = cnt;
 			return;
 		}
 	}
@@ -95,8 +99,14 @@ function displayTagInfo(tagInfo)
 		cell = trow.insertCell(1);
 		cell.innerHTML = epcData;
 		cell = trow.insertCell(2);
-		cell.innerHTML = timeSeen;
+		cell.innerHTML = pcbits;
 		cell = trow.insertCell(3);
+		cell.innerHTML = rssi;
+		cell = trow.insertCell(4);
+		cell.innerHTML = antid;		
+		cell = trow.insertCell(5);
+		cell.innerHTML = timeSeen;
+		cell = trow.insertCell(6);
 		cell.innerHTML = 1;		
 	}
 	tagCount++;

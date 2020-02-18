@@ -37,12 +37,42 @@
                 	<th colspan="16">Connected Antennas</th>
 				</tr>		
             </table>
+        	<table class="b" cellspacing="0" cellpadding="0">
+				<tr>			
+					<td>
+						<input type=button style="{width:120px;}" value="Refresh List" onClick="ProcessRefreshList()" />
+					</td>
+					<td>
+						<input type=button style="{width:120px;}" value="Rescan Channel" onClick="ProcessRescanChannel()" />
+						<select id="myHeader" size="1">
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+							<option value="7">7</option>
+							<option value="8">8</option>
+							<option value="9">All</option>							
+						</select>
+					</td>
+                </tr>			
+             </table>			
         </td>
     </tr>
 </table>
 </form>
 
 <script>
+
+function ProcessRefreshList()
+{
+	loadAntennaMap();
+}
+
+function ProcessRescanChannel()
+{
+}
 
  function loadDoc()
  { 

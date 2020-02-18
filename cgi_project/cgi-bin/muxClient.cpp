@@ -42,6 +42,7 @@ MuxClient::MuxClient()
     socket_handle    = -1;
     socket_handle1   = -1;
     socket_handle2   = -1;
+	idx = tcp_len = idx_1 = tcp_len_1 = 0;
 }
 
 MuxClient::~MuxClient()
@@ -329,20 +330,20 @@ int MuxClient::getChars_1(unsigned char *buff, int len)
 		}
 	
 		FD_ZERO(&readset);
-		FD_SET(socket_handle1, &readset);
+		FD_SET(socket_handle, &readset);
 		tv.tv_sec = 1;  /* 1 Secs Timeout */
 		tv.tv_usec = 0;
 		// tv.tv_sec = 0;  /* 0 Secs Timeout */
 		// tv.tv_usec = (300 * 1000);
-		result = select(socket_handle1 + 1, &readset, NULL, NULL, &tv);
+		result = select(socket_handle + 1, &readset, NULL, NULL, &tv);
     	if (result == SOCKET_ERROR)
         	return (SOCKET_ERROR);
 		if (result > 0) 
 		{
-			if (FD_ISSET(socket_handle1, &readset)) 
+			if (FD_ISSET(socket_handle, &readset))
 			{
       			/* The socket_fd has data available to be read */
-      			result = ::recv(socket_handle1, (char *)&cache_buffer_1[tcp_len_1], 1024 - tcp_len_1, 0);
+      			result = ::recv(socket_handle, (char *)&cache_buffer_1[tcp_len_1], 1024 - tcp_len_1, 0);
       			if (result == SOCKET_ERROR)
                 	return(SOCKET_ERROR);
       			if (result == 0)

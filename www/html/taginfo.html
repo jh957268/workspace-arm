@@ -45,10 +45,14 @@
             </table>
         	<table class="b" cellspacing="0" cellpadding="0">
 				<tr>			
-					<td colspan="7">
-						<input type=button style="{width:120px;}" value="Start Tag Read" onClick="startTagInfoSSe()" />
-						<input type=button style="{width:120px;}" value="Stop Tag Read" onClick="stopTagInfoSSe()" />
-						<input type=button style="{width:120px;}" value="Tag Read Once" onClick="readTagInfoOnce()" />
+					<td>
+						<input type=button style="{width:120px;}" value="Start Tags Read" onClick="startTagInfoSSe()" />
+						<input type=button style="{width:120px;}" value="Stop Tags Read" onClick="stopTagInfoSSe()" />
+					</td>
+					<td>
+						<label for="antenna">AntID:</label>
+						<input type="text" name="anten" id="AntID" value="1" />
+						<input type=button style="{width:120px;}" value="Tags Read Once" onClick="readTagInfoOnce()" />
 					</td>
                 </tr>			
              </table>			

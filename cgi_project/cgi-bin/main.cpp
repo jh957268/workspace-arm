@@ -6,6 +6,8 @@
 #include "iReaderapi.h"
 char antmap[300];
 
+char ttagrbuf[512];
+
 int main(void) 
 {
 	IReader *handle;
@@ -86,6 +88,11 @@ int main(void)
 	}
 	else if (!strcmp(cgi_env, "readtag=1"))
 	{
+		int ant_id, ttagCount;
+		struct taginfo_rssi *pTaginfo_rssi;
+		char pcbits[8], epcdata[32], rssidata[20];
+		short rssi;
+
 		ret = IReaderApiStartExecutor(handle, 1);
 		if (IREADER_SUCCESS != ret)
 		{
@@ -94,6 +101,45 @@ int main(void)
 		}
 
 		// Ireader read asyn tags
+		while (1)
+		{
+			ret = IReaderApiGetTagsMetaDataRSSI(handle, &ant_id, &ttagCount, (struct taginfo_rssi *)ttagrbuf);
+			if (IREADER_SUCCESS != ret)
+			{
+				IReaderApiClose(handle);
+				return 0;
+			}
+			pTaginfo_rssi = (struct taginfo_rssi *)ttagrbuf;
+			time_t now = time(NULL);
+			for (int i = 0; i < ttagCount; i++)
+			{
+			   	printf("Content-Type: text/event-stream\r\n");
+			    printf("Cache-Control: no-cache\n\n");
+			    sprintf(pcbits,"%02x %02x", u8(pTaginfo_rssi->tagid[0]), u8(pTaginfo_rssi->tagid[1]));
+
+				sprintf(epcdata, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+									u8(pTaginfo_rssi->tagid[2]),
+									u8(pTaginfo_rssi->tagid[3]),
+									u8(pTaginfo_rssi->tagid[4]),
+									u8(pTaginfo_rssi->tagid[5]),
+									u8(pTaginfo_rssi->tagid[6]),
+									u8(pTaginfo_rssi->tagid[7]),
+									u8(pTaginfo_rssi->tagid[8]),
+									u8(pTaginfo_rssi->tagid[9]),
+									u8(pTaginfo_rssi->tagid[10]),
+									u8(pTaginfo_rssi->tagid[11]),
+									u8(pTaginfo_rssi->tagid[12]),
+									u8(pTaginfo_rssi->tagid[13])
+									);
+
+				rssi = pTaginfo_rssi->tagid[14];
+				rssi = (rssi << 8) | ((pTaginfo_rssi->tagid[15]) & 0xff);
+				sprintf(rssidata, "%f dBm",(float)(rssi/10.0));
+			    printf("data:%s~%s~%s~%d~%ld\r\n\r\n",epcdata, pcbits, rssidata, ant_id, now);
+				pTaginfo_rssi++;
+			}
+
+		}
 	}
 	else if (!strcmp(cgi_env, "region=1"))
 	{

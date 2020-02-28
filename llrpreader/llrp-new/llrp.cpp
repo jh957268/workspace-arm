@@ -42,6 +42,15 @@ Muxserial *Ser2;
 
 sqlite3 *rfid_db;
 
+static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
+   int i;
+   for(i = 0; i<argc; i++) {
+      printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+   }
+   printf("\n");
+   return 0;
+}
+
 int main(int argc, char* argv[])
 {
 	string input_string = "";
@@ -129,6 +138,32 @@ int main(int argc, char* argv[])
 	    fprintf(stderr, "Opened database successfully\n");
 	}
 
+	// sqlite3_close(rfid_db);
+
+	/* Create SQL statement */
+
+	char *sql;
+	sql = "CREATE TABLE TAGINFO("  \
+	      "TAGVALUE 	CHAR(24)     NOT NULL," \
+	      "ANTID         INT     NOT NULL," \
+	      "RSSI          DOUBLE," \
+	      "FIRSTSEENTIME DATETIME," \
+	      "LASTSEENTIME  DATETIME," \
+	      "SEENCOUNT     INT," \
+		  "PRIMARY KEY (" \
+		  "TAGVALUE," \
+		  "ANTID));";
+
+	   /* Execute SQL statement */
+	   rc = sqlite3_exec(rfid_db, sql, callback, 0, &zErrMsg);
+
+	   if( rc != SQLITE_OK ){
+	      fprintf(stderr, "SQL error: %s\n", zErrMsg);
+	      sqlite3_free(zErrMsg);
+	   } else {
+	      fprintf(stdout, "Table created successfully\n");
+	   }
+	   sqlite3_close(rfid_db);
 //	LLRP_MntServer abc;
 
 //	abc = LLRP_MntServer(1); testing calling the contructor

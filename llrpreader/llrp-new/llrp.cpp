@@ -13,6 +13,7 @@
 #include "debug_print.h"
 #include "muxserial.h"
 #include "gpio.h"
+#include "sqlite3.h"
 
 using namespace std;
 
@@ -39,10 +40,14 @@ unsigned char test_char;
 Muxserial *Ser1;
 Muxserial *Ser2;
 
+sqlite3 *rfid_db;
+
 int main(int argc, char* argv[])
 {
 	string input_string = "";
 	//WSADATA wsaData;
+	char *zErrMsg = 0;
+	int rc;
 
 #if 0
 	UINT8 datalen[2];
@@ -112,6 +117,17 @@ int main(int argc, char* argv[])
 	cout << word << endl;
 
 #endif
+
+	rc = sqlite3_open("rfidtag.db", &rfid_db);
+
+	if( rc )
+	{
+		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(rfid_db));
+		return(0);
+	} else
+	{
+	    fprintf(stderr, "Opened database successfully\n");
+	}
 
 //	LLRP_MntServer abc;
 

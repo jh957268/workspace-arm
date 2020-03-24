@@ -43,7 +43,7 @@ all: exellrp-new
 exellrp-new: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross G++ Linker'
-	aarch64-linux-gnu-g++ -L/home/joohong/workspace-arm/llrpreader/iReader/Release -L/home/joohong/workspace-arm/LTK/LTKCPP/Library -L/home/joohong/workspace-arm/llrpreader/wrapper/Release -o "exellrp-new" $(OBJS) $(USER_OBJS) $(LIBS)
+	aarch64-linux-gnu-g++ -L/home/joohong/workspace-arm/llrpreader/iReader/Release -L/home/joohong/workspace-arm/LTK/LTKCPP/Library -L/home/joohong/workspace-arm/llrpreader/wrapper/Release -L/home/joohong/workspace-arm/install/lib -o "exellrp-new" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS := -liReader -lltkcpp -lwrapper -lpthread -lrt
+LIBS := -liReader -lltkcpp -lwrapper -lsqlite3 -lpthread -lrt
 

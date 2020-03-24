@@ -44,7 +44,7 @@ CPP_DEPS += \
 %.o: ../%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross G++ Compiler'
-	aarch64-linux-gnu-g++ -I/home/joohong/workspace-arm/llrpreader/wrapper/inc -I/home/joohong/workspace-arm/llrpreader/iReader -I/home/joohong/workspace-arm/LTK/LTKCPP/Library -O0 -g -Wall -c -fmessage-length=0 -Wno-write-strings -Wno-literal-suffix -Wno-pointer-arith -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	aarch64-linux-gnu-g++ -I/home/joohong/workspace-arm/llrpreader/wrapper/inc -I/home/joohong/workspace-arm/llrpreader/iReader -I/home/joohong/workspace-arm/LTK/LTKCPP/Library -I/home/joohong/workspace-arm/install/include -O0 -g -Wall -c -fmessage-length=0 -Wno-write-strings -Wno-literal-suffix -Wno-pointer-arith -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

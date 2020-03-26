@@ -154,6 +154,20 @@ int main(int argc, char* argv[])
 		  "PRIMARY KEY (" \
 		  "TAGVALUE," \
 		  "ANTID));";
+
+CREATE TABLE TAG_DATA 
+( 
+    tag_ID int   PRIMARY KEY NOT NULL, 
+    tag_Val varchar(32) not null, 
+    DATE_TIME_STAMP timestamp default current_timestamp, 
+    tag_AntID int,
+	tag_RSSI	   double,
+    tag_First_Seen timestamp, 
+    tag_Last_Seen  timestamp, 
+    tag_Seen_Count int, 
+    tag_Out_Of_Fov int 
+);		  
+		  
 #endif
 	   sql = "CREATE TABLE COMPANY("  \
 	      "ID INT PRIMARY KEY     NOT NULL," \

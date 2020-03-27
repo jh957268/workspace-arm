@@ -157,17 +157,45 @@ int main(int argc, char* argv[])
 
 CREATE TABLE TAG_DATA 
 ( 
-    tag_ID int   PRIMARY KEY NOT NULL, 
-    tag_Val varchar(32) not null, 
-    DATE_TIME_STAMP timestamp default current_timestamp, 
-    tag_AntID int,
-	tag_RSSI	   double,
-    tag_First_Seen timestamp, 
-    tag_Last_Seen  timestamp, 
-    tag_Seen_Count int, 
-    tag_Out_Of_Fov int 
+    tag_id integer PRIMARY KEY, 
+    tag_val text(32) NOT NULL, 
+    DATE_TIME_STAMP DATETIME default current_timestamp, 
+    tag_antID integer,
+	tag_RSSI	   DOUBLE,
+    tag_first_seen DATETIME, 
+    tag_last_seen  DATETIME, 
+    tag_seen_count integer, 
+    tag_out_Of_fov integer
 );		  
-		  
+
+insert into TAG_DATA (tag_id, tag_val, tag_antID, tag_RSSI, tag_first_seen, tag_last_seen, tag_seen_count, 	tag_out_Of_fov)
+VALUES
+    (1, '1234567890abcdef1234567f', 1, -55.0, datetime('now'), datetime('now'), 1, 1);
+	
+insert into TAG_DATA (tag_val, tag_antID, tag_RSSI, tag_first_seen, tag_last_seen, tag_seen_count, 	tag_out_Of_fov)
+VALUES
+    ('1234567890abcdef12345678', 1, -55.0, datetime('now'), datetime('now'), 1, 1),
+	('1234567890abcdef1234567a', 2, -56.0, datetime('now'), datetime('now'), 1, 1),
+	('1234567890abcdef1234567b', 3, -58.0, datetime('now'), datetime('now'), 1, 1);	
+	
+select tag_id from TAG_DATA where tag_val='1234567890abcdef1234567a' AND tag_antID=2;
+
+update TAG_DATA SET tag_seen_count=5 where tag_id=4;
+
+select tag_id,tag_seen_count from TAG_DATA where tag_val='1234567890abcdef1234567a' AND tag_antID=2;
+	
+CREATE TABLE prod_mast(
+prod_id integer PRIMARY KEY,
+prod_name text(20),
+prod_rate integer,
+prod_qc text(10) DEFAULT 'OK');	
+
+INSERT INTO prod_mast(prod_id, prod_name, prod_rate, prod_qc)
+VALUES(1, 'Pancakes', 75, 'OK');
+
+INSERT INTO prod_mast(prod_name, prod_rate, prod_qc)
+VALUES('Gulha', 55, 'Problems');
+	
 #endif
 	   sql = "CREATE TABLE COMPANY("  \
 	      "ID INT PRIMARY KEY     NOT NULL," \

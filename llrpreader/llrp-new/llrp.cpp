@@ -167,7 +167,7 @@ CREATE TABLE TAG_DATA
     tag_seen_count integer, 
     tag_out_Of_fov integer
 );		  
-
+BEGIN TRANSACTION;
 insert into TAG_DATA (tag_id, tag_val, tag_antID, tag_RSSI, tag_first_seen, tag_last_seen, tag_seen_count, 	tag_out_Of_fov)
 VALUES
     (1, '1234567890abcdef1234567f', 1, -55.0, datetime('now'), datetime('now'), 1, 1);
@@ -183,6 +183,30 @@ select tag_id from TAG_DATA where tag_val='1234567890abcdef1234567a' AND tag_ant
 update TAG_DATA SET tag_seen_count=5 where tag_id=4;
 
 select tag_id,tag_seen_count from TAG_DATA where tag_val='1234567890abcdef1234567a' AND tag_antID=2;
+
+COMMIT;
+
+BEGIN TRANSACTION;
+ 
+UPDATE accounts
+   SET balance = balance - 1000
+ WHERE account_no = 100;
+ 
+UPDATE accounts
+   SET balance = balance + 1000
+ WHERE account_no = 200;
+ 
+INSERT INTO account_changes(account_no,flag,amount,changed_at) 
+VALUES(100,'-',1000,datetime('now'));
+ 
+INSERT INTO account_changes(account_no,flag,amount,changed_at) 
+VALUES(200,'+',1000,datetime('now'));
+ 
+COMMIT;
+
+
+
+
 	
 CREATE TABLE prod_mast(
 prod_id integer PRIMARY KEY,

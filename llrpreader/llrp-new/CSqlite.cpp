@@ -12,14 +12,13 @@ CSqlite::CSqlite(char *db)
 	if( rc )
 	{
 		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(rfid_db));
-		return(0);
 	} 
 	else
 	{
 	    fprintf(stderr, "Opened database successfully\n");
 	}
 	
-	sql = "CREATE TABLE TAG_DATA" \
+	sql = "CREATE TABLE if not exists TAG_DATA" \
 	    "(" \
 	        "tag_id integer PRIMARY KEY," \
 	        "tag_val text(32) NOT NULL," \
@@ -43,27 +42,74 @@ CSqlite::CSqlite(char *db)
 	}	   
 }
 
+int
+CSqlite::callback(void *NotUsed, int argc, char **argv, char **azColName) 
+{
+   int i;
+   int *parm = (int *)NotUsed;
+   
+   for(i = 0; i<argc; i++) {
+      printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+   }
+   if (NotUsed)
+   {
+	   //*(int *)NotUsed = atoi(argv[0]);
+		parm[0] = atoi(argv[0]);
+		parm[1] = atoi(argv[1]);   
+   }
+   printf("\n");
+   return 0;
+}
+
 void
-CSqlite::begin_transaction(int val)
+CSqlite::begin_transaction()
 {
 	sqlite3_exec(rfid_db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
 }
 
 void
-CSqlite::commit
-(
+CSqlite::commit()
+{
 	sqlite3_exec(rfid_db, "COMMIT;", NULL, NULL, NULL);
-)
+}
 
+void
+CSqlite::db_close()
+{
+	sqlite3_close(rfid_db);
+}
 
 int
-CSqlite::insert_tag(unsigned char *tag, int antid, double rssi)
+CSqlite::select_tag(char *tag)
+{
+	int rc = SQLITE_OK;
+
+	if (!strcmp(tag, "all"))
+	{
+		sql = "select * from TAG_DATA;";
+		rc = sqlite3_exec(rfid_db, sql, callback, 0, &zErrMsg);
+
+	}
+	else
+	{
+
+	}
+	if( rc != SQLITE_OK ){
+	    fprintf(stderr, "SQL error: %s\n", zErrMsg);
+	    sqlite3_free(zErrMsg);
+	} else {
+	    fprintf(stdout, "Records created successfully\n");
+	}
+}
+
+int
+CSqlite::insert_tag(char *tag, int antid, double rssi)
 {
 	int rc;
 	
-	sprintf(sql_buff, ""select tag_id from TAG_DATA where tag_val='%s' AND tag_antID=%d;", tag, antid);
-	select_tag_id = 0;
-	rc = sqlite3_exec(rfid_db, sql, callback, &select_tag_id, &zErrMsg);
+	sprintf(sql_buff, "select tag_id,tag_seen_count from TAG_DATA where tag_val='%s' AND tag_antID=%d;", tag, antid);
+	parm[0] = parm[1] = 0;
+	rc = sqlite3_exec(rfid_db, sql_buff, callback, (void*)parm, &zErrMsg);
 
 	if( rc != SQLITE_OK ){
 	    fprintf(stderr, "SQL error: %s\n", zErrMsg);
@@ -71,9 +117,10 @@ CSqlite::insert_tag(unsigned char *tag, int antid, double rssi)
 	} else {
 	    fprintf(stdout, "Records created successfully\n");
 	}
-	if (select_tag_id != 0)
+	if (parm[0] != 0)	
 	{
-		sprintf(sql_buff, "update TAG_DATA SET tag_seen_count=5 where tag_id=%d;", select_tag_id);
+		int seen_cnt = parm[1] + 1;
+		sprintf(sql_buff, "update TAG_DATA SET tag_RSSI=%f,tag_seen_count=%d,tag_last_seen=datetime('now') where tag_id=%d;", rssi, seen_cnt,parm[0] );
 	    rc = sqlite3_exec(rfid_db, sql_buff, callback, 0, &zErrMsg);
 
 	    if( rc != SQLITE_OK ){
@@ -82,6 +129,20 @@ CSqlite::insert_tag(unsigned char *tag, int antid, double rssi)
 	    } else {
 	       fprintf(stdout, "Records created successfully\n");
 	    }
+		return 0;
 	}
+	
+	sprintf(sql_buff,"insert into TAG_DATA (tag_val, tag_antID, tag_RSSI, tag_first_seen, tag_last_seen, tag_seen_count, tag_out_Of_fov)" \
+			 "VALUES" \
+	         "('%s', %d, %f, datetime('now'), datetime('now'), 1, 1);",tag, antid, rssi); 
+			 
+	rc = sqlite3_exec(rfid_db, sql_buff, callback, 0, &zErrMsg);
+
+	if( rc != SQLITE_OK ){
+		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+	    sqlite3_free(zErrMsg);
+	} else {
+	    fprintf(stdout, "Records created successfully\n");
+	}			 
 }
 

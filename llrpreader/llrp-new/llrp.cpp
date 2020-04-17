@@ -13,7 +13,7 @@
 #include "debug_print.h"
 #include "muxserial.h"
 #include "gpio.h"
-#include "sqlite3.h"
+#include "CSqlite.h"
 
 using namespace std;
 
@@ -40,9 +40,10 @@ unsigned char test_char;
 Muxserial *Ser1;
 Muxserial *Ser2;
 
-sqlite3 *rfid_db;
-int select_tag_id;
-char sql_buff[128];
+//sqlite3 *rfid_db;
+//int select_tag_id;
+//char sql_buff[128];
+CSqlite *Sqlite_db;
 
 static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
    int i;
@@ -133,6 +134,9 @@ int main(int argc, char* argv[])
 
 #endif
 
+	Sqlite_db = new CSqlite("rfidtag.db");
+
+#if 0
 	rc = sqlite3_open("rfidtag.db", &rfid_db);
 
 	if( rc )
@@ -143,12 +147,12 @@ int main(int argc, char* argv[])
 	{
 	    fprintf(stderr, "Opened database successfully\n");
 	}
-
+#endif
 	// sqlite3_close(rfid_db);
 
 	/* Create SQL statement */
 
-	char *sql, *sql1;
+//	char *sql, *sql1;
 #if 0
 	sql = "CREATE TABLE TAGINFO("  \
 	      "TAGVALUE 	CHAR(24)     NOT NULL," \
@@ -269,6 +273,7 @@ VALUES('Gulha', 55, 'Problems');
 	    }
 #endif
 
+#if 0
 	   sql = "CREATE TABLE TAG_DATA" \
 	    "(" \
 	        "tag_id integer PRIMARY KEY," \
@@ -350,6 +355,20 @@ VALUES('Gulha', 55, 'Problems');
 	   sqlite3_exec(rfid_db, "COMMIT;", NULL, NULL, NULL);
 
 	   sqlite3_close(rfid_db);
+
+#endif
+	   Sqlite_db->begin_transaction();
+	   Sqlite_db->insert_tag("1234567890abcdef1234567f", 1, -55.6);
+	   Sqlite_db->insert_tag("1234567890abcdef12345678", 1, -58.6);
+	   Sqlite_db->insert_tag("1234567890abcdef1234567a", 2, -56.6);
+	   Sqlite_db->insert_tag("1234567890abcdef1234567b", 3, -57.6);
+
+	   Sqlite_db->insert_tag("1234567890abcdef1234567a", 2, -46.6);
+	   Sqlite_db->commit();
+
+	   Sqlite_db->select_tag("all");
+	   Sqlite_db->db_close();
+
 //	LLRP_MntServer abc;
 
 //	abc = LLRP_MntServer(1); testing calling the contructor

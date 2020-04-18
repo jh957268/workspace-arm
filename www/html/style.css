@@ -136,6 +136,8 @@ ul li a:hover, ul li a:active {
 	text-decoration: none;
 	background: #CCC
 }
+body#sysinfo a#sysinfo, body#taginfo a#taginfo,
+body#antenna a#antenna, body#tagdb a#tagdb,
 body#lan a#lan, body#wan a#wan, 
 body#password a#password,
 body#dhcpserver a#dhcpserver, 

@@ -381,6 +381,21 @@ IAgent::sendMessage
 
 } // IAgent::sendMessage()
 
+int 
+IAgent::sendResponse(uint8_t resp_code, int msg_len, uint8_t *msg)
+{
+	uint8_t buff [256] = {HDR1, HDR2};
+	int len = msg_len + 1;             // 1 is the response code
+	
+	buff[2] = (len >> 8) & 0xff;
+	buff[3] = (len & 0xff);
+	buff[4] = ~buff[2];
+	buff[5] = ~buff[3];
+	buff[6] = resp_code;
+	memcpy(&buff[7], msg, msg_len);
+	return (sendMessage(buff, len + 6));
+}
+
 void
 IAgent::disconnect
 (
@@ -449,4 +464,10 @@ int IAgent::get_bytes(uint8_t *buff, int req_len)
 		remain -= result;
 	}
 	return (req_len);
+}
+
+int IAgent::Sqlite_callback(void *NotUsed, int argc, char **argv, char **azColName)
+{
+
+	return -1;
 }

@@ -42,6 +42,7 @@ public:
 	}
 	
 	static int iAgent_CallBack(int fd, uint8_t *tReadBuf, int itReadCnt, int antID);
+	static int Sqlite_callback(void *NotUsed, int argc, char **argv, char **azColName);
 
 private:
 
@@ -68,6 +69,7 @@ private:
     void iAgent_GetSearchTimeout(iMsgObj *hMsg);
     int sendMessage(const char *msg);
     int sendMessage(uint8_t *buff, int len);
+	int sendResponse(uint8_t resp_code, int msg_len, uint8_t *msg);
     void disconnect(void);
 
     int get_bytes(uint8_t *buff, int req_len);

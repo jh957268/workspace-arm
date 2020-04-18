@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Untitled Document</title>
+<link rel=stylesheet href="style.css" type="text/css" />
+</head>
+
+<body id="tagdb">
+
+<form action="wan.htm" method="get">
+ <table class="c" cellspacing="0" cellpadding="0">
+	<tr>
+    	<td class="head" colspan="2">&nbsp;&nbsp;Item-Level Tracking Made Easy...</td>
+    </tr>
+	<tr>
+    	<td colspan="2" class="pgtitle">iReader-989 WEB GUI 1.0.0.0</td>
+    </tr>
+    <tr>
+    	<td valign="top">
+        	<ul>
+            <li><a href="sysinfo.html" id="sysinfo">System</a></li>
+            <li><a href="antenna.html" id="antenna">Antenna Status</a></li>
+            <li><a href="taginfo.html" id="taginfo">Read Tags</a></li>
+            <li><a href="tagdb.html" id="tagdb">Database Tags</a></li>			
+            <li><a href="" id="dhcpserver">DHCP Server</a></li>
+            <li><a href="" id="portforwarding">Port Forwarding</a></li>
+            <li><a href="" id="ddns">DDNS</a></li>
+            <li><a href="" id="systeminfo">System Info</a></li>
+            <li><a href="" id="logs">Logs</a></li>
+            <li><a href="" id="savesettings">Save Settings</a></li>
+            <li><a href="" id="reboot">Reboot</a></li>
+            </ul>
+        </td>
+        <td>
+        	<table class="b" id="ant_table" cellspacing="0" cellpadding="0">
+            	<tr>
+                	<th style="width:10%">Tag No.</th>
+					<th style="width:40%">EPC Data</th>
+					<th style="width:10%">PC Bits</th>
+					<th style="width:10%">RSSI</th>
+					<th style="width:10%">Ant. ID</th>					
+					<th style="width:20%">Last Seen Time</th>					
+					<th style="width:10%">Count</th>					
+				</tr>		
+            </table>
+        	<table class="b" cellspacing="0" cellpadding="0">
+				<tr>			
+					<td>
+						<input type=button style="{width:120px;}" value="Start Tags Read" onClick="startTagInfoSSe()" />
+						<input type=button style="{width:120px;}" value="Stop Tags Read" onClick="stopTagInfoSSe()" />
+					</td>
+					<td>
+						<label for="antenna">AntID:</label>
+						<input type="text" name="anten" id="AntID" value="1" />
+						<input type=button style="{width:120px;}" value="Tags Read Once" onClick="readTagInfoOnce()" />
+					</td>
+                </tr>			
+             </table>			
+        </td>
+    </tr>
+</table>
+</form>
+
+<script>
+
+var tagCount = 0; 
+function displayTagInfo(tagInfo)
+{
+	var atable = document.getElementById("ant_table");
+	var trow;
+	var cell;
+	
+	const [epcData, pcbits, rssi, antid, timeSeen] = tagInfo.split('~');
+ 
+	for (tbl_row = 1; tbl_row <= tagCount; tbl_row++)
+	{
+		if ( (atable.rows[tbl_row].cells[1].innerHTML.localeCompare(epcData) == 0) && (atable.rows[tbl_row].cells[4].innerHTML.localeCompare(antid) == 0))
+		{
+			atable.rows[tbl_row].cells[5].innerHTML = timeSeen;
+			atable.rows[tbl_row].cells[2].innerHTML = pcbits;
+			atable.rows[tbl_row].cells[3].innerHTML = rssi;		
+			var cnt = 1*atable.rows[tbl_row].cells[6].innerHTML;
+			cnt = cnt+1;
+			atable.rows[tbl_row].cells[6].innerHTML = cnt;
+			return;
+		}
+	}
+	// for (tbl_row = 1; tbl_row <= 2; tbl_row++)
+	tbl_row = tagCount + 1;
+	{
+		trow = atable.insertRow(tbl_row);
+		if ( tbl_row == 0 || (tbl_row && !(tbl_row%2)))
+		{
+			trow.style.backgroundColor = "#cbccc6";
+		}
+		else
+		{
+			trow.style.backgroundColor = "#DFEFE9";	
+		}
+
+		cell = trow.insertCell(0);
+		cell.innerHTML = tbl_row;
+		cell = trow.insertCell(1);
+		cell.innerHTML = epcData;
+		cell = trow.insertCell(2);
+		cell.innerHTML = pcbits;
+		cell = trow.insertCell(3);
+		cell.innerHTML = rssi;
+		cell = trow.insertCell(4);
+		cell.innerHTML = antid;		
+		cell = trow.insertCell(5);
+		cell.innerHTML = timeSeen;
+		cell = trow.insertCell(6);
+		cell.innerHTML = 1;		
+	}
+	tagCount++;
+}
+
+var source;
+var isOpenOnce = false;
+function startTagInfoSSe()
+{
+	if (isOpenOnce == true)
+	{
+		return;
+	}
+	 //alert("Start SSE now!");
+	if(typeof(EventSource) !== "undefined") 
+	{
+		source = new EventSource("/cgi-bin/execgi-bin.cgi?readtag=1");
+
+		source.onmessage = function(event) 
+		{
+			// document.getElementById("result").innerHTML += event.data + "<br>";
+			displayTagInfo(event.data);
+			
+		}
+	} else {
+		document.getElementById("result").innerHTML = "Sorry, your browser does not support server-sent events...";
+	}
+	isOpenOnce = true;
+}
+
+function stopTagInfoSSe()
+{
+  // alert("Close SSE now!");
+	if (isOpenOnce == true) 
+	{
+		source.close();
+	}
+	isOpenOnce = false;
+}
+
+function readTagInfoOnce()
+{
+	if (isOpenOnce == true)
+	{
+		return;
+	}
+}
+
+  // tablea.rows[5].cells[10].innerHTML='&#128225;<b>ANT</b>';
+  //alert("Table row inserted end!");
+  //var tagInfo = '0123456789abcdef01234567~Feb 2 2020 12:30:14';
+  //var tagInfo1 = '0123456789abcdef01234567~Feb 2 2020 12:30:24';
+  //var tagInfo2 = '0123456789abcdef01234568~Feb 2 2020 12:30:34';
+  //var tagInfo3 = '0123456789abcdef01234568~Feb 2 2020 12:30:44'; 
+  //var tagInfo4 = '0123456789abcdef01234567~Feb 2 2020 12:30:54';  
+  //displayTagInfo(tagInfo);
+  //displayTagInfo(tagInfo1);
+  //displayTagInfo(tagInfo2);
+ //displayTagInfo(tagInfo3); 
+ //displayTagInfo(tagInfo4);   
+  //loadAntennaMap();
+  //startTagInfoSSe();
+</script>
+
+</body>
+</html>
+

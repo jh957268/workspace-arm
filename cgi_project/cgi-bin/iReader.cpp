@@ -114,6 +114,23 @@ int  IReader::IReaderGetRegion(int *region)
     return (IREADER_SUCCESS);
 }
 
+int  IReader::IReaderDBSelectAll()
+{
+	int ret;
+	int reg;
+	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x01, 0xFF, 0xFE, 0x93};  // 0x91 get region
+    // retrieve the list from mux again
+
+	ret = sendmsg(buf);
+
+	if (m_rxMsg.opCode != 0x93 || ret != RFID_CMD_SUCCESS)
+	{
+		return (IREADER_COMMAND_FAIL);
+	}
+
+    return (IREADER_SUCCESS);
+}
+
 int  IReader::IReaderGetSearchTimeout(int *timeout)
 {
 	int ret;
@@ -316,6 +333,32 @@ int  IReader::IReaderGetTagsMetaDataRSSI(int *antID, int *tagcount, struct tagin
 	}
 
 	*tagcount = totaltags; 
+	return (IREADER_SUCCESS);
+}
+
+int  IReader::IReaderGetTagDBRecord(char *DBRecord, int *cnt)
+{
+ 	int retv;
+
+ 	*cnt = 0;
+ 	retv = MSG_receiveMsgObj_1(&m_rxMsg_1);
+    if (retv == SOCKET_ERROR)
+    {
+        return (SOCKET_ERROR);
+    }
+	if ( 0 == retv )
+	{
+		return IREADER_SUCCESS;		// timout and no data available
+	}
+
+	if ((m_rxMsg_1.opCode != 0x93) || (retv != RFID_CMD_SUCCESS))
+	{
+		return (IREADER_COMMAND_FAIL);
+	}
+
+	memmove(DBRecord, &m_rxMsg_1.data[0], m_rxMsg_1.dataLen - 1);
+	*cnt = 1;
+
 	return (IREADER_SUCCESS);
 }
 

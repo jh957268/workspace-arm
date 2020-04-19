@@ -367,7 +367,7 @@ VALUES('Gulha', 55, 'Problems');
 	   Sqlite_db->commit();
 
 	   Sqlite_db->select_tag("all", CSqlite::callback, 0);
-	   Sqlite_db->db_close();
+	   //Sqlite_db->db_close();
 
 //	LLRP_MntServer abc;
 

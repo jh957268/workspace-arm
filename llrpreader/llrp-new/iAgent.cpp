@@ -9,6 +9,7 @@
 #include  "iReaderapi.h"
 #include  "debug_print.h"
 #include  "iAgent_executor.h"
+#include "CSqlite.h"
 
 #include <iostream>
 
@@ -17,6 +18,8 @@ using namespace std;
 unsigned int IAgent::nextId = 0;
 
 #define _time64		time
+
+extern CSqlite *Sqlite_db;
 
 //=============================================================================
 // Constructor
@@ -166,6 +169,9 @@ int IAgent::iAgent_ProcessMsgObj(iMsgObj *hMsg)
 			break;
 		case 0x92:
 			iAgent_GetSearchTimeout(hMsg);
+			break;
+		case 0x93:
+			iAgent_Sqlite_Select(hMsg);
 			break;
 		default:
 			break;
@@ -466,8 +472,38 @@ int IAgent::get_bytes(uint8_t *buff, int req_len)
 	return (req_len);
 }
 
-int IAgent::Sqlite_callback(void *NotUsed, int argc, char **argv, char **azColName)
+void IAgent::iAgent_Sqlite_Select(iMsgObj *hMsg)
+{
+	int fd = clientSocket;
+
+	uint8_t buff [] = {HDR1, HDR2, 0x00, 0x02, 0xff, 0xfd, 0x00, 0x00};
+
+	buff[6] = hMsg->opCode;
+
+	sendMessage(buff, 8);     // should be 7
+	Sqlite_db->select_tag("all", Sqlite_callback, (void *)&fd);
+}
+
+int IAgent::Sqlite_callback(void *param, int argc, char **argv, char **azColName)
 {
 
-	return -1;
+	char buff[128] = {HDR1, HDR2};;
+	// tag_id tag_val antid  rssi first_seen last_seen seen_cnt
+	sprintf(&buff[7], "%s~%s~%s~%s~%s~%s~%s", argv[0], argv[1], argv[3], argv[4], argv[5], argv[6], argv[7]);
+
+	int len = strlen(&buff[7]);
+	len = len + 1;
+	buff[2] = (len >> 8) & 0xff;
+	buff[3] = (len & 0xff);
+	buff[4] = ~buff[2];
+	buff[5] = ~buff[3];
+	buff[6] = 0x93;
+
+	sprintf(&buff[7], "%s~%s~%s~%s~%s~%s~%s", argv[0], argv[1], argv[3], argv[4], argv[5], argv[6], argv[7]);
+
+	int fd = ((int *)param)[0];
+
+	::send( fd, buff, len + 6, 0 );
+
+	return 0;
 }

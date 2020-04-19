@@ -35,25 +35,20 @@
         <td>
         	<table class="b" id="ant_table" cellspacing="0" cellpadding="0">
             	<tr>
-                	<th style="width:10%">Tag No.</th>
-					<th style="width:40%">EPC Data</th>
+                	<th style="width:10%">Tag ID</th>
+					<th style="width:35%">EPC Data</th>
 					<th style="width:10%">PC Bits</th>
 					<th style="width:10%">RSSI</th>
-					<th style="width:10%">Ant. ID</th>					
-					<th style="width:20%">Last Seen Time</th>					
+					<th style="width:5%">Ant. ID</th>					
+					<th style="width:15%">Last Seen Time</th>
+					<th style="width:15%">First Seen Time</th>					
 					<th style="width:10%">Count</th>					
 				</tr>		
             </table>
         	<table class="b" cellspacing="0" cellpadding="0">
 				<tr>			
 					<td>
-						<input type=button style="{width:120px;}" value="Start Tags Read" onClick="startTagInfoSSe()" />
-						<input type=button style="{width:120px;}" value="Stop Tags Read" onClick="stopTagInfoSSe()" />
-					</td>
-					<td>
-						<label for="antenna">AntID:</label>
-						<input type="text" name="anten" id="AntID" value="1" />
-						<input type=button style="{width:120px;}" value="Tags Read Once" onClick="readTagInfoOnce()" />
+						<input type=button style="{width:120px;}" value="Load Next 30 Tags" onClick="LoadDBTag()" />
 					</td>
                 </tr>			
              </table>			
@@ -65,13 +60,13 @@
 <script>
 
 var tagCount = 0; 
-function displayTagInfo(tagInfo)
+function DisplayDBTag(tagInfo)
 {
 	var atable = document.getElementById("ant_table");
 	var trow;
 	var cell;
 	
-	const [epcData, pcbits, rssi, antid, timeSeen] = tagInfo.split('~');
+	const [tagid, epcData, pcbits, rssi, antid, lasttimeSeen, firstseentime, seencnt] = tagInfo.split('~');
  
 	for (tbl_row = 1; tbl_row <= tagCount; tbl_row++)
 	{
@@ -117,48 +112,17 @@ function displayTagInfo(tagInfo)
 	tagCount++;
 }
 
-var source;
-var isOpenOnce = false;
-function startTagInfoSSe()
-{
-	if (isOpenOnce == true)
-	{
-		return;
-	}
-	 //alert("Start SSE now!");
-	if(typeof(EventSource) !== "undefined") 
-	{
-		source = new EventSource("/cgi-bin/execgi-bin.cgi?readtag=1");
-
-		source.onmessage = function(event) 
-		{
-			// document.getElementById("result").innerHTML += event.data + "<br>";
-			displayTagInfo(event.data);
-			
-		}
-	} else {
-		document.getElementById("result").innerHTML = "Sorry, your browser does not support server-sent events...";
-	}
-	isOpenOnce = true;
-}
-
-function stopTagInfoSSe()
-{
-  // alert("Close SSE now!");
-	if (isOpenOnce == true) 
-	{
-		source.close();
-	}
-	isOpenOnce = false;
-}
-
-function readTagInfoOnce()
-{
-	if (isOpenOnce == true)
-	{
-		return;
-	}
-}
+function LoadDBTag()
+ { 
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      DisplayDBTag(this.responseText);
+    }
+  }
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?dbtag="+tagCount, true);
+  xhttp.send();
+ }
 
   // tablea.rows[5].cells[10].innerHTML='&#128225;<b>ANT</b>';
   //alert("Table row inserted end!");

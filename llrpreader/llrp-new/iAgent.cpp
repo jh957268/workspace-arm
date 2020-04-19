@@ -499,7 +499,9 @@ int IAgent::Sqlite_callback(void *param, int argc, char **argv, char **azColName
 	buff[5] = ~buff[3];
 	buff[6] = 0x93;
 
-	sprintf(&buff[7], "%s~%s~%s~%s~%s~%s~%s", argv[0], argv[1], argv[3], argv[4], argv[5], argv[6], argv[7]);
+	//sprintf(&buff[7], "%s~%s~%s~%s~%s~%s~%s", argv[0], argv[1], argv[3], argv[4], argv[5], argv[6], argv[7]);
+
+	//printf("%s\n", &buff[7]);
 
 	int fd = ((int *)param)[0];
 

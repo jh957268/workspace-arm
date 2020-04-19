@@ -14,7 +14,7 @@ int main(void)
 	int ret;
 	int region;
 	const char *cgi_env = getenv("QUERY_STRING");
-
+	//const char *cgi_env = "dbtag=1";
 	// parse the cgi_env
 
 #if 0
@@ -41,11 +41,13 @@ int main(void)
 #endif
 	handle = IReaderApiInit();
 
+
 	if (NULL == handle)
 	{
 		printf("Create IReader Fails");
 		exit(-1);
 	}
+	printf("connecting...\n");
 	ret = IReaderApiConnect(handle, (char *)"127.0.0.1");
 	if (IREADER_SUCCESS != ret)
 	{
@@ -139,6 +141,38 @@ int main(void)
 				pTaginfo_rssi++;
 			}
 
+		}
+	}
+	else if (!strcmp(cgi_env, "dbtag=1"))
+	{
+		int ttagCount;
+		char db_record[128];
+
+		ret = IReaderApiDBSelectAll(handle);
+		if (IREADER_SUCCESS != ret)
+		{
+			printf("command fails\n");
+			IReaderApiClose(handle);
+			return 0;
+		}
+
+		// Ireader read asyn tags
+		while (1)
+		{
+			ret = IReaderApiGetTagDBRecord(handle, db_record, &ttagCount);
+			if (IREADER_SUCCESS != ret)
+			{
+				IReaderApiClose(handle);
+				return 0;
+			}
+
+			if (ttagCount == 0)
+			{
+				continue;
+			}
+		   	printf("Content-Type: text/event-stream\r\n");
+		    printf("Cache-Control: no-cache\n\n");
+		    printf("data:%s", db_record);
 		}
 	}
 	else if (!strcmp(cgi_env, "region=1"))

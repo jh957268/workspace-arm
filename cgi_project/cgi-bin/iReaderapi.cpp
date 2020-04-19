@@ -309,6 +309,23 @@ Int32 __cdecl IReaderApiGetRegion(void * handle, int *region)
 	return(error);
 }
 
+Int32 __cdecl IReaderApiDBSelectAll(void * handle)
+{
+	int error;
+	IReader *devHandle;
+
+	error = IReaderHandleValid(handle);
+	((IReader *)handle)->IReaderTakeMutex();
+	if (error == IREADER_SUCCESS)
+	{
+		devHandle = (IReader *)handle;
+		error = devHandle->IReaderDBSelectAll();
+
+	}
+	((IReader *)handle)->IReaderGiveMutex();
+	return(error);
+}
+
 Int32 __cdecl IReaderApiGetSearchTimeout(void * handle, int *region)
 {
 	int error;
@@ -395,6 +412,18 @@ Int32 __cdecl IReaderApiGetTagsMetaDataRSSI(void * handle, int *antid, int *tagc
 
     // Now reguest the M5e to start reading the tags
     IF_ERROR_RETURN(((IReader *)handle)->IReaderGetTagsMetaDataRSSI(antid, tagcount, tagrbuf));
+
+	// ((IReader *)handle)->IReaderGiveMutex();
+    return IREADER_SUCCESS;
+}
+
+Int32 __cdecl IReaderApiGetTagDBRecord(void * handle, char *dbrecord, int *tagcount)
+{
+    IF_ERROR_RETURN(IReaderHandleValid(handle));
+	// ((IReader *)handle)->IReaderTakeMutex();			No need, different socket
+
+    // Now reguest the M5e to start reading the tags
+    IF_ERROR_RETURN(((IReader *)handle)->IReaderGetTagDBRecord(dbrecord, tagcount));
 
 	// ((IReader *)handle)->IReaderGiveMutex();
     return IREADER_SUCCESS;

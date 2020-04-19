@@ -47,7 +47,7 @@ int main(void)
 		printf("Create IReader Fails");
 		exit(-1);
 	}
-	printf("connecting...\n");
+	//printf("connecting...\n");
 	ret = IReaderApiConnect(handle, (char *)"127.0.0.1");
 	if (IREADER_SUCCESS != ret)
 	{
@@ -62,7 +62,7 @@ int main(void)
 
 		for (int i = 0; i < 256; i++)
 		{
-			antmap[i] += 0x30;
+			antmap[i] += 0x31;
 		}
 #if 0
 		for (int i = 0; i < 256; i++)
@@ -151,7 +151,7 @@ int main(void)
 		ret = IReaderApiDBSelectAll(handle);
 		if (IREADER_SUCCESS != ret)
 		{
-			printf("command fails\n");
+			//printf("command fails\n");
 			IReaderApiClose(handle);
 			return 0;
 		}
@@ -160,6 +160,10 @@ int main(void)
 		while (1)
 		{
 			ret = IReaderApiGetTagDBRecord(handle, db_record, &ttagCount);
+			//ret = IReaderApiDBSelectAll(handle);
+			//ret = IREADER_SUCCESS;
+			//ttagCount = 1;
+			//sprintf(db_record, "1~1122334455667788");
 			if (IREADER_SUCCESS != ret)
 			{
 				IReaderApiClose(handle);
@@ -172,7 +176,9 @@ int main(void)
 			}
 		   	printf("Content-Type: text/event-stream\r\n");
 		    printf("Cache-Control: no-cache\n\n");
-		    printf("data:%s", db_record);
+		    printf("data:%s\r\n\r\n", db_record);
+		    fflush(stdout);
+			sleep(1);
 		}
 	}
 	else if (!strcmp(cgi_env, "region=1"))

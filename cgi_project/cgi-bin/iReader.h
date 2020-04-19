@@ -99,6 +99,7 @@ class IReader : public MuxClient
 		int           IReaderDisconnect(void);
 		int           IReaderSetRegion(int region);
 		int           IReaderGetRegion(int *region);
+		int           IReaderDBSelectAll(void);
 		int           IReaderGetSearchTimeout(int *timeout);
 		int           IReaderSetPowerLevel(int antid, int pwr, int doset);
 		int           IReaderSetWritePowerLevel(int pwr);
@@ -108,6 +109,7 @@ class IReader : public MuxClient
 		int  		  IReaderReadTagsMetaDataRSSI(int antID, int pwr, int *tagcount, struct taginfo_rssi *tagrbuf);
 		int  		  IReaderGetTagsMetaDataRSSI(int *antID, int *tagcount, struct taginfo_rssi *tagrbuf);
 		int  		  IReaderGetTags(int *antID, int *tagcount, struct taginfo *tagrbuf);
+		int           IReaderGetTagDBRecord(char *DBRecord, int *cnt);
 		int  		  IReaderStartExecutor(int flag);
 		int  		  IReaderGetTagCount(int *tagcount);
 		int  		  IReaderWriteTag(int timeout, unsigned char *tagid);

@@ -92,13 +92,16 @@ CSqlite::select_tag(char *tag, t_func sq_callback, void *param)
 	}
 	else
 	{
-
+		// tag can be LIMIT 10 OFFSET 10;
+		// sql = "select * from TAG_DATA limit xx offset yy;"
+		sprintf(sql_buff, "select * from TAG_DATA %s;", tag);
+		rc = sqlite3_exec(rfid_db, sql_buff, sq_callback, param, &zErrMsg);
 	}
 	if( rc != SQLITE_OK ){
 	    fprintf(stderr, "SQL error: %s\n", zErrMsg);
 	    sqlite3_free(zErrMsg);
 	} else {
-	    fprintf(stdout, "Records created successfully\n");
+	    fprintf(stdout, "Records selected successfully\n");
 	}
 }
 
@@ -115,7 +118,7 @@ CSqlite::insert_tag(char *tag, int antid, double rssi)
 	    fprintf(stderr, "SQL error: %s\n", zErrMsg);
 	    sqlite3_free(zErrMsg);
 	} else {
-	    fprintf(stdout, "Records created successfully\n");
+	    fprintf(stdout, "Record seleted successfully\n");
 	}
 	if (parm[0] != 0)	
 	{
@@ -127,7 +130,7 @@ CSqlite::insert_tag(char *tag, int antid, double rssi)
 	       fprintf(stderr, "SQL error: %s\n", zErrMsg);
 	       sqlite3_free(zErrMsg);
 	    } else {
-	       fprintf(stdout, "Records created successfully\n");
+	       fprintf(stdout, "Record updated successfully\n");
 	    }
 		return 0;
 	}
@@ -142,7 +145,7 @@ CSqlite::insert_tag(char *tag, int antid, double rssi)
 		fprintf(stderr, "SQL error: %s\n", zErrMsg);
 	    sqlite3_free(zErrMsg);
 	} else {
-	    fprintf(stdout, "Records created successfully\n");
+	    fprintf(stdout, "Records inserted successfully\n");
 	}			 
 }
 

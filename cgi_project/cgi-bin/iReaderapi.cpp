@@ -309,7 +309,7 @@ Int32 __cdecl IReaderApiGetRegion(void * handle, int *region)
 	return(error);
 }
 
-Int32 __cdecl IReaderApiDBSelectAll(void * handle)
+Int32 __cdecl IReaderApiDBSelectAll(void * handle, int limit, int offset)
 {
 	int error;
 	IReader *devHandle;
@@ -319,7 +319,7 @@ Int32 __cdecl IReaderApiDBSelectAll(void * handle)
 	if (error == IREADER_SUCCESS)
 	{
 		devHandle = (IReader *)handle;
-		error = devHandle->IReaderDBSelectAll();
+		error = devHandle->IReaderDBSelectAll(limit, offset);
 
 	}
 	((IReader *)handle)->IReaderGiveMutex();

@@ -476,13 +476,30 @@ int IAgent::get_bytes(uint8_t *buff, int req_len)
 void IAgent::iAgent_Sqlite_Select(iMsgObj *hMsg)
 {
 	int fd = clientSocket;
+	int offset, limit;
+	char sel_cl[24];
 
-	uint8_t buff [] = {HDR1, HDR2, 0x00, 0x02, 0xff, 0xfd, 0x00, 0x00};
+	uint8_t buff [32] = {HDR1, HDR2, 0x00, 0x02, 0xff, 0xfd, 0x00, 0x00};
+	
+	limit = (hMsg->data[0] << 8) | hMsg->data[1];
+	offset = (hMsg->data[2] << 8) | hMsg->data[3];
+	if (offset == 0 && limit == 0)
+	{
+		sprintf(sel_cl, "all");
+	}
+	else
+	{
+		sprintf(sel_cl, "limit %d offset %d", limit, offset );
+	}
 
 	buff[6] = hMsg->opCode;
 
 	sendMessage(buff, 8);     // should be 7
-	Sqlite_db->select_tag("all", Sqlite_callback, (void *)&fd);
+	Sqlite_db->select_tag(sel_cl, Sqlite_callback, (void *)&fd);
+	buff[3] = 5;
+	buff[5] = 0xa;
+	sprintf((char *)&buff[7], "done");
+	sendMessage(buff, 11);     // should be 11
 }
 
 int IAgent::Sqlite_callback(void *param, int argc, char **argv, char **azColName)

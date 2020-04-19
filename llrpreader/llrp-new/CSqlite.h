@@ -5,6 +5,8 @@
 #include <string.h>
 #include "sqlite3.h"
 
+typedef int (*t_func)(void *NotUsed, int argc, char **argv, char **azColName);
+
 class CSqlite
 {
     public:
@@ -14,12 +16,11 @@ class CSqlite
 			void begin_transaction(void);
 			void commit(void);
 			int  insert_tag(char *tag, int antid, double rssi);
-			int  select_tag(char *tag);
+			int  select_tag(char *tag, t_func sqcallback, void *param);
 			void db_close();
-
+			static int callback(void *NotUsed, int argc, char **argv, char **azColName);
     private:
 
-			static int callback(void *NotUsed, int argc, char **argv, char **azColName);
 			sqlite3 *rfid_db;
 			int parm[2];
 			char sql_buff[256];

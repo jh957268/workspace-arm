@@ -114,13 +114,17 @@ int  IReader::IReaderGetRegion(int *region)
     return (IREADER_SUCCESS);
 }
 
-int  IReader::IReaderDBSelectAll()
+int  IReader::IReaderDBSelectAll(int limit, int offset)
 {
 	int ret;
 	int reg;
-	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x01, 0xFF, 0xFE, 0x93};  // 0x91 get region
+	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x05, 0xFF, 0xFA, 0x93, 0, 0, 0, 0};  // 0x91 get region
     // retrieve the list from mux again
 
+	buf[7] = (limit >> 8) & 0xff;
+	buf[8] = limit & 0xff;
+	buf[9] = (offset >> 8) & 0xff;
+	buf[10] = offset & 0xff;	
 	ret = sendmsg(buf);
 
 	if (m_rxMsg.opCode != 0x93 || ret != RFID_CMD_SUCCESS)
@@ -357,7 +361,8 @@ int  IReader::IReaderGetTagDBRecord(char *DBRecord, int *cnt)
 	}
 
 	memmove(DBRecord, &m_rxMsg_1.data[0], m_rxMsg_1.dataLen - 1);
-	*cnt = 1;
+	
+	*cnt = m_rxMsg_1.dataLen - 1;    // message len
 
 	return (IREADER_SUCCESS);
 }

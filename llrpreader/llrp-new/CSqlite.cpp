@@ -80,14 +80,14 @@ CSqlite::db_close()
 }
 
 int
-CSqlite::select_tag(char *tag)
+CSqlite::select_tag(char *tag, t_func sq_callback, void *param)
 {
 	int rc = SQLITE_OK;
 
 	if (!strcmp(tag, "all"))
 	{
 		sql = "select * from TAG_DATA;";
-		rc = sqlite3_exec(rfid_db, sql, callback, 0, &zErrMsg);
+		rc = sqlite3_exec(rfid_db, sql, sq_callback, param, &zErrMsg);
 
 	}
 	else

@@ -6,7 +6,7 @@
 #include "iReaderapi.h"
 char antmap[300];
 
-char ttagrbuf[512];
+char ttagrbuf[2048];
 
 int main(void) 
 {
@@ -148,7 +148,7 @@ int main(void)
 		int ttagCount;
 		char db_record[128];
 
-		ret = IReaderApiDBSelectAll(handle);
+		ret = IReaderApiDBSelectAll(handle, 0, 0);    // select all limit 0 offset 0
 		if (IREADER_SUCCESS != ret)
 		{
 			//printf("command fails\n");
@@ -178,9 +178,54 @@ int main(void)
 		    printf("Cache-Control: no-cache\n\n");
 		    printf("data:%s\r\n\r\n", db_record);
 		    fflush(stdout);
-			sleep(1);
 		}
 	}
+	else if (!strcmp(cgi_env, "seltag=1"))
+	{
+		int ttagCount;
+		char db_record[128];
+		int total_record = 0;
+		ttagrbuf[0] = 0;		
+
+		ret = IReaderApiDBSelectAll(handle, 0, 0);    // select all limit 0 offset 0
+		if (IREADER_SUCCESS != ret)
+		{
+			//printf("command fails\n");
+			IReaderApiClose(handle);
+			return 0;
+		}
+
+		// Ireader read asyn tags
+		while (1)
+		{
+			ret = IReaderApiGetTagDBRecord(handle, db_record, &ttagCount);
+			//ret = IReaderApiDBSelectAll(handle);
+			//ret = IREADER_SUCCESS;
+			//ttagCount = 1;
+			//sprintf(db_record, "1~1122334455667788");
+			if (IREADER_SUCCESS != ret)
+			{
+				IReaderApiClose(handle);
+				return 0;
+			}
+
+			if (ttagCount == 0)   // ttagCount is msg len
+			{
+				continue;
+			}
+			
+			db_record[ttagCount] = 0;
+			if (!strcmp(db_record, "done"))
+			{
+				break;
+			}
+			total_record++;
+			strcat(ttagrbuf, db_record);
+		}
+		printf("%s", ttagrbuf);
+		IReaderApiClose(handle);
+		return 0;
+	}	
 	else if (!strcmp(cgi_env, "region=1"))
 	{
 		ret = IReaderApiGetRegion(handle, &region);

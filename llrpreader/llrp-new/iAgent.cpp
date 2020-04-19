@@ -66,6 +66,7 @@ IAgent::main
 #endif
 		
 	}
+	DBG_PRINT( DEBUG_INFO, "IAgent[%d]:: Closed"NL, id );
 	::close(clientSocket);
 	idle = true;  // Once this is set to true, other connection (from LLRP_Mntserver) may use this object before the
 	              // phtread exit if preemption "can" happen

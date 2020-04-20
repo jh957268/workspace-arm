@@ -497,7 +497,7 @@ void IAgent::iAgent_Sqlite_Select(iMsgObj *hMsg)
 	sendMessage(buff, 8);     // should be 7
 	Sqlite_db->select_tag(sel_cl, Sqlite_callback, (void *)&fd);
 	buff[3] = 5;
-	buff[5] = 0xa;
+	buff[5] = 0xfa;
 	sprintf((char *)&buff[7], "done");
 	sendMessage(buff, 11);     // should be 11
 }

@@ -220,6 +220,10 @@ int main(void)
 			{
 				break;
 			}
+			if (total_record != 0)
+			{
+				strcat(ttagrbuf, ";");
+			}
 			total_record++;
 			strcat(ttagrbuf, db_record);
 		}

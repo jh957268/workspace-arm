@@ -66,21 +66,8 @@ function DisplayDBTag(tagInfo)
 	var trow;
 	var cell;
 	
-	const [tagid, epcData, pcbits, rssi, antid, lasttimeSeen, firstseentime, seencnt] = tagInfo.split('~');
+	//const [tagid, epcData, pcbits, rssi, antid, lasttimeSeen, firstseentime, seencnt] = tagInfo.split('~');
  
-	for (tbl_row = 1; tbl_row <= tagCount; tbl_row++)
-	{
-		if ( (atable.rows[tbl_row].cells[1].innerHTML.localeCompare(epcData) == 0) && (atable.rows[tbl_row].cells[4].innerHTML.localeCompare(antid) == 0))
-		{
-			atable.rows[tbl_row].cells[5].innerHTML = timeSeen;
-			atable.rows[tbl_row].cells[2].innerHTML = pcbits;
-			atable.rows[tbl_row].cells[3].innerHTML = rssi;		
-			var cnt = 1*atable.rows[tbl_row].cells[6].innerHTML;
-			cnt = cnt+1;
-			atable.rows[tbl_row].cells[6].innerHTML = cnt;
-			return;
-		}
-	}
 	// for (tbl_row = 1; tbl_row <= 2; tbl_row++)
 	tbl_row = tagCount + 1;
 	{
@@ -95,19 +82,19 @@ function DisplayDBTag(tagInfo)
 		}
 
 		cell = trow.insertCell(0);
-		cell.innerHTML = tbl_row;
+		cell.innerHTML = tagInfo;
 		cell = trow.insertCell(1);
-		cell.innerHTML = epcData;
+		//cell.innerHTML = epcData;
 		cell = trow.insertCell(2);
-		cell.innerHTML = pcbits;
+		//cell.innerHTML = pcbits;
 		cell = trow.insertCell(3);
-		cell.innerHTML = rssi;
+		//cell.innerHTML = rssi;
 		cell = trow.insertCell(4);
-		cell.innerHTML = antid;		
+		//cell.innerHTML = antid;		
 		cell = trow.insertCell(5);
-		cell.innerHTML = timeSeen;
+		//cell.innerHTML = timeSeen;
 		cell = trow.insertCell(6);
-		cell.innerHTML = 1;		
+		//cell.innerHTML = 1;		
 	}
 	tagCount++;
 }
@@ -120,7 +107,7 @@ function LoadDBTag()
       DisplayDBTag(this.responseText);
     }
   }
-  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?dbtag="+tagCount, true);
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?seltag=1", true);
   xhttp.send();
  }
 

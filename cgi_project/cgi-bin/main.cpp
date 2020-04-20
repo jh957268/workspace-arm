@@ -215,6 +215,7 @@ int main(void)
 			}
 			
 			db_record[ttagCount] = 0;
+
 			if (!strcmp(db_record, "done"))
 			{
 				break;

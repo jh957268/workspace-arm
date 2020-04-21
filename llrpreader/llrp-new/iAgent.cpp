@@ -270,12 +270,13 @@ void IAgent::iAgent_ReadTags(iMsgObj *hMsg)
 void IAgent::iAgent_ReadTagsRSSI(iMsgObj *hMsg)
 {
 	uint8_t buff [256] = {HDR1, HDR2, 0x00, 33, 0xff, 0xfd, 0x00, 0x00};
+	int len;
 
 	IReader *handle = IReader::getInstance();
 
 	int ttagCount = 0;
 	int antID = hMsg->data[0];
-	int pwr = hMsg->data[1];
+	int pwr = (hMsg->data[1] << 8) | hMsg->data[2];    // e.g 2500
 	
 	IReaderApiReadTagsMetaDataRSSI((void *)handle, antID, pwr, &ttagCount, (struct taginfo_rssi *)&buff[9]);
 	buff[6] = hMsg->opCode;	
@@ -283,22 +284,23 @@ void IAgent::iAgent_ReadTagsRSSI(iMsgObj *hMsg)
 	buff[8] = ttagCount;
 	buff[3] = 3 + (ttagCount * TAGLEN_RSSI);
 	buff[5] = ~buff[3];
-	//c3000_send_packet(buff, buff[3] + 6 );
+	
+	len = buff[3] + 6;
+	::send( clientSocket, buff, len, 0 );
 
 }
 
 void IAgent::iAgent_SetTxPower(iMsgObj *hMsg)
 {
 	uint8_t buff [] = {HDR1, HDR2, 0x00, 0x02, 0xff, 0xfd, 0x00, 0x00};
-#if 0
-	int antid = hMsg->data[0];
-	int pwr = hMsg->data[1];
 
-	Console_Printf("ID = %d, pwr = %d\n", antid, pwr);	
+	int antid = hMsg->data[0];
+	int pwr = (hMsg->data[1] << 8) | hMsg->data[2];    // e.g 2500
+
+	// Console_Printf("ID = %d, pwr = %d\n", antid, pwr);	
 	buff[6] = hMsg->opCode;
-	m_antpower[antid -1] = pwr;
-	cc3000_send_packet(buff, buff[3] + 6 );
-#endif
+	//m_antpower[antid -1] = pwr;
+	sendMessage(buff, 8);
 }
 
 void IAgent::iAgent_StartExecutor(iMsgObj *hMsg)

@@ -342,7 +342,7 @@ int IAgent::iAgent_CallBack(int fd, uint8_t *tReadBuf, int itReadCnt, int antID)
 	//OSSleep(100);
 	
 	// write data to Database
-	Sqlite_db->begin_transaction();
+	//Sqlite_db->begin_transaction();
 	struct taginfo_rssi *pTaginfo_rssi;
 	pTaginfo_rssi = (struct taginfo_rssi *)&tReadBuf[9];   
 	for (int i = 0; i < itReadCnt; i++)
@@ -371,9 +371,9 @@ int IAgent::iAgent_CallBack(int fd, uint8_t *tReadBuf, int itReadCnt, int antID)
 		rssi = pTaginfo_rssi->tagid[14];
 		rssi = (rssi << 8) | ((pTaginfo_rssi->tagid[15]) & 0xff);
 		frssi = (float)(rssi/10.0);
-		Sqlite_db->insert_tag(epcdata, antID, frssi);
+		//Sqlite_db->insert_tag(epcdata, antID, frssi);
 	}
-	Sqlite_db->commit();
+	//Sqlite_db->commit();
 
 	len = tReadBuf[3] + 6;
 	int iResult = ::send( fd, tReadBuf, len, 0 );
@@ -382,6 +382,7 @@ int IAgent::iAgent_CallBack(int fd, uint8_t *tReadBuf, int itReadCnt, int antID)
 	{
 		return itReadCnt;
 	}
+	DBG_PRINT(DEBUG_INFO, "IAgent Callback send fails with error: %d, fd = %d" NL, iResult, fd );
 	return -1;
 }
 

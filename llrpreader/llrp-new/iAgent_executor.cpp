@@ -73,7 +73,7 @@ IAgent_Executor::main( OwTask * )
 					callbackFunctionPtr(ttagrbuf, tagCount, antID );
 				}
 #endif
-				if ((executor_start_flag & 0xf0000) != 0)
+				if (executor_start_flag == 0)
 				{
 					// This is from cli command, execute one loop
 					executor_start_flag = 0;

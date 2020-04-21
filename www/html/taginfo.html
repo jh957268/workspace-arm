@@ -145,6 +145,16 @@ function startTagInfoSSe()
 function stopTagInfoSSe()
 {
   // alert("Close SSE now!");
+  
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+         // do nothing
+    }
+  }
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=0", true);
+  xhttp.send();
+ 
 	if (isOpenOnce == true) 
 	{
 		source.close();

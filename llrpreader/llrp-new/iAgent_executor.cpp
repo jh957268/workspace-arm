@@ -94,13 +94,14 @@ IAgent_Executor::main( OwTask * )
 
 					if ( iResult != tagCount )
 					{
-						DBG_PRINT(DEBUG_INFO, "IAgent_executor sendMessage failed with error: %d" NL, iResult );
+						DBG_PRINT(DEBUG_INFO, "IAgent_executor sendMessage failed with error: %d, fd = %d, j=%d" NL, iResult, clientFd[j], j );
 
 						clientFd[j] = -1;
 					}
 				}
 				if (0 == found)
 				{
+					executor_start_flag = 0;
 					break;
 				}
 				OwTask::sleep(10);
@@ -119,6 +120,7 @@ IAgent_Executor::start_executor(int fd)
 		if (clientFd[i] == -1)
 		{
 			clientFd[i] = fd;
+			break;
 		}
 	}
 	semaphoreGive();
@@ -134,6 +136,7 @@ IAgent_Executor::stop_executor(int fd)
 		if (clientFd[i] == fd)
 		{
 			clientFd[i] = -1;
+			break;
 		}
 	}
 }

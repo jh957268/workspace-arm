@@ -88,6 +88,13 @@ int main(void)
 		IReaderApiClose(handle);
 		return 0;
 	}
+	else if (!strcmp(cgi_env, "readtag=0"))
+	{
+		ret = IReaderApiStartExecutor(handle, 0);
+		printf("ok");
+		IReaderApiClose(handle);
+		return 0;
+	}
 	else if (!strcmp(cgi_env, "readtag=1"))
 	{
 		int ant_id, ttagCount;

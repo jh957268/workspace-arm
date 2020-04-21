@@ -80,6 +80,7 @@ IAgent_Executor::main( OwTask * )
 					break;
 				}				
 
+				int found = 0;
 				for (int j = 0; j < MAX_TX_SOCKET; j++)
 				{
 					int iResult;
@@ -88,7 +89,7 @@ IAgent_Executor::main( OwTask * )
 					{
 						continue;
 					}
-
+					found = 1;
 					iResult = IAgent::iAgent_CallBack(clientFd[j], ttagrbuf, tagCount, antID);
 
 					if ( iResult != tagCount )
@@ -97,6 +98,10 @@ IAgent_Executor::main( OwTask * )
 
 						clientFd[j] = -1;
 					}
+				}
+				if (0 == found)
+				{
+					break;
 				}
 				OwTask::sleep(10);
 			}

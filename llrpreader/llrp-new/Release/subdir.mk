@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../CSqlite.cpp \
 ../CWatchDogFeeder.cpp \
 ../cli.cpp \
 ../gpio.cpp \
@@ -16,6 +17,7 @@ CPP_SRCS += \
 ../llrp_ROSpecExecutor.cpp 
 
 OBJS += \
+./CSqlite.o \
 ./CWatchDogFeeder.o \
 ./cli.o \
 ./gpio.o \
@@ -28,6 +30,7 @@ OBJS += \
 ./llrp_ROSpecExecutor.o 
 
 CPP_DEPS += \
+./CSqlite.d \
 ./CWatchDogFeeder.d \
 ./cli.d \
 ./gpio.d \

@@ -48,6 +48,8 @@
 				<tr>			
 					<td>
 						<input type=button style="{width:120px;}" value="Load Next 30 Tags" onClick="LoadDBTag()" />
+						<input type=button style="{width:120px;}" value="Stream Tags to DB" onClick="startTagInfoDB()" />
+						<input type=button style="{width:120px;}" value="Stop streaming" onClick="stopTagInfoDB()" />
 					</td>
                 </tr>			
              </table>			
@@ -113,6 +115,45 @@ function LoadDBTag()
   xhttp.open("GET", "cgi-bin/execgi-bin.cgi?seltag=1", true);
   xhttp.send();
  }
+ 
+ var isOpenDB = false;
+ function startTagInfoDB()
+{
+	if (isOpenDB == true)
+	{
+		return;
+	}
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+         // do nothing
+    }
+  }
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=2", true);
+  xhttp.send();
+   isOpenDB = true;
+}
+
+function stopTagInfoDB()
+{
+	if (isOpenDB == false)
+	{
+		return;
+	}
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+         // do nothing
+    }
+  }
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=3", true);
+  xhttp.send();
+  isOpenDB = false;
+  
+
+}		
 
   // tablea.rows[5].cells[10].innerHTML='&#128225;<b>ANT</b>';
   //alert("Table row inserted end!");

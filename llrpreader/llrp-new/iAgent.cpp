@@ -308,14 +308,15 @@ void IAgent::iAgent_StartExecutor(iMsgObj *hMsg)
 	uint8_t buff [] = {HDR1, HDR2, 0x00, 0x02, 0xff, 0xfd, 0x00, 0x00};
 
 	int flag = hMsg->data[0];
-	
+	int fd = (hMsg->data[1] << 8) | (hMsg->data[2]);
+ 	
 	if (flag != 0)
 	{
-		IAgent_Executor::getInstance()->start_executor(clientSocket);
+		IAgent_Executor::getInstance()->start_executor((fd == DATABASE_MAGIC) ? fd : clientSocket);
 	}
 	else
 	{
-		IAgent_Executor::getInstance()->stop_executor(clientSocket);
+		IAgent_Executor::getInstance()->stop_executor((fd == DATABASE_MAGIC) ? fd : clientSocket);
 	}
 	
 	buff[6] = hMsg->opCode;
@@ -341,19 +342,21 @@ int IAgent::iAgent_CallBack(int fd, uint8_t *tReadBuf, int itReadCnt, int antID)
 	//	return;
 	//OSSleep(100);
 	
-	// write data to Database
-	//Sqlite_db->begin_transaction();
-	struct taginfo_rssi *pTaginfo_rssi;
-	pTaginfo_rssi = (struct taginfo_rssi *)&tReadBuf[9];   
-	for (int i = 0; i < itReadCnt; i++)
+	if (DATABASE_MAGIC == fd)
 	{
-		char pcbits[8], epcdata[32];
-		short rssi;
-		float frssi;
+		// write data to Database
+		Sqlite_db->begin_transaction();
+		struct taginfo_rssi *pTaginfo_rssi;
+		pTaginfo_rssi = (struct taginfo_rssi *)&tReadBuf[9];   
+		for (int i = 0; i < itReadCnt; i++)
+		{
+			char pcbits[8], epcdata[32];
+			short rssi;
+			float frssi;
 
-		sprintf(pcbits,"%02x %02x", u8(pTaginfo_rssi->tagid[0]), u8(pTaginfo_rssi->tagid[1]));
+			sprintf(pcbits,"%02x %02x", u8(pTaginfo_rssi->tagid[0]), u8(pTaginfo_rssi->tagid[1]));
 
-		sprintf(epcdata, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+			sprintf(epcdata, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
 									u8(pTaginfo_rssi->tagid[2]),
 									u8(pTaginfo_rssi->tagid[3]),
 									u8(pTaginfo_rssi->tagid[4]),
@@ -368,12 +371,14 @@ int IAgent::iAgent_CallBack(int fd, uint8_t *tReadBuf, int itReadCnt, int antID)
 									u8(pTaginfo_rssi->tagid[13])
 									);
 
-		rssi = pTaginfo_rssi->tagid[14];
-		rssi = (rssi << 8) | ((pTaginfo_rssi->tagid[15]) & 0xff);
-		frssi = (float)(rssi/10.0);
-		//Sqlite_db->insert_tag(epcdata, antID, frssi);
+			rssi = pTaginfo_rssi->tagid[14];
+			rssi = (rssi << 8) | ((pTaginfo_rssi->tagid[15]) & 0xff);
+			frssi = (float)(rssi/10.0);
+			Sqlite_db->insert_tag(epcdata, antID, frssi);
+		}
+		Sqlite_db->commit();
+		return itReadCnt;
 	}
-	//Sqlite_db->commit();
 
 	len = tReadBuf[3] + 6;
 	int iResult = ::send( fd, tReadBuf, len, 0 );

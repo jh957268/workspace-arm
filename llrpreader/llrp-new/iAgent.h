@@ -17,6 +17,8 @@
 #include <arpa/inet.h>
 #include <arpa/inet.h>
 
+#define DATABASE_MAGIC	0xFFEE
+
 class IAgent :
     public OwTask   
 {

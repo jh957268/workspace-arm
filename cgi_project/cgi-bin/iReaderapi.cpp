@@ -441,13 +441,13 @@ Int32 __cdecl IReaderApiGetTags(void * handle, int *antid, int *tagcount, struct
     return IREADER_SUCCESS;
 }
 
-Int32 __cdecl IReaderApiStartExecutor(void * handle, int flag)
+Int32 __cdecl IReaderApiStartExecutor(void * handle, int flag, int fd)
 {
     IF_ERROR_RETURN(IReaderHandleValid(handle));
 	((IReader *)handle)->IReaderTakeMutex();
 
     // Now reguest the M5e to start reading the tags
-    IF_ERROR_RETURN(((IReader *)handle)->IReaderStartExecutor(flag));
+    IF_ERROR_RETURN(((IReader *)handle)->IReaderStartExecutor(flag, fd));
 
 	((IReader *)handle)->IReaderGiveMutex();
     return IREADER_SUCCESS;

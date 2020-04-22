@@ -418,12 +418,14 @@ int  IReader::IReaderGetTags(int *antID, int *tagcount, struct taginfo *tagrbuf)
 }
 
 // start or stop the executor
-int  IReader::IReaderStartExecutor(int flag)
+int  IReader::IReaderStartExecutor(int flag, int fd)
 {
 	int ret;
-	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x02, 0xFF, 0xFD, 0x87, 0x00};  // use antenna porrt 0
+	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x04, 0xFF, 0xFB, 0x87, 0x00, 0, 0};  // use antenna porrt 0
 	// unsigned char buf[] = {0xff, 0x2, 0x91, 0x2, 0x2, 0,0};
 	buf[7] = (unsigned char)flag;
+	buf[8] = (unsigned char) ((fd >> 8) & 0xff);
+	buf[9] = (unsigned char) (fd & 0xff);
 	ret = sendmsg(buf);
 	if (m_rxMsg.opCode != buf[6])
 	{

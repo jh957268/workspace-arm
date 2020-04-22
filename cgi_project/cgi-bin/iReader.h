@@ -111,7 +111,7 @@ class IReader : public MuxClient
 		int  		  IReaderGetTagsMetaDataRSSI(int *antID, int *tagcount, struct taginfo_rssi *tagrbuf);
 		int  		  IReaderGetTags(int *antID, int *tagcount, struct taginfo *tagrbuf);
 		int           IReaderGetTagDBRecord(char *DBRecord, int *cnt);
-		int  		  IReaderStartExecutor(int flag);
+		int  		  IReaderStartExecutor(int flag, int fd = 0);
 		int  		  IReaderGetTagCount(int *tagcount);
 		int  		  IReaderWriteTag(int timeout, unsigned char *tagid);
 		int  		  IReaderWriteTagData(int membank, Uint32 addr, unsigned char *data, int datalen, unsigned char *tagid, unsigned char *passwd);

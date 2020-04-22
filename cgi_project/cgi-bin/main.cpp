@@ -7,6 +7,7 @@
 char antmap[300];
 
 char ttagrbuf[2048];
+#define DATABASE_MAGIC	0xFFEE
 
 int main(void) 
 {
@@ -90,7 +91,21 @@ int main(void)
 	}
 	else if (!strcmp(cgi_env, "readtag=0"))
 	{
-		ret = IReaderApiStartExecutor(handle, 0);
+		ret = IReaderApiStartExecutor(handle, 0, 0);
+		printf("ok");
+		IReaderApiClose(handle);
+		return 0;
+	}
+	else if (!strcmp(cgi_env, "readtag=2"))
+	{
+		ret = IReaderApiStartExecutor(handle, 1, DATABASE_MAGIC);
+		printf("ok");
+		IReaderApiClose(handle);
+		return 0;
+	}
+	else if (!strcmp(cgi_env, "readtag=3"))
+	{
+		ret = IReaderApiStartExecutor(handle, 0, DATABASE_MAGIC);
 		printf("ok");
 		IReaderApiClose(handle);
 		return 0;
@@ -102,7 +117,7 @@ int main(void)
 		char pcbits[8], epcdata[32], rssidata[20];
 		short rssi;
 
-		ret = IReaderApiStartExecutor(handle, 1);
+		ret = IReaderApiStartExecutor(handle, 1, 0);
 		if (IREADER_SUCCESS != ret)
 		{
 			IReaderApiClose(handle);

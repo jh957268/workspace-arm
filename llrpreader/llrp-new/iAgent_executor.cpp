@@ -114,13 +114,20 @@ void
 IAgent_Executor::start_executor(int fd)
 {
 	executor_start_flag = 1;
-
-	for (int i = 0; i < MAX_TX_SOCKET; i++)
+	
+	if (fd == DATABASE_MAGIC)
 	{
-		if (clientFd[i] == -1)
+		clientFd[MAX_TX_SOCKET - 1] = fd;
+	}
+	else
+	{
+		for (int i = 0; (i < MAX_TX_SOCKET - 1); i++)
 		{
-			clientFd[i] = fd;
-			break;
+			if (clientFd[i] == -1)
+			{
+				clientFd[i] = fd;
+				break;
+			}
 		}
 	}
 	semaphoreGive();

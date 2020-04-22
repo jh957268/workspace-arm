@@ -25,7 +25,7 @@ extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiReadTagsAtomic(void *h
 extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiReadTagsMetaDataRSSI(void *handle, int antid, int pwr, int *tagcount, struct taginfo_rssi *tagrbuf);
 extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiGetTagsMetaDataRSSI(void *handle, int *antid, int *tagcount, struct taginfo_rssi *tagrbuf);
 extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiGetTags(void *handle, int *antid, int *tagcount, struct taginfo *tagrbuf);
-extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiStartExecutor(void *handle, int flag);
+extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiStartExecutor(void *handle, int flag, int fd);
 extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiWriteTag(void *handle, int pwr, int timeout, unsigned char *tagid);
 extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiSetPowerLevel(void *handle, int antid, int pwr, int doset);
 extern "C" __declspec( dllexport )Int32 __cdecl IReaderApiGetPowerLevel(void *handle, int antid, int *pwr);

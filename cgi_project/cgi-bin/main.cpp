@@ -202,14 +202,16 @@ int main(void)
 		    fflush(stdout);
 		}
 	}
-	else if (!strcmp(cgi_env, "seltag=1"))
+	else if (!strncmp(cgi_env, "seltag=1", 8))
 	{
 		int ttagCount;
 		char db_record[128];
 		int total_record = 0;
-		ttagrbuf[0] = 0;		
+		ttagrbuf[0] = 0;
 
-		ret = IReaderApiDBSelectAll(handle, 0, 0);    // select all limit 0 offset 0
+		int offset = atoi(&cgi_env[9]);
+
+		ret = IReaderApiDBSelectAll(handle, 10, offset);    // select all limit 0 offset 0
 		if (IREADER_SUCCESS != ret)
 		{
 			//printf("command fails\n");

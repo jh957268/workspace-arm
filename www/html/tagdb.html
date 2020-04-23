@@ -112,17 +112,17 @@ function LoadDBTag()
 	   }
     }
   }
-  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?seltag=1", true);
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?seltag=1-"+tagCount, true);
   xhttp.send();
  }
  
  var isOpenDB = false;
  function startTagInfoDB()
 {
-	if (isOpenDB == true)
-	{
-		return;
-	}
+	//if (isOpenDB == true)
+	//{
+	//	return;
+	//}
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -137,10 +137,10 @@ function LoadDBTag()
 
 function stopTagInfoDB()
 {
-	if (isOpenDB == false)
-	{
-		return;
-	}
+	//if (isOpenDB == false)
+	//{
+	//	return;
+	//}
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {

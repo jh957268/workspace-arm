@@ -146,6 +146,59 @@ CSqlite::insert_tag(char *tag, int antid, double rssi)
 	    sqlite3_free(zErrMsg);
 	} else {
 	    fprintf(stdout, "Records inserted successfully\n");
+	}
+	return 0;
+}
+
+int
+CSqlite::insert_user_tag(char *tag, int antid)
+{
+	int rc;
+	
+	sprintf(sql_buff, "select tag_id from TAG_USER_DATA where tag_val='%s' AND tag_antID=%d;", tag, antid);
+	parm[0] = parm[1] = 0;
+	rc = sqlite3_exec(rfid_db, sql_buff, callback, (void*)parm, &zErrMsg);
+
+	if( rc != SQLITE_OK ){
+	    fprintf(stderr, "SQL error: %s\n", zErrMsg);
+	    sqlite3_free(zErrMsg);
+	} else {
+	    fprintf(stdout, "Record seleted successfully\n");
+	}
+	if (parm[0] != 0)	
+	{
+		return -1;
+	}
+	
+	sprintf(sql_buff,"insert into TAG_USER_DATA (tag_val, tag_antID, tag_create_time)" \
+			 "VALUES" \
+	         "('%s', %d, datetime('now'));",tag, antid); 
+			 
+	rc = sqlite3_exec(rfid_db, sql_buff, callback, 0, &zErrMsg);
+
+	if( rc != SQLITE_OK ){
+		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+	    sqlite3_free(zErrMsg);
+	} else {
+	    fprintf(stdout, "Records inserted successfully\n");
 	}			 
+}
+
+int
+CSqlite::delete_user_tag(char *tag, int antid)
+{
+	int rc;
+	
+	sprintf(sql_buff, "select from TAG_USER_DATA where tag_val='%s' AND tag_antID=%d;", tag, antid);
+	parm[0] = parm[1] = 0;
+	rc = sqlite3_exec(rfid_db, sql_buff, callback, 0, &zErrMsg);
+
+	if( rc != SQLITE_OK ){
+	    fprintf(stderr, "SQL error: %s\n", zErrMsg);
+	    sqlite3_free(zErrMsg);
+	} else {
+	    fprintf(stdout, "Record seleted successfully\n");
+	}
+	return 0;
 }
 

@@ -175,6 +175,7 @@ int  Muxserial::getArray(char *buffer, int len)
     {
     	read_nbr = read(serial_handle, buffer, len);
 #if 0	// remove this to save time, the perror will return Resource is unvailable	
+		// will return -1 if no char is available
     	if (-1 == read_nbr)
     	{
     		perror("sertila read\n");
@@ -223,7 +224,7 @@ void Muxserial::clearRcv(void)
 	while (1)
 	{
 		n = getChar(&dum_ch);
-		if ((0 == n) || (-1 == n))   // getChar if no char is available since it is unblock. errno will be EAGAIN
+		if ((0 == n) || (-1 == n))   // getChar if no char is available, it will return -1 since it is unblock. errno will be EAGAIN
 			                         // or EWOULDBLOCK, and perror will be resource is temporary unavailabe
 		{
 			break;

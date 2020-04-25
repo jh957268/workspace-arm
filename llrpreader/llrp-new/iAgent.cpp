@@ -181,6 +181,11 @@ int IAgent::iAgent_ProcessMsgObj(iMsgObj *hMsg)
 	return 0;
 }
 
+int IAgent::iAgent_SendMsgObj(iMsgObj *hMsg)
+{
+	return 0;
+}
+
 void IAgent::iAgent_SetAntPort(iMsgObj *hMsg)
 {
 	uint8_t buff [] = {HDR1, HDR2, 0x00, 0x02, 0xff, 0xfd, 0x00, 0x00};

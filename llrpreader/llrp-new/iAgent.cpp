@@ -181,7 +181,7 @@ int IAgent::iAgent_ProcessMsgObj(iMsgObj *hMsg)
 	return 0;
 }
 
-int IAgent::iAgent_SendMsgObj(iMsgObj *hMsg)
+int IAgent::iAgent_sendMsgObj(iMsgObj *hMsg)
 {
 	return 0;
 }

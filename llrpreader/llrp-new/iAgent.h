@@ -58,7 +58,7 @@ private:
     iMsgObj  		t_rxMsg;
 
     int  iAgent_receiveMsgObj(iMsgObj *hMsg);
-    void iAgent_sendMsgObj(iMsgObj *hMsg);
+    int  iAgent_sendMsgObj(iMsgObj *hMsg);
     int  iAgent_ProcessMsgObj(iMsgObj *hMsg);
 
     void iAgent_SetAntPort(iMsgObj *hMsg);

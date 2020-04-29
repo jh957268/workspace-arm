@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Untitled Document</title>
+<link rel=stylesheet href="style.css" type="text/css" />
+</head>
+
+<body id="sysinfo">
+
+<form action="wan.htm" method="get">
+ <table cellspacing="0" cellpadding="0">
+	<tr>
+    	<td class="head" colspan="2">Item-Level Tracking Made Easy...</td>
+    </tr>
+	<tr>
+    	<td colspan="2" class="pgtitle">iReader-989 WEB GUI Version 1.0.0.0</td>
+    </tr>
+    <tr>
+    	<td valign="top">
+        	<ul>
+            <li><a href="sysinfo.html" id="sysinfo">System</a></li>
+            <li><a href="antenna.html" id="antenna">Antenna Status</a></li>
+            <li><a href="taginfo.html" id="taginfo">Read Tags</a></li>
+			<li><a href="tagdb.html" id="tagdb">Database Tags</a></li>
+			<li><a href="upload.html" id="upload"></a></li>
+            </ul>
+        </td>
+        <td>
+        	<table cellspacing="0" cellpadding="0">
+            	<tr>
+                	<th colspan="2">System Settings</th>
+              </tr>
+            	<tr>
+                    <td class="label">iReader Region</td>
+                    <td class="input">
+                      <select id="myHeader" size="1">
+                        <option value="0">JAPAN</option>
+                        <option value="1">KOREA</option>
+                        <option value="2">USA</option>
+                        <option value="3">CHINA</option>
+                        <option value="4">CANADA</option>  
+                      </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">Tag Search Timeout(ms)</td>
+                    <td class="input"><input type="text" name="subnetmask1" id="myHeader1" value="$%subnetmask1%$" /></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="submit"><input type="submit" name="submitbutton" id="submitbutton" value="SUBMIT" style="color: black;" /></td>
+                </tr>
+            	<tr>
+                	<th colspan="2">System Info</th>
+                </tr>
+            	<tr>
+                    <td class="label"><label for="temperature">Temperature</label></td>
+                    <td class="input"><input type="text" name="Temperature" value="$%ipaddress1%$" /></td>
+                </tr>				
+            </table>
+        </td>
+    </tr>
+</table>
+</form>
+
+<form action="/cgi-bin/sse.cgi" method="post" enctype="multipart/form-data">
+<table cellspacing="0" cellpadding="0">
+    <tr>
+    	<td valign="top">
+        	<ul>
+				<li hidden><a href="upload.html" id="upload">Upgrade Softwa</a></li>
+            </ul>
+        </td>
+        <td>
+        	<table cellspacing="0" cellpadding="0">
+            	<tr>
+                	<th colspan="2">Upgrade Software</th>
+				</tr>
+            	<tr>
+                    <td class="label">Select Image to Upload:</label></td>
+					<td class="input"><input type="file" name="fileToUpload" id="fileToUpload"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="submit"><input type="submit" value="Upload Image" name="submit" style="color: black;></td>
+                </tr>		
+            </table>
+        </td>
+    </tr>	
+</table>
+</form>
+
+<script>
+
+ function loadDoc()
+ { 
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("myHeader").value =
+      this.responseText;
+    }
+  };
+  xhttp.open("GET", "cgi-bin/rfid_test.cgi?s=C&o=1", true);
+  xhttp.send();
+
+
+  var xhttp1 = new XMLHttpRequest();
+  xhttp1.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("myHeader1").value =
+      this.responseText;
+    }
+  };
+  xhttp1.open("GET", "cgi-bin/rfid_test1.cgi?s=C&o=1", true);
+  xhttp1.send();
+ }
+
+ function loadField(url, id)
+ { 
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById(id).value =
+      this.responseText;
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.send();
+ }
+
+loadField('cgi-bin/execgi-bin.cgi?region=1', 'myHeader');
+loadField('cgi-bin/execgi-bin.cgi?region=0', 'myHeader1');
+//loadField('cgi-bin/rfid_test1.cgi', 'myHeader1');
+
+</script>
+
+</body>
+</html>
+

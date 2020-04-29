@@ -14,6 +14,8 @@ void send_resp(int code);
 	const char *cgi_env1;
 	const char *cgi_env2;
 	const char *cgi_env3;
+char upd_header[HEADER_SIZE + 4];
+char upd_header_reverse[HEADER_SIZE + 4];
 int main(void) 
 {
     char c;
@@ -58,10 +60,10 @@ int main(void)
 	
 	fwrite(start, 1, &upd_header[256] - start, fp);
 	
-    while ((input_len - HEADER_SIZE) > 0)
+    while ((input_len - (2 * HEADER_SIZE)) > 0)
     {
-	c = fgetc(stdin);
-	fputc(c, fp);
+		c = fgetc(stdin);
+		fputc(c, fp);
 //        fputc( c, stdout);
 //        fflush(stdout);
         //if (feof(stdin))
@@ -72,6 +74,40 @@ int main(void)
 //	printf("</body>");
 //	printf("</html>");
     }
+	// read the rest 256 byte
+	iResult = read_upd_header(upd_header);
+	if (iResult != HEADER_SIZE)
+	{
+		send_resp(-1);
+    	if (fp)
+    	{
+       		fclose(fp);
+    	}
+		return 0;
+	}
+	
+	upd_header[256] = 0;
+#if 1
+	for (int i = 0; i < HEADER_SIZE	; i++)
+	{
+		upd_header_reverse[HEADER_SIZE - 1 - i] = upd_header[i];
+	}
+	upd_header_reverse[HEADER_SIZE] = 0;
+	start = strstr(upd_header_reverse, "----\n\r");
+	if (start == 0)
+	{
+		fwrite(&upd_header[0], 1, HEADER_SIZE, fp);
+		send_resp(-4);
+        fflush(stdout);
+		return 0;
+	}
+
+	start += 6;
+	int diff = (int)(start - &upd_header_reverse[0]);
+#endif
+	fwrite(&upd_header[0], 1, HEADER_SIZE - diff, fp);
+
+
     if (fp)
     {
        fclose(fp);
@@ -106,7 +142,7 @@ printf("<title>Hello Word - First CGI Program</title>");
 printf("</head>");
 printf("<body>");
 printf("%s !! %s !! %s", cgi_env1, cgi_env2, cgi_env3);
-printf("<h2><font color=\"red\">Hello Word! This is my first CGI program code = %d</font></h2>", code);
+printf("<h2><font color=\"red\">Hello Word! This is my first CGI program code = %d, %s</font></h2>", code,upd_header);
 printf("</body>");
 printf("</html>");
 fflush(stdout);

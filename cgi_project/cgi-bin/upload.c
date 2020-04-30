@@ -88,31 +88,36 @@ int main(void)
 	
 	upd_header[256] = 0;
 #if 1
-	for (int i = 0; i < HEADER_SIZE	; i++)
+
+	start = strstr(upd_header, "\r\n------");
+	
+	int i;
+	for (i = 0; i < 250; i++)
 	{
-		upd_header_reverse[HEADER_SIZE - 1 - i] = upd_header[i];
+		if ((upd_header[i] == '\r') && (upd_header[i+1] == '\n') && (upd_header[i+2] == '-') && (upd_header[i+3] == '-') && 
+			(upd_header[i+4] == '-') && (upd_header[i+5] == '-'))
+		{
+			break;
+		}			
 	}
-	upd_header_reverse[HEADER_SIZE] = 0;
-	start = strstr(upd_header_reverse, "----\n\r");
-	if (start == 0)
+	if (i == 250)
 	{
-		fwrite(&upd_header[0], 1, HEADER_SIZE, fp);
+		//fwrite(&upd_header[0], 1, HEADER_SIZE, fp);
 		send_resp(-4);
         fflush(stdout);
 		return 0;
 	}
 
-	start += 6;
-	int diff = (int)(start - &upd_header_reverse[0]);
+	int diff = (int)(&upd_header[i] - &upd_header[0]);
 #endif
-	fwrite(&upd_header[0], 1, HEADER_SIZE - diff, fp);
+	fwrite(&upd_header[0], 1, diff, fp);
 
 
     if (fp)
     {
        fclose(fp);
     }
-	send_resp(0);
+	send_resp(55);
     return 0;
 }
 

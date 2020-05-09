@@ -143,6 +143,7 @@ ul li a:hover, ul li a:active {
 }
 body#sysinfo a#sysinfo, body#taginfo a#taginfo,
 body#antenna a#antenna, body#tagdb a#tagdb,
+body#asset a#asset, body#network a#network,
 body#lan a#lan, body#wan a#wan, 
 body#password a#password,
 body#dhcpserver a#dhcpserver, 

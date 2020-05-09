@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Untitled Document</title>
+<link rel=stylesheet href="style.css" type="text/css" />
+</head>
+
+<body id="asset">
+
+<form action="wan.htm" method="get">
+ <table class="c" cellspacing="0" cellpadding="0">
+	<tr>
+    	<td class="head" colspan="2">&nbsp;&nbsp;Item-Level Tracking Made Easy...</td>
+    </tr>
+	<tr>
+    	<td colspan="2" class="pgtitle">iReader-989 WEB GUI 1.0.0.0</td>
+    </tr>
+    <tr>
+    	<td valign="top">
+        	<ul>
+            <li><a href="sysinfo.html" id="sysinfo">System</a></li>
+            <li><a href="antenna.html" id="antenna">Antenna Status</a></li>
+            <li><a href="taginfo.html" id="taginfo">Read Tags</a></li>
+            <li><a href="tagdb.html" id="tagdb">Database Tags</a></li>
+            <li><a href="asset.html" id="asset">Asset Monitoring</a></li>
+            <li><a href="network.html" id="network">Network Settings</a></li>			
+            </ul>
+        </td>
+        <td>
+        	<table class="b" id="ant_table" cellspacing="0" cellpadding="0">
+            	<tr>
+                	<th style="width:7%">Tag ID</th>
+					<th style="width:25%">EPC Data</th>
+					<th style="width:6%">Ant. ID</th>
+					<th style="width:16%">Action</th>					
+					<th style="width:20%">Last Seen Time</th>
+					<th style="width:20%">First Seen Time</th>					
+					<th style="width:7%">Count</th>					
+				</tr>		
+            </table>
+        	<table class="b" cellspacing="0" cellpadding="0">
+				<tr>			
+					<td>
+						<input type=button style="{width:120px;}" value="Load Next 30 Tags" onClick="LoadDBTag()" />
+						<input type=button style="{width:120px;}" value="Stream Tags to DB" onClick="startTagInfoDB()" />
+						<input type=button style="{width:120px;}" value="Stop streaming" onClick="stopTagInfoDB()" />
+					</td>
+                </tr>			
+             </table>			
+        </td>
+    </tr>
+</table>
+</form>
+
+<form action="/cgi-bin/sse.cgi?inserttag" method="post">
+<table cellspacing="0" cellpadding="0">
+    <tr>
+    	<td valign="top">
+        	<ul>
+				<li hidden><a href="upload.html" id="upload">Upgrade Softwa</a></li>
+            </ul>
+        </td>
+        <td>
+        	<table cellspacing="0" cellpadding="0">
+            	<tr>
+                	<th colspan="2">Insert Asset/Tag to DB</th>
+				</tr>
+            	<tr>
+                    <td class="label">Asset Tag ID</label></td>
+					<td class="input" ><input type="text" name="tagval" id="tagvalid" </td>
+                </tr>
+                <tr>
+                    <td class="label">Asset Location(AntID)</td>
+                    <td class="input"><input type="text" name="antloc" id="antlocid"></td>
+                </tr>
+                <tr>
+                    <td class="label">Action Upon Detect</td>
+                    <td class="input">
+						<select name="action" id="actionid" size="0">
+							<option value="0">No Action</option>
+							<option value="1">Open Gate</option>
+							<option value="2">Beep</option>
+						</select>
+					</td>
+                </tr>					
+                <tr>
+                    <td></td>
+                    <td class="submit"><input type="submit" value="Insert" name="submit" style="color: black;></td>
+                </tr>		
+            </table>
+        </td>
+    </tr>	
+</table>
+</form>
+
+<script>
+
+var tagCount = 0; 
+function DisplayDBTag(tagInfo)
+{
+	var atable = document.getElementById("ant_table");
+	var trow;
+	var cell;
+	
+	const [tagid, epcData, antid, rssi, lasttimeSeen, firstseentime, seencnt] = tagInfo.split('~');
+ 
+	// for (tbl_row = 1; tbl_row <= 2; tbl_row++)
+	tbl_row = tagCount + 1;
+	{
+		trow = atable.insertRow(tbl_row);
+		if ( tbl_row == 0 || (tbl_row && !(tbl_row%2)))
+		{
+			trow.style.backgroundColor = "#cbccc6";
+		}
+		else
+		{
+			trow.style.backgroundColor = "#DFEFE9";	
+		}
+
+		cell = trow.insertCell(0);
+		cell.innerHTML = tagid;
+		cell = trow.insertCell(1);
+		cell.innerHTML = epcData;
+		cell = trow.insertCell(2);
+		cell.innerHTML = antid;
+		cell = trow.insertCell(3);
+		cell.innerHTML = rssi;
+		cell = trow.insertCell(4);
+		cell.innerHTML = lasttimeSeen;		
+		cell = trow.insertCell(5);
+		cell.innerHTML = firstseentime;
+		cell = trow.insertCell(6);
+		cell.innerHTML = seencnt;		
+	}
+	tagCount++;
+}
+
+function LoadDBTag()
+ { 
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+	  var arrStr = this.responseText.split(/[;]/);
+	   for (var i = 0; i < arrStr.length; i++)
+	   {
+      		DisplayDBTag(arrStr[i]);
+	   }
+    }
+  }
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?seltag=1-"+tagCount, true);
+  xhttp.send();
+ }
+ 
+ var isOpenDB = false;
+ function startTagInfoDB()
+{
+	//if (isOpenDB == true)
+	//{
+	//	return;
+	//}
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+         // do nothing
+    }
+  }
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=2", true);
+  xhttp.send();
+   isOpenDB = true;
+}
+
+function stopTagInfoDB()
+{
+	//if (isOpenDB == false)
+	//{
+	//	return;
+	//}
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+         // do nothing
+    }
+  }
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=3", true);
+  xhttp.send();
+  isOpenDB = false;
+  
+
+}		
+
+  // tablea.rows[5].cells[10].innerHTML='&#128225;<b>ANT</b>';
+  //alert("Table row inserted end!");
+  //var tagInfo = '0123456789abcdef01234567~Feb 2 2020 12:30:14';
+  //var tagInfo1 = '0123456789abcdef01234567~Feb 2 2020 12:30:24';
+  //var tagInfo2 = '0123456789abcdef01234568~Feb 2 2020 12:30:34';
+  //var tagInfo3 = '0123456789abcdef01234568~Feb 2 2020 12:30:44'; 
+  //var tagInfo4 = '0123456789abcdef01234567~Feb 2 2020 12:30:54';  
+  //displayTagInfo(tagInfo);
+  //displayTagInfo(tagInfo1);
+  //displayTagInfo(tagInfo2);
+ //displayTagInfo(tagInfo3); 
+ //displayTagInfo(tagInfo4);   
+  //loadAntennaMap();
+  //startTagInfoSSe();
+</script>
+
+</body>
+</html>
+

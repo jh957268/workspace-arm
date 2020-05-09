@@ -38,8 +38,31 @@ CSqlite::CSqlite(char *db)
 		fprintf(stderr, "SQL error: %s\n", zErrMsg);
 	    sqlite3_free(zErrMsg);
 	} else {
-	    fprintf(stdout, "Table created successfully\n");
-	}	   
+	    fprintf(stdout, "TAG_DATA Table created successfully\n");
+	}
+
+	sql = "CREATE TABLE if not exists ASSET_DATA" \
+	    "(" \
+	        "tag_id integer PRIMARY KEY," \
+	        "tag_val text(32) NOT NULL," \
+	        "DATE_TIME_STAMP DATETIME default current_timestamp," \
+	        "tag_antID integer," \
+	    	"tag_action	    test(8)," \
+	        "tag_first_seen DATETIME," \
+	        "tag_last_seen  DATETIME," \
+	        "tag_seen_count integer," \
+	        "tag_out_Of_fov integer" \
+	   ");";
+
+	   /* Execute SQL statement */
+	rc = sqlite3_exec(rfid_db, sql, callback, 0, &zErrMsg);
+
+	if ( rc != SQLITE_OK ){
+		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+	    sqlite3_free(zErrMsg);
+	} else {
+	    fprintf(stdout, "ASSET_DATA Table created successfully\n");
+	}
 }
 
 int

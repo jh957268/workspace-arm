@@ -9,6 +9,8 @@ char antmap[300];
 char ttagrbuf[2048];
 #define DATABASE_MAGIC	0xFFEE
 
+int inserttag_main(void);
+
 int main(void) 
 {
 	IReader *handle;
@@ -56,7 +58,14 @@ int main(void)
 		IReaderApiClose(handle);
 		exit(-1);
 	}
-	if (!strcmp(cgi_env, "antmap=1"))
+	if (!strcmp(cgi_env, "inserttag"))
+	{
+		inserttag_main();
+		IReaderApiClose(handle);
+		return 0;
+		
+	}
+	else if (!strcmp(cgi_env, "antmap=1"))
 	{
 		memset(antmap, 0, 270);
 		ret = IReaderApiGetAntMap(handle, antmap);

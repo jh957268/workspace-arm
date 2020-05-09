@@ -19,26 +19,21 @@
     <tr>
     	<td valign="top">
         	<ul>
-            <li><a href="sysinfo.html" id="sysinfo">System</a></li>
+            <li><a href="sysinfo.html" id="sysinfo">Reader Settings</a></li>
             <li><a href="antenna.html" id="antenna">Antenna Status</a></li>
             <li><a href="taginfo.html" id="taginfo">Read Tags</a></li>
 			<li><a href="tagdb.html" id="tagdb">Database Tags</a></li>
-            <li><a href="" id="dhcpserver">DHCP Server</a></li>
-            <li><a href="" id="portforwarding">Port Forwarding</a></li>
-            <li><a href="" id="ddns">DDNS</a></li>
-            <li><a href="" id="systeminfo">System Info</a></li>
-            <li><a href="" id="logs">Logs</a></li>
-            <li><a href="" id="savesettings">Save Settings</a></li>
-            <li><a href="" id="reboot">Reboot</a></li>
+			<li><a href="asset.html" id="asset">Asset Monitoring</a></li>
+			<li><a href="network.html" id="network">Network Settings</a></li>
             </ul>
         </td>
         <td>
         	<table cellspacing="0" cellpadding="0">
             	<tr>
-                	<th colspan="2">System Settings</th>
+                	<th colspan="2">Reader Settings</th>
               </tr>
             	<tr>
-                    <td class="label"><label for="username">iReader Region</label></td>
+                    <td class="label">iReader Region</td>
                     <td class="input">
                       <select id="myHeader" size="1">
                         <option value="0">JAPAN</option>
@@ -50,7 +45,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="label"><label for="password">Tag Search Timeout(ms)</label></td>
+                    <td class="label">Tag Search Timeout(ms)</td>
                     <td class="input"><input type="text" name="subnetmask1" id="myHeader1" value="$%subnetmask1%$" /></td>
                 </tr>
                 <tr>
@@ -58,7 +53,7 @@
                     <td class="submit"><input type="submit" name="submitbutton" id="submitbutton" value="SUBMIT" style="color: black;" /></td>
                 </tr>
             	<tr>
-                	<th colspan="2">System Info</th>
+                	<th colspan="2">Reader Status</th>
                 </tr>
             	<tr>
                     <td class="label"><label for="temperature">Temperature</label></td>
@@ -71,9 +66,30 @@
 </form>
 
 <form action="/cgi-bin/sse.cgi" method="post" enctype="multipart/form-data">
-    Select image to upload:
-    <input type="file" name="fileToUpload" id="fileToUpload">
-    <input type="submit" value="Upload Image" name="submit">
+<table cellspacing="0" cellpadding="0">
+    <tr>
+    	<td valign="top">
+        	<ul>
+				<li hidden><a href="upload.html" id="upload">Upgrade Softwa</a></li>
+            </ul>
+        </td>
+        <td>
+        	<table cellspacing="0" cellpadding="0">
+            	<tr>
+                	<th colspan="2">Upgrade Software</th>
+				</tr>
+            	<tr>
+                    <td class="label">Select Image to Upload:</label></td>
+					<td class="input"><input type="file" name="fileToUpload" id="fileToUpload"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="submit"><input type="submit" value="Upload Image" name="submit" style="color: black;></td>
+                </tr>		
+            </table>
+        </td>
+    </tr>	
+</table>
 </form>
 
 <script>

@@ -17,6 +17,7 @@ class CSqlite
 			void commit(void);
 			int  insert_tag(char *tag, int antid, double rssi);
 			int  insert_user_tag(char *tag, int antid, int action);
+			int  user_tag_action(char *tag, int antid, int *action);
 			int  delete_user_tag(char *tag, int antid);			
 			int  select_tag(char *tag, t_func sqcallback, void *param, int table);
 			void db_close();
@@ -24,7 +25,7 @@ class CSqlite
     private:
 
 			sqlite3 *rfid_db;
-			int parm[2];
+			int parm[4];
 			char sql_buff[256];
 			char *sql;
 			char *zErrMsg;

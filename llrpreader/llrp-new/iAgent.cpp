@@ -320,11 +320,11 @@ void IAgent::iAgent_StartExecutor(iMsgObj *hMsg)
  	
 	if (flag != 0)
 	{
-		IAgent_Executor::getInstance()->start_executor((fd == DATABASE_MAGIC) ? fd : clientSocket);
+		IAgent_Executor::getInstance()->start_executor(((fd == DATABASE_MAGIC) || (fd == DATABASE_USER_MAGIC)) ? fd : clientSocket);
 	}
 	else
 	{
-		IAgent_Executor::getInstance()->stop_executor((fd == DATABASE_MAGIC) ? fd : clientSocket);
+		IAgent_Executor::getInstance()->stop_executor(((fd == DATABASE_MAGIC) || (fd == DATABASE_USER_MAGIC))? fd : clientSocket);
 	}
 	
 	buff[6] = hMsg->opCode;
@@ -350,7 +350,7 @@ int IAgent::iAgent_CallBack(int fd, uint8_t *tReadBuf, int itReadCnt, int antID)
 	//	return;
 	//OSSleep(100);
 	
-	if (DATABASE_MAGIC == fd)
+	if ((DATABASE_MAGIC == fd) || (DATABASE_USER_MAGIC == fd))
 	{
 		// write data to Database
 		Sqlite_db->begin_transaction();
@@ -379,10 +379,22 @@ int IAgent::iAgent_CallBack(int fd, uint8_t *tReadBuf, int itReadCnt, int antID)
 									u8(pTaginfo_rssi->tagid[13])
 									);
 
-			rssi = pTaginfo_rssi->tagid[14];
-			rssi = (rssi << 8) | ((pTaginfo_rssi->tagid[15]) & 0xff);
-			frssi = (float)(rssi/10.0);
-			Sqlite_db->insert_tag(epcdata, antID, frssi);
+			if (DATABASE_USER_MAGIC == fd)
+			{
+				// look up database and perform the action field
+				int action = 0;   // no action
+				Sqlite_db->user_tag_action(epcdata, antID, &action);
+				
+				// Now process the action according
+			
+			}
+			else
+			{
+				rssi = pTaginfo_rssi->tagid[14];
+				rssi = (rssi << 8) | ((pTaginfo_rssi->tagid[15]) & 0xff);
+				frssi = (float)(rssi/10.0);
+				Sqlite_db->insert_tag(epcdata, antID, frssi);
+			}
 		}
 		Sqlite_db->commit();
 		return itReadCnt;

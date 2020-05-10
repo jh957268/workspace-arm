@@ -16,7 +16,7 @@ class CSqlite
 			void begin_transaction(void);
 			void commit(void);
 			int  insert_tag(char *tag, int antid, double rssi);
-			int  insert_user_tag(char *tag, int antid);
+			int  insert_user_tag(char *tag, int antid, int action);
 			int  delete_user_tag(char *tag, int antid);			
 			int  select_tag(char *tag, t_func sqcallback, void *param);
 			void db_close();

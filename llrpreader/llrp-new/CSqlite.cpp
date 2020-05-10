@@ -103,21 +103,32 @@ CSqlite::db_close()
 }
 
 int
-CSqlite::select_tag(char *tag, t_func sq_callback, void *param)
+CSqlite::select_tag(char *tag, t_func sq_callback, void *param, int table)
 {
 	int rc = SQLITE_OK;
+	char *pTable;
+	
+	if (table == 0)
+	{
+		pTable = "TAG_DATA";
+	}
+	else
+	{
+		pTable = "TAG_USER_DATA";
+	}
+	
 
 	if (!strcmp(tag, "all"))
 	{
-		sql = "select * from TAG_DATA;";
-		rc = sqlite3_exec(rfid_db, sql, sq_callback, param, &zErrMsg);
+		sprintf(sql_buff, "select * from %s;", pTable);
+		rc = sqlite3_exec(rfid_db, sql_buff, sq_callback, param, &zErrMsg);
 
 	}
 	else
 	{
 		// tag can be LIMIT 10 OFFSET 10;
 		// sql = "select * from TAG_DATA limit xx offset yy;"
-		sprintf(sql_buff, "select * from TAG_DATA %s;", tag);
+		sprintf(sql_buff, "select * from %s %s;", pTable, tag);
 		rc = sqlite3_exec(rfid_db, sql_buff, sq_callback, param, &zErrMsg);
 	}
 	if( rc != SQLITE_OK ){

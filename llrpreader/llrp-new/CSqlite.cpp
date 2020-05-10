@@ -23,7 +23,7 @@ CSqlite::CSqlite(char *db)
 	        "tag_id integer PRIMARY KEY," \
 	        "tag_val text(32) NOT NULL," \
 	        "DATE_TIME_STAMP DATETIME default current_timestamp," \
-	        "tag_antID integer," \
+	        "tag_antID 		integer," \
 	    	"tag_RSSI	    DOUBLE," \
 	        "tag_first_seen DATETIME," \
 	        "tag_last_seen  DATETIME," \
@@ -41,13 +41,13 @@ CSqlite::CSqlite(char *db)
 	    fprintf(stdout, "TAG_DATA Table created successfully\n");
 	}
 
-	sql = "CREATE TABLE if not exists ASSET_DATA" \
+	sql = "CREATE TABLE if not exists TAG_USER_DATA" \
 	    "(" \
 	        "tag_id integer PRIMARY KEY," \
 	        "tag_val text(32) NOT NULL," \
 	        "DATE_TIME_STAMP DATETIME default current_timestamp," \
-	        "tag_antID integer," \
-	    	"tag_action	    test(8)," \
+	        "tag_antID 		integer," \
+	    	"tag_action	    interger," \ 
 	        "tag_first_seen DATETIME," \
 	        "tag_last_seen  DATETIME," \
 	        "tag_seen_count integer," \
@@ -157,7 +157,7 @@ CSqlite::insert_tag(char *tag, int antid, double rssi)
 	    }
 		return 0;
 	}
-	
+
 	sprintf(sql_buff,"insert into TAG_DATA (tag_val, tag_antID, tag_RSSI, tag_first_seen, tag_last_seen, tag_seen_count, tag_out_Of_fov)" \
 			 "VALUES" \
 	         "('%s', %d, %f, datetime('now'), datetime('now'), 1, 1);",tag, antid, rssi); 
@@ -174,7 +174,7 @@ CSqlite::insert_tag(char *tag, int antid, double rssi)
 }
 
 int
-CSqlite::insert_user_tag(char *tag, int antid)
+CSqlite::insert_user_tag(char *tag, int antid, int action)
 {
 	int rc;
 	
@@ -190,12 +190,13 @@ CSqlite::insert_user_tag(char *tag, int antid)
 	}
 	if (parm[0] != 0)	
 	{
-		return -1;
+		sprintf(sql_buff, "update TAG_USER_DATA SET tag_action=%d where tag_id=%d;", action,parm[0] );
+		return 0;
 	}
 	
-	sprintf(sql_buff,"insert into TAG_USER_DATA (tag_val, tag_antID, tag_create_time)" \
+	sprintf(sql_buff,"insert into TAG_USER_DATA (tag_val, tag_antID, tag_action, tag_create_time)" \
 			 "VALUES" \
-	         "('%s', %d, datetime('now'));",tag, antid); 
+	         "('%s', %d, %d, datetime('now'));",tag, antid, action); 
 			 
 	rc = sqlite3_exec(rfid_db, sql_buff, callback, 0, &zErrMsg);
 

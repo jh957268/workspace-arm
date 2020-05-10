@@ -70,6 +70,7 @@ private:
     void iAgent_GetRegion(iMsgObj *hMsg);
     void iAgent_GetSearchTimeout(iMsgObj *hMsg);
     void iAgent_Sqlite_Select(iMsgObj *hMsg);
+    void iAgent_Sqlite_Insert(iMsgObj *hMsg);
     int sendMessage(const char *msg);
     int sendMessage(uint8_t *buff, int len);
 	int sendResponse(uint8_t resp_code, int msg_len, uint8_t *msg);

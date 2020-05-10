@@ -190,8 +190,16 @@ CSqlite::insert_user_tag(char *tag, int antid, int action)
 	}
 	if (parm[0] != 0)	
 	{
-		sprintf(sql_buff, "update TAG_USER_DATA SET tag_action=%d where tag_id=%d;", action,parm[0] );
-		return 0;
+		sprintf(sql_buff, "update TAG_USER_DATA SET tag_action=%d where tag_id=%d;", action, parm[0]);
+		rc = sqlite3_exec(rfid_db, sql_buff, callback, 0, &zErrMsg);
+
+	    if( rc != SQLITE_OK ){
+	       fprintf(stderr, "SQL error: %s\n", zErrMsg);
+	       sqlite3_free(zErrMsg);
+	    } else {
+	       fprintf(stdout, "Record updated successfully\n");
+	    }
+		return rc;
 	}
 	
 	sprintf(sql_buff,"insert into TAG_USER_DATA (tag_val, tag_antID, tag_action, tag_create_time)" \
@@ -205,7 +213,8 @@ CSqlite::insert_user_tag(char *tag, int antid, int action)
 	    sqlite3_free(zErrMsg);
 	} else {
 	    fprintf(stdout, "Records inserted successfully\n");
-	}			 
+	}
+	return (rc);
 }
 
 int

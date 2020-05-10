@@ -309,7 +309,7 @@ Int32 __cdecl IReaderApiGetRegion(void * handle, int *region)
 	return(error);
 }
 
-Int32 __cdecl IReaderApiDBSelectAll(void * handle, int limit, int offset)
+Int32 __cdecl IReaderApiDBSelectAll(void * handle, int limit, int offset, int table)
 {
 	int error;
 	IReader *devHandle;
@@ -319,12 +319,30 @@ Int32 __cdecl IReaderApiDBSelectAll(void * handle, int limit, int offset)
 	if (error == IREADER_SUCCESS)
 	{
 		devHandle = (IReader *)handle;
-		error = devHandle->IReaderDBSelectAll(limit, offset);
+		error = devHandle->IReaderDBSelectAll(limit, offset, table);
 
 	}
 	((IReader *)handle)->IReaderGiveMutex();
 	return(error);
 }
+
+Int32 __cdecl IReaderApiDBInsertTag(void * handle, char * tag_str)
+{
+	int error;
+	IReader *devHandle;
+
+	error = IReaderHandleValid(handle);
+	((IReader *)handle)->IReaderTakeMutex();
+	if (error == IREADER_SUCCESS)
+	{
+		devHandle = (IReader *)handle;
+		error = devHandle->IReaderDBInsertTag(tag_str);
+
+	}
+	((IReader *)handle)->IReaderGiveMutex();
+	return(error);
+}
+
 
 Int32 __cdecl IReaderApiGetSearchTimeout(void * handle, int *region)
 {

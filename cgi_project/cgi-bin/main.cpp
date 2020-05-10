@@ -7,9 +7,10 @@
 char antmap[300];
 
 char ttagrbuf[2048];
-#define DATABASE_MAGIC	0xFFEE
+#define DATABASE_MAGIC		0xFFEE
+#define DATABASE_USER_MAGIC	0xFFDD
 
-int inserttag_main(void);
+int inserttag_main(IReader *handle);
 
 int main(void) 
 {
@@ -60,8 +61,8 @@ int main(void)
 	}
 	if (!strcmp(cgi_env, "inserttag"))
 	{
-		inserttag_main();
-		IReaderApiClose(handle);
+		inserttag_main(handle);
+		// IReaderApiClose(handle);
 		return 0;
 		
 	}
@@ -119,6 +120,20 @@ int main(void)
 		IReaderApiClose(handle);
 		return 0;
 	}
+	else if (!strcmp(cgi_env, "readtag=4"))
+	{
+		ret = IReaderApiStartExecutor(handle, 1, DATABASE_USER_MAGIC);
+		printf("ok");
+		IReaderApiClose(handle);
+		return 0;
+	}
+	else if (!strcmp(cgi_env, "readtag=5"))
+	{
+		ret = IReaderApiStartExecutor(handle, 0, DATABASE_USER_MAGIC);
+		printf("ok");
+		IReaderApiClose(handle);
+		return 0;
+	}	
 	else if (!strcmp(cgi_env, "readtag=1"))
 	{
 		int ant_id, ttagCount;
@@ -179,7 +194,7 @@ int main(void)
 		int ttagCount;
 		char db_record[128];
 
-		ret = IReaderApiDBSelectAll(handle, 0, 0);    // select all limit 0 offset 0
+		ret = IReaderApiDBSelectAll(handle, 0, 0, 0);    // select all limit 0 offset 0
 		if (IREADER_SUCCESS != ret)
 		{
 			//printf("command fails\n");
@@ -211,16 +226,27 @@ int main(void)
 		    fflush(stdout);
 		}
 	}
-	else if (!strncmp(cgi_env, "seltag=1", 8))
+	else if (!strncmp(cgi_env, "seltag", 6))
 	{
 		int ttagCount;
 		char db_record[128];
 		int total_record = 0;
 		ttagrbuf[0] = 0;
+		int table = 0;
 
 		int offset = atoi(&cgi_env[9]);
 
-		ret = IReaderApiDBSelectAll(handle, 10, offset);    // select all limit 0 offset 0
+		if (cgi_env[7] == '1')
+		{
+			table = 0;
+		}
+		else
+		{
+			table = 1;	
+		}
+		
+
+		ret = IReaderApiDBSelectAll(handle, 30, offset, table);    // select all limit 0 offset 0 from table
 		if (IREADER_SUCCESS != ret)
 		{
 			//printf("command fails\n");

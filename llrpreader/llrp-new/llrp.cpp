@@ -364,9 +364,15 @@ VALUES('Gulha', 55, 'Problems');
 	   Sqlite_db->insert_tag("1234567890abcdef1234567b", 3, -57.6);
 
 	   Sqlite_db->insert_tag("1234567890abcdef1234567a", 2, -46.6);
+
+	   Sqlite_db->insert_user_tag("1234567890abcdef1234567f", 10, 0);
+	   Sqlite_db->insert_user_tag("1234567890abcdef1234567e", 11, 1);
+	   Sqlite_db->insert_user_tag("1234567890abcdef1234567d", 12, 2);
+
 	   Sqlite_db->commit();
 
 	   Sqlite_db->select_tag("all", CSqlite::callback, 0, 0);
+	   Sqlite_db->select_tag("all", CSqlite::callback, 0, 1);
 	   //Sqlite_db->db_close();
 
 //	LLRP_MntServer abc;

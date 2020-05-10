@@ -8,7 +8,7 @@
 
 <body id="asset">
 
-<form action="wan.htm" method="get">
+<form action="asset.htm" method="get">
  <table class="c" cellspacing="0" cellpadding="0">
 	<tr>
     	<td class="head" colspan="2">&nbsp;&nbsp;Item-Level Tracking Made Easy...</td>
@@ -43,8 +43,8 @@
 				<tr>			
 					<td>
 						<input type=button style="{width:120px;}" value="Load Next 30 Tags" onClick="LoadDBTag()" />
-						<input type=button style="{width:120px;}" value="Stream Tags to DB" onClick="startTagInfoDB()" />
-						<input type=button style="{width:120px;}" value="Stop streaming" onClick="stopTagInfoDB()" />
+						<input type=button style="{width:120px;}" value="Start Monitoring" onClick="startTagInfoDB()" />
+						<input type=button style="{width:120px;}" value="Stop Monitoring" onClick="stopTagInfoDB()" />						
 					</td>
                 </tr>			
              </table>			
@@ -53,7 +53,7 @@
 </table>
 </form>
 
-<form action="/cgi-bin/sse.cgi?inserttag" method="post">
+<form action="/cgi-bin/execgi-bin.cgi?inserttag" method="post">
 <table cellspacing="0" cellpadding="0">
     <tr>
     	<td valign="top">
@@ -67,7 +67,7 @@
                 	<th colspan="2">Insert Asset/Tag to DB</th>
 				</tr>
             	<tr>
-                    <td class="label">Asset Tag ID</label></td>
+                    <td class="label">Asset EPC Data</label></td>
 					<td class="input" ><input type="text" name="tagval" id="tagvalid" </td>
                 </tr>
                 <tr>
@@ -159,7 +159,7 @@ function LoadDBTag()
 	   }
     }
   }
-  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?seltag=1-"+tagCount, true);
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?seltag=2-"+tagCount, true);
   xhttp.send();
  }
  
@@ -177,7 +177,7 @@ function LoadDBTag()
          // do nothing
     }
   }
-  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=2", true);
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=4", true);
   xhttp.send();
    isOpenDB = true;
 }
@@ -195,7 +195,7 @@ function stopTagInfoDB()
          // do nothing
     }
   }
-  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=3", true);
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=5", true);
   xhttp.send();
   isOpenDB = false;
   

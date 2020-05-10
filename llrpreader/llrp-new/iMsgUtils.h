@@ -28,7 +28,7 @@ extern "C" {
 	buff[6] : command or response code
 	buff[7] : real data starts from here
 	BTW (in the future): buff[7] should be status, and real data should start at buff[8]
-	data len is two bytes : count command or response and real data
+	data len is two bytes : count command or response and real data, that is 1(command or response)  + read data length
 	buff[2] : high bye of data len
 	buff[3] : low byte of data len
 	buff[4] : ~high bye of data len (bit reverse)

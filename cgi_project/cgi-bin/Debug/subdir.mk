@@ -7,19 +7,22 @@ CPP_SRCS += \
 ../iReader.cpp \
 ../iReaderapi.cpp \
 ../main.cpp \
-../muxClient.cpp 
+../muxClient.cpp \
+../post_var.cpp 
 
 OBJS += \
 ./iReader.o \
 ./iReaderapi.o \
 ./main.o \
-./muxClient.o 
+./muxClient.o \
+./post_var.o 
 
 CPP_DEPS += \
 ./iReader.d \
 ./iReaderapi.d \
 ./main.d \
-./muxClient.d 
+./muxClient.d \
+./post_var.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

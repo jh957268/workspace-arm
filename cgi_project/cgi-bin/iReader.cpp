@@ -114,20 +114,44 @@ int  IReader::IReaderGetRegion(int *region)
     return (IREADER_SUCCESS);
 }
 
-int  IReader::IReaderDBSelectAll(int limit, int offset)
+int  IReader::IReaderDBSelectAll(int limit, int offset, int table)
 {
 	int ret;
 	int reg;
-	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x05, 0xFF, 0xFA, 0x93, 0, 0, 0, 0};  // 0x91 get region
+	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x06, 0xFF, 0xF9, 0x93, 0, 0, 0, 0, 0};  // 0x91 get region
     // retrieve the list from mux again
 
 	buf[7] = (limit >> 8) & 0xff;
 	buf[8] = limit & 0xff;
 	buf[9] = (offset >> 8) & 0xff;
-	buf[10] = offset & 0xff;	
+	buf[10] = offset & 0xff;
+	buf[11] = table & 0xff;	
 	ret = sendmsg(buf);
 
 	if (m_rxMsg.opCode != 0x93 || ret != RFID_CMD_SUCCESS)
+	{
+		return (IREADER_COMMAND_FAIL);
+	}
+
+    return (IREADER_SUCCESS);
+}
+
+int  IReader::IReaderDBInsertTag(char *tag_str)
+{
+	int ret;
+
+	unsigned char buf[128] = {HDR1, HDR2, 0x00, 0x06, 0xFF, 0xF9, 0x94, 0, 0, 0, 0, 0};  // 0x91 get region
+    // retrieve the list from mux again
+
+	int len = strlen(tag_str);
+
+	buf[3] = 1 + len;
+	buf[5] = ~buf[3];
+	memmove ((void *)&buf[7], (void *)tag_str, len);
+
+	ret = sendmsg(buf);
+
+	if (m_rxMsg.opCode != 0x94 || ret != RFID_CMD_SUCCESS)
 	{
 		return (IREADER_COMMAND_FAIL);
 	}

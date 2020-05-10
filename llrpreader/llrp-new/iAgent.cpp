@@ -553,34 +553,82 @@ void IAgent::iAgent_Sqlite_Select(iMsgObj *hMsg)
 }
 
 void IAgent::iAgent_Sqlite_Insert(iMsgObj *hMsg)
-{
-#if 0	
-	int fd = clientSocket;
-	int offset, limit;
-	char sel_cl[24];
+{	
+	int antid, action;
+	char *insert_str;
+	char *tmp1, *tmp2;
+	char epc[32];
+#define ERR_CODE	1	
+	int error_code = ERR_CODE;
+	
 
 	uint8_t buff [32] = {HDR1, HDR2, 0x00, 0x02, 0xff, 0xfd, 0x00, 0x00};
+
+	insert_str = (char *)hMsg->data;
 	
-	limit = (hMsg->data[0] << 8) | hMsg->data[1];
-	offset = (hMsg->data[2] << 8) | hMsg->data[3];
-	if (offset == 0 && limit == 0)
+	do
 	{
-		sprintf(sel_cl, "all");
-	}
-	else
-	{
-		sprintf(sel_cl, "limit %d offset %d", limit, offset );
-	}
+		tmp1 = strchr(insert_str, '=');
+		if (tmp1 == 0)
+		{
+			// send error
+			error_code = ERR_CODE;
+			break;;
+		}
+		tmp1++;
+		tmp2 = strchr(tmp1, '&');
+		if (tmp2 == 0)
+		{
+			// send error
+			break;;
+		}
+		*tmp2 = 0;
+		sprintf(epc, "%s", tmp1);
+	
+		tmp2++;
+		tmp1 = strchr(tmp2, '=');
+		if (tmp1 == 0)
+		{
+			// send error
+			break;
+		}
+		tmp1++;	
+		tmp2 = strchr(tmp1, '&');
+		if (tmp2 == 0)
+		{
+			// send error
+			break;
+		}
+		*tmp2 = 0;
+		antid = atoi(tmp1);
+		tmp2++;
 
+		tmp1 = strchr(tmp2, '=');
+		if (tmp1 == 0)
+		{
+			// send error
+			break;
+		}
+		tmp1++;	
+		tmp2 = strchr(tmp1, '&');
+		if (tmp2 == 0)
+		{
+			// send error
+			break;
+		}
+		*tmp2 = 0;	
+		action = atoi(tmp1);
+		error_code = 0;
+	} while (0);
+	
 	buff[6] = hMsg->opCode;
-
-	sendMessage(buff, 8);     // should be 7
-	Sqlite_db->insert_user_tag(sel_cl, Sqlite_callback, (void *)&fd);
-	buff[3] = 5;
-	buff[5] = 0xfa;
-	sprintf((char *)&buff[7], "done");
-	sendMessage(buff, 11);     // should be 11
-#endif	
+	
+	if ( 0 == error_code)
+	{
+		error_code = Sqlite_db->insert_user_tag(epc, antid, action);
+	}
+	buff[7] = (uint8_t)error_code;
+	sendMessage(buff, 8);     // should be 8
 }
 
 int IAgent::Sqlite_callback(void *param, int argc, char **argv, char **azColName)

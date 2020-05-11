@@ -558,7 +558,10 @@ void IAgent::iAgent_Sqlite_Select(iMsgObj *hMsg)
 	buff[6] = hMsg->opCode;
 
 	sendMessage(buff, 8);     // should be 7
-	Sqlite_db->select_tag(sel_cl, Sqlite_callback, (void *)&fd, table);
+
+	parm[0] = fd;
+	parm[1] = table;
+	Sqlite_db->select_tag(sel_cl, Sqlite_callback, (void *)parm, table);
 	buff[3] = 5;
 	buff[5] = 0xfa;
 	sprintf((char *)&buff[7], "done");
@@ -649,8 +652,28 @@ int IAgent::Sqlite_callback(void *param, int argc, char **argv, char **azColName
 
 	char buff[128] = {HDR1, HDR2};;
 	// tag_id tag_val antid  rssi first_seen last_seen seen_cnt
-	sprintf(&buff[7], "%s~%s~%s~%s~%s~%s~%s", argv[0], argv[1], argv[3], argv[4], argv[5], argv[6], argv[7]);
-
+	int table = ((int *)param)[1];
+	if (table == 0)
+	{
+		sprintf(&buff[7], "%s~%s~%s~%s~%s~%s~%s", argv[0], argv[1], argv[3], argv[4], argv[5], argv[6], argv[7]);
+	}
+	else
+	{
+		char *action;
+		if (*argv[4] == '0')
+		{
+			action = "No Action";
+		}
+		else if (*argv[4] == '1')
+		{
+			action = "Open Gate";
+		}
+		else
+		{
+			action = "Beep";
+		}
+		sprintf(&buff[7], "%s~%s~%s~%s~%s~%s~%s", argv[0], argv[1], argv[3], action, argv[5], argv[6], argv[7]);		
+	}
 	int len = strlen(&buff[7]);
 	len = len + 1;
 	buff[2] = (len >> 8) & 0xff;

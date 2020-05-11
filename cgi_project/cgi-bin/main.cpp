@@ -73,7 +73,14 @@ int main(void)
 
 		for (int i = 0; i < 256; i++)
 		{
-			antmap[i] += 0x31;
+			if (i & 1)
+			{
+				antmap[i] += 0x31;
+			}
+			else
+			{
+				antmap[i] += 0x30;
+			}
 		}
 #if 0
 		for (int i = 0; i < 256; i++)

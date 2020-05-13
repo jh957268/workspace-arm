@@ -13,6 +13,7 @@
 #include "debug_print.h"
 #include "muxserial.h"
 #include "gpio.h"
+#include "pwm.h"
 #include "CSqlite.h"
 
 using namespace std;
@@ -385,6 +386,7 @@ VALUES('Gulha', 55, 'Problems');
 	}
 	GPIO::getInstance(0, 11);
 	GPIO::getInstance(1, 74);
+	PWM::getInstance();
 
 	if (LLRP_MntServer::initRegistry() == -1)
 	{

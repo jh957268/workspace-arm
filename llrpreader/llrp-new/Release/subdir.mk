@@ -14,7 +14,8 @@ CPP_SRCS += \
 ../llrp_MntAgent.cpp \
 ../llrp_MntServer.cpp \
 ../llrp_MsgProcessor.cpp \
-../llrp_ROSpecExecutor.cpp 
+../llrp_ROSpecExecutor.cpp \
+../pwm.cpp 
 
 OBJS += \
 ./CSqlite.o \
@@ -27,7 +28,8 @@ OBJS += \
 ./llrp_MntAgent.o \
 ./llrp_MntServer.o \
 ./llrp_MsgProcessor.o \
-./llrp_ROSpecExecutor.o 
+./llrp_ROSpecExecutor.o \
+./pwm.o 
 
 CPP_DEPS += \
 ./CSqlite.d \
@@ -40,7 +42,8 @@ CPP_DEPS += \
 ./llrp_MntAgent.d \
 ./llrp_MntServer.d \
 ./llrp_MsgProcessor.d \
-./llrp_ROSpecExecutor.d 
+./llrp_ROSpecExecutor.d \
+./pwm.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

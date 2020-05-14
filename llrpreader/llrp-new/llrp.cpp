@@ -358,6 +358,8 @@ VALUES('Gulha', 55, 'Problems');
 	   sqlite3_close(rfid_db);
 
 #endif
+
+#if 0
 	   Sqlite_db->begin_transaction();
 	   Sqlite_db->insert_tag("1234567890abcdef1234567f", 1, -55.6);
 	   Sqlite_db->insert_tag("1234567890abcdef12345678", 1, -58.6);
@@ -371,6 +373,7 @@ VALUES('Gulha', 55, 'Problems');
 	   Sqlite_db->insert_user_tag("1234567890abcdef1234567d", 12, 2);
 
 	   Sqlite_db->commit();
+#endif	   
 
 	   Sqlite_db->select_tag("all", CSqlite::callback, 0, 0);
 	   Sqlite_db->select_tag("all", CSqlite::callback, 0, 1);
@@ -386,7 +389,10 @@ VALUES('Gulha', 55, 'Problems');
 	}
 	GPIO::getInstance(0, 11);
 	GPIO::getInstance(1, 74);
-	PWM::getInstance();
+	PWM::getInstance()->period(20000000);   // 20ms, 50Hz
+	//PWM::getInstance()->duty_cycle(2400000);   // 2.4ms, 12% will drive to 180 degree
+	PWM::getInstance()->duty_cycle(400000);   // 0.4ms, 2% will drive to 0 degree
+	
 
 	if (LLRP_MntServer::initRegistry() == -1)
 	{

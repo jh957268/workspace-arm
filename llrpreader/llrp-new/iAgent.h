@@ -58,6 +58,7 @@ private:
     static unsigned int  nextId;		///< Next agent ID available
     iMsgObj  		t_rxMsg;
     int             parm[4];
+    char            tagbuff[1024];
 
     int  iAgent_receiveMsgObj(iMsgObj *hMsg);
     int  iAgent_sendMsgObj(iMsgObj *hMsg);

@@ -283,14 +283,16 @@ int  IReader::IReaderReadTags(int antid, int *tagcount, struct taginfo *tagrbuf)
 
 int  IReader::IReaderReadTagsMetaDataRSSI(int antID, int pwr, int *tagcount, struct taginfo_rssi *tagrbuf)
 {
-	unsigned char  buf[] = {HDR1, HDR2, 0x00, 0x03, 0xFF, 0xFC, 0x83, 0x00, 0x00};
+	unsigned char  buf[] = {HDR1, HDR2, 0x00, 0x05, 0xFF, 0xFA, 0x83, 0x00, 0x00, 0x00, 0x00};
     int totaltags, tags;
 	int ret;
 	struct taginfo_rssi *pTaginfo_rssi;
 	
     *tagcount = 0;
-	buf[7] = antID;
-	buf[8] = pwr;
+	buf[7] = (antID >> 8) & 0xff;
+	buf[8] = antID & 0xff;
+	buf[9] = (pwr >> 8) & 0xff;
+	buf[10] = pwr & 0xff;
 
 	ret = sendmsg(buf);
 	if ((m_rxMsg.opCode != 0x83) || (ret != RFID_CMD_SUCCESS))
@@ -308,13 +310,21 @@ int  IReader::IReaderReadTagsMetaDataRSSI(int antID, int pwr, int *tagcount, str
 	{
 		return IREADER_SUCCESS;
 	}
+
 	pTaginfo_rssi = (struct taginfo_rssi *)&m_rxMsg.data[2];
+
+	//memmove(tagrbuf->tagid, pTaginfo_rssi->tagid,totaltags *  TAGLEN_RSSI);
+
+	//printf("!!!!");
+	//for (int i = 0; i < totaltags * TAGLEN_RSSI; i++)
+	//{
+    //	printf("%02x-",((unsigned char *)tagrbuf)[i] );
+	//}
 	for (tags = 0; tags <  totaltags; tags++)
 	{
 		memmove(tagrbuf[tags].tagid, &(pTaginfo_rssi->tagid[0]), TAGLEN_RSSI);
 		pTaginfo_rssi++;
 	}
-
 	*tagcount = totaltags; 
 	return (IREADER_SUCCESS);
 }
@@ -837,6 +847,8 @@ int IReader::MSG_receiveMsgObj(MsgObj *hMsg)
  	for(i=0; i<hMsg->dataLen - 1; i++)   // -1 because opcode is read where opcode is included in len
   	{
 		bytesRead = getChar(&hMsg->data[i]);
+
+		//printf("%02x-", hMsg->data[i]);
 		if ( 1 != bytesRead)
 		{
 			sprintf(debug_buffer, "Fails get data: %d", bytesRead);

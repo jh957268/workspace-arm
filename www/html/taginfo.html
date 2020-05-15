@@ -7,7 +7,6 @@
 </head>
 
 <body id="taginfo">
-
 <form action="wan.htm" method="get">
  <table class="c" cellspacing="0" cellpadding="0">
 	<tr>
@@ -42,13 +41,15 @@
         	<table class="b" cellspacing="0" cellpadding="0">
 				<tr>			
 					<td>
-						<input type=button style="{width:120px;}" value="Start Tags Read" onClick="startTagInfoSSe()" />
-						<input type=button style="{width:120px;}" value="Stop Tags Read" onClick="stopTagInfoSSe()" />
+						<input type=button style="width:120px" value="Start Tags Read" onClick="startTagInfoSSe()" />
+						<input type=button style="width:120px" value="Stop Tags Read" onClick="stopTagInfoSSe()" />
 					</td>
 					<td>
-						<label for="antenna">AntID:</label>
-						<input type="text" name="anten" id="AntID" value="1" />
-						<input type=button style="{width:120px;}" value="Tags Read Once" onClick="readTagInfoOnce()" />
+						<label for="anten">AntID:</label>
+						<input type="text" name="anten" id="AntID" value="1" size="4" />
+						<label for="power">Power:</label>
+						<input type="text" name="power" id="PowerID" value="2500" size="6"/>
+						<input type=button style="width:120px" value="Read Tags Once" style="color:black" onClick="readTagInfoOnce(this.form)" />
 					</td>
                 </tr>			
              </table>			
@@ -157,12 +158,33 @@ function stopTagInfoSSe()
 	isOpenOnce = false;
 }
 
-function readTagInfoOnce()
+function readTagInfoOnce(thform)
 {
 	if (isOpenOnce == true)
 	{
 		return;
 	}
+	//alert("1");
+	var xhttp = new XMLHttpRequest();
+  	xhttp.onreadystatechange = function() {
+    	if (this.readyState == 4 && this.status == 200) {
+			//document.getElementById("result").innerHTML = this.responseText;
+			var arrStr = this.responseText.split(/[;]/);
+			for (var i = 0; i < arrStr.length; i++)
+	   		{
+				displayTagInfo(arrStr[i]);
+	   		}
+    	}
+  	}
+	var antid;
+	var power;
+	antid = thform.anten.value;
+	power = thform.power.value;
+
+	//alert(antid + power);
+  	xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=6-"+antid+"-"+power, true);
+  	xhttp.send();
+
 }
 
   // tablea.rows[5].cells[10].innerHTML='&#128225;<b>ANT</b>';

@@ -7,6 +7,7 @@
 char antmap[300];
 
 char ttagrbuf[2048];
+char recordrbuf[2048];
 #define DATABASE_MAGIC		0xFFEE
 #define DATABASE_USER_MAGIC	0xFFDD
 
@@ -18,7 +19,7 @@ int main(void)
 	int ret;
 	int region;
 	const char *cgi_env = getenv("QUERY_STRING");
-	//const char *cgi_env = "dbtag=1";
+	//const char *cgi_env = "readtag=6-1-2500";
 	// parse the cgi_env
 
 #if 0
@@ -196,6 +197,74 @@ int main(void)
 
 		}
 	}
+	else if (!strncmp(cgi_env, "readtag=6", 9))
+	{
+		int ant_id, ttagCount, power;
+		struct taginfo_rssi *pTaginfo_rssi;
+		char pcbits[8], epcdata[32], rssidata[20];
+		short rssi;
+		char *tmp1, *tmp2;
+		char tmpbuff[128];
+		int i;
+	
+		// Ireader read tags once
+
+		strcpy(tmpbuff, cgi_env);
+		tmp1 = &tmpbuff[10];
+		tmp2 = strchr(tmp1, '-');
+		*tmp2++ = 0;
+		ant_id = atoi(tmp1);
+		power = atoi(tmp2);
+		ret = IReaderApiReadTagsMetaDataRSSI(handle, ant_id, power, &ttagCount, (struct taginfo_rssi *)ttagrbuf);
+
+		if (IREADER_SUCCESS != ret)
+		{
+			IReaderApiClose(handle);
+			return 0;
+		}
+
+		pTaginfo_rssi = (struct taginfo_rssi *)ttagrbuf;
+		time_t now = time(NULL);
+
+		recordrbuf[0] = 0;
+		int total_record = 0;
+
+ 		for (i = 0; i < ttagCount; i++)
+		{
+			sprintf(pcbits,"%02x %02x", u8(pTaginfo_rssi->tagid[0]), u8(pTaginfo_rssi->tagid[1]));
+
+			sprintf(epcdata, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+									u8(pTaginfo_rssi->tagid[2]),
+									u8(pTaginfo_rssi->tagid[3]),
+									u8(pTaginfo_rssi->tagid[4]),
+									u8(pTaginfo_rssi->tagid[5]),
+									u8(pTaginfo_rssi->tagid[6]),
+									u8(pTaginfo_rssi->tagid[7]),
+									u8(pTaginfo_rssi->tagid[8]),
+									u8(pTaginfo_rssi->tagid[9]),
+									u8(pTaginfo_rssi->tagid[10]),
+									u8(pTaginfo_rssi->tagid[11]),
+									u8(pTaginfo_rssi->tagid[12]),
+									u8(pTaginfo_rssi->tagid[13])
+									);
+
+			rssi = pTaginfo_rssi->tagid[14];
+			rssi = (rssi << 8) | ((pTaginfo_rssi->tagid[15]) & 0xff);
+			sprintf(rssidata, "%f dBm",(float)(rssi/10.0));
+			if (total_record != 0)
+			{
+				strcat(recordrbuf, ";");
+			}
+			sprintf(tmpbuff, "%s~%s~%s~%d~%ld",epcdata, pcbits, rssidata, ant_id, now);
+			strcat(recordrbuf, tmpbuff);
+			pTaginfo_rssi++;
+			total_record++;
+			
+		}
+		printf("%s", recordrbuf);
+		IReaderApiClose(handle);
+		return 0;
+	}	
 	else if (!strcmp(cgi_env, "dbtag=1"))
 	{
 		int ttagCount;
@@ -275,7 +344,7 @@ int main(void)
 				return 0;
 			}
 
-			if (ttagCount == 0)   // ttagCount is msg len
+			if (ttagCount == 0)   // ttagCount store  msg len
 			{
 				continue;
 			}

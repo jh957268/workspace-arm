@@ -275,6 +275,7 @@ void IAgent::iAgent_ReadTags(iMsgObj *hMsg)
 #endif
 }
 
+#define NL "\n"
 void IAgent::iAgent_ReadTagsRSSI(iMsgObj *hMsg)
 {
 	uint8_t buff [256] = {HDR1, HDR2, 0x00, 33, 0xff, 0xfd, 0x00, 0x00};
@@ -283,10 +284,15 @@ void IAgent::iAgent_ReadTagsRSSI(iMsgObj *hMsg)
 	IReader *handle = IReader::getInstance();
 
 	int ttagCount = 0;
-	int antID = hMsg->data[0];
-	int pwr = (hMsg->data[1] << 8) | hMsg->data[2];    // e.g 2500
+	int antID = (hMsg->data[0] << 8) | hMsg->data[1] ;
+	int pwr = (hMsg->data[2] << 8) | hMsg->data[3];    // e.g 2500
+
+	printf("antid = %d, power = %d\n", antID, pwr);
 	
 	IReaderApiReadTagsMetaDataRSSI((void *)handle, antID, pwr, &ttagCount, (struct taginfo_rssi *)&buff[9]);
+
+	buff[0] = HDR1;
+	buff[1] = HDR2;
 	buff[6] = hMsg->opCode;	
 	buff[7] = antID;
 	buff[8] = ttagCount;
@@ -294,6 +300,7 @@ void IAgent::iAgent_ReadTagsRSSI(iMsgObj *hMsg)
 	buff[5] = ~buff[3];
 	
 	len = buff[3] + 6;
+
 	::send( clientSocket, buff, len, 0 );
 
 }

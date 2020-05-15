@@ -64,7 +64,7 @@ struct taginfo_rssi
 {
 	// first two bytes are PC BITS, 12 bytes EPC data, two bytes RSSI, total 16 bytes
 	char tagid[TAGLEN_RSSI];
-};
+}__attribute__((packed));
 
 class IReader : public MuxClient
 {

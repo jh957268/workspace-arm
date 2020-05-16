@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "iReaderapi.h"
-char antmap[300];
+char antmap[1280];
 
 char ttagrbuf[2048];
 char recordrbuf[2048];
@@ -105,7 +105,7 @@ int main(void)
 #endif
 		}
 #endif
-		antmap[256] = 0;
+		antmap[strlen(antmap)] = 0;
 		printf("%s", antmap);
 		IReaderApiClose(handle);
 		return 0;

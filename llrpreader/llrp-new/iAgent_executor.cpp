@@ -2,6 +2,7 @@
 #include "iAgent_executor.h"
 #include "debug_print.h"
 #include "iAgent.h"
+#include "CAntenna.h"
 
 // static uint8_t ttagrbuf[512];
 
@@ -21,7 +22,7 @@ IAgent_Executor::IAgent_Executor():
 		clientFd[i] = -1;
 	}
 	executor_start_flag = 0;
-	m_antcount = 0;
+	// m_antcount = 0;
 	m_hSem = new OwSemaphore(1);
 
 }
@@ -44,18 +45,25 @@ IAgent_Executor::main( OwTask * )
 			continue;
 		}
 
-		m_antcount = 1;  // test only
-		m_antlist[0] = 1;
-		m_antpower[1] = 2500;
-		m_antpower[0] = 2500;
+		//m_antcount = 1;  // test only
+		//m_antlist[0] = 1;
+		//m_antpower[1] = 2500;
+		//m_antpower[0] = 2500;
 		while (	executor_start_flag != 0 )
 		{
 
-			for (int i = 0; i < m_antcount; i++)
+			for (int i = 0; i < CAntenna::m_antcount; i++)
 			{
-				int antID = m_antlist[i];
+				int antID = CAntenna::m_antlist[i];    // antID starts from 1
+				int power = CAntenna::m_antpower[antID-1];
 
-				status = IReaderApiReadTagsMetaDataRSSI(handle, antID, m_antpower[antID], &tagCount, (struct taginfo_rssi *)&ttagrbuf[9]);
+				if (power < 500 || power > 3000)
+				{
+					OwTask::sleep(100);  // just make sure it does not hold the CPU
+					continue;
+				}
+
+				status = IReaderApiReadTagsMetaDataRSSI(handle, antID, power, &tagCount, (struct taginfo_rssi *)&ttagrbuf[9]);
 				if (status != IREADER_SUCCESS)
 				{
 					DBG_PRINT(DEBUG_INFO,"Read Tags Fails" NL);

@@ -144,8 +144,13 @@ int IAgent::iAgent_receiveMsgObj(iMsgObj *hMsg)
 	return (1);
 }
 
+#define PRINT_MSG_CODE 0
+
 int IAgent::iAgent_ProcessMsgObj(iMsgObj *hMsg)
 {
+#if PRINT_MSG_CODE
+	printf("%s, code = %x\n", __FUNCTION__, hMsg->opCode);
+#endif
 	switch (hMsg->opCode)
 	{
 		case 0x81:
@@ -177,7 +182,10 @@ int IAgent::iAgent_ProcessMsgObj(iMsgObj *hMsg)
 			break;
 		case 0x94:
 			iAgent_Sqlite_Insert(hMsg);
-			break;		
+			break;
+		case 0x95:
+			iAgent_Rescan_Salve(hMsg);
+			break;				
 		default:
 			break;
 	}
@@ -311,7 +319,15 @@ void IAgent::iAgent_ReadTagsRSSI(iMsgObj *hMsg)
 
 	//printf("antid = %d, power = %d\n", antID, pwr);
 	
-	IReaderApiReadTagsMetaDataRSSI((void *)handle, antID, pwr, &ttagCount, (struct taginfo_rssi *)&buff[9]);
+	if (antID < 1 || antID > 256)
+	{
+		ttagCount = 0;
+	}
+	else
+	{
+		IReaderApiReadTagsMetaDataRSSI((void *)handle, antID, pwr, &ttagCount, (struct taginfo_rssi *)&buff[9]);
+	}
+	// This assume every antenna cannot have more than 10 tag, since we only send 1 byte length field which is 255 max
 
 	buff[0] = HDR1;
 	buff[1] = HDR2;
@@ -331,10 +347,64 @@ void IAgent::iAgent_SetTxPower(iMsgObj *hMsg)
 {
 	uint8_t buff [] = {HDR1, HDR2, 0x00, 0x02, 0xff, 0xfd, 0x00, 0x00};
 
-	int antid = hMsg->data[0];
-	int pwr = (hMsg->data[1] << 8) | hMsg->data[2];    // e.g 2500
+	int antID = (hMsg->data[0] << 8) | hMsg->data[1] ;
+	int pwr = (hMsg->data[2] << 8) | hMsg->data[3];    // e.g 2500
+	
+	//printf("%s\n", __FUNCTION__);
 
+	if (antID < 1 || antID > 256)
+	{
+		buff[7] = 0xfe;				// value not valid code
+	}
+	else
+	{
+		// array is zero base
+		CAntenna::m_antpower[antID - 1] = pwr;
+	}
+	
 	// Console_Printf("ID = %d, pwr = %d\n", antid, pwr);	
+	buff[6] = hMsg->opCode;
+	//m_antpower[antid -1] = pwr;
+	sendMessage(buff, 8);
+}
+
+void IAgent::iAgent_Rescan_Salve(iMsgObj *hMsg)
+{
+	uint8_t buff [] = {HDR1, HDR2, 0x00, 0x02, 0xff, 0xfd, 0x00, 0x00};
+
+	int channel = hMsg->data[0];
+	IReader *handle = IReader::getInstance();
+
+	int status;
+
+	if (channel == 9)
+	{
+		for (int i = 1; i <= 8; i++)
+		{
+			status = IReaderApiSyncChannel(handle, i);
+			if (IREADER_SUCCESS != status)
+			{
+				DBG_PRINT(DEBUG_INFO,"Rescan iReader Channel %d fails, close iReader Handler.\n", i);
+				buff[6] = 0xfd;				// value rescan error code
+				break;
+			}
+			DBG_PRINT(DEBUG_INFO,"Rescan iReader Channel %d success.\n", i);
+		}
+	}
+	else
+	{
+		status = IReaderApiSyncChannel(handle, channel);
+		if (IREADER_SUCCESS != status)
+		{
+			DBG_PRINT(DEBUG_INFO,"Rescan iReader Channel %d fails, close iReader Handler." NL, channel);
+			buff[7] = 0xfd;				// value rescan error code
+		}
+		else
+		{
+			DBG_PRINT(DEBUG_INFO,"Rescan iReader Channel %d success." NL, channel);
+		}
+	}
+
 	buff[6] = hMsg->opCode;
 	//m_antpower[antid -1] = pwr;
 	sendMessage(buff, 8);

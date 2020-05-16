@@ -269,7 +269,7 @@ Int32 __cdecl IReaderApiScanSlave(void * handle, Int32 chn)
     IF_ERROR_RETURN(IReaderHandleValid(handle));
 	((IReader *)handle)->IReaderTakeMutex();
     //IF_ERROR_RETURN(((MuxClient *)handle)->SelectModule(MUX_MODULE));
-    IF_ERROR_RETURN(((IReader *)handle)->IReaderRescanSlave(chn - 1));
+    IF_ERROR_RETURN(((IReader *)handle)->IReaderRescanSlave(chn));
     //IF_ERROR_RETURN(((MuxClient *)handle)->SelectModule(READER_MODULE));
 	((IReader *)handle)->IReaderGiveMutex();
     return IREADER_SUCCESS;
@@ -604,7 +604,7 @@ Int32 __cdecl IReaderApiReadTagsAll(void * handle)
 	return(error); 
 }
 
-Int32 __cdecl IReaderApiSetPowerLevel(void * handle, int antid, int pwr, int doset)
+Int32 __cdecl IReaderApiSetPowerLevel(void * handle, int antid, int pwr)
 {
 	int error;
 	IReader *devHandle;
@@ -614,7 +614,7 @@ Int32 __cdecl IReaderApiSetPowerLevel(void * handle, int antid, int pwr, int dos
 	if (error == IREADER_SUCCESS)
 	{
 		devHandle = (IReader *)handle;
-		error = devHandle->IReaderSetPowerLevel(antid-1, pwr, doset);
+		error = devHandle->IReaderSetPowerLevel(antid, pwr);
 		
 	}
 	((IReader *)handle)->IReaderGiveMutex();

@@ -424,7 +424,9 @@ VALUES('Gulha', 55, 'Problems');
 
 	CAntenna::Set_TxPower_Default();
 	CAntenna::Set_WrPower_Default();
-	IReaderApiGetAntList(IReader::getInstance(), &CAntenna::m_antcount, CAntenna::m_antlist);
+
+	// cannot get ant list, it is too early, the MUX has not finished scan yet
+	//IReaderApiGetAntList(IReader::getInstance(), &CAntenna::m_antcount, CAntenna::m_antlist);
 #if 0
 	Ser2 = new Muxserial("/dev/ttyS2");
 

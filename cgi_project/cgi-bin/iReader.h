@@ -103,7 +103,7 @@ class IReader : public MuxClient
 		int           IReaderDBSelectAll(int limit, int offset, int table);
 		int  		  IReaderDBInsertTag(char *tag_str);
 		int           IReaderGetSearchTimeout(int *timeout);
-		int           IReaderSetPowerLevel(int antid, int pwr, int doset);
+		int           IReaderSetPowerLevel(int antid, int pwr);
 		int           IReaderSetWritePowerLevel(int pwr);
 		int           IReaderGetPowerLevel(int antid, int *pwr);
 		int 		  IReaderTagSearchTimeout(int timeout);

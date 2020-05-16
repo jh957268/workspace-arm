@@ -45,10 +45,32 @@
 						<input type=button style="width:120px" value="Stop Tags Read" onClick="stopTagInfoSSe()" />
 					</td>
 					<td>
-						<label for="anten">AntID:</label>
+						<label for="anten"><b>AntID:</b></label>					
 						<input type="text" name="anten" id="AntID" value="1" size="4" />
-						<label for="power">Power:</label>
-						<input type="text" name="power" id="PowerID" value="2500" size="6"/>
+						<label for="power"><b>&nbsp;Power:</b></label>						
+						<select id="powerId" size="1">
+							<option value="10">10dBm</option>
+							<option value="11">11dBm</option>
+							<option value="12">12dBm</option>
+							<option value="13">13dBm</option>
+							<option value="14">14dBm</option>
+							<option value="15">15dBm</option>
+							<option value="16">16dBm</option>
+							<option value="17">17dBm</option>
+							<option value="18">18dBm</option>
+							<option value="19">19dBm</option>
+							<option value="20">20dBm</option>
+							<option value="21">21dBm</option>
+							<option value="22">22dBm</option>
+							<option value="23">23dBm</option>
+							<option value="24">24dBm</option>
+							<option value="25" selected>25dBm</option>
+							<option value="26">26dBm</option>
+							<option value="27">27dBm</option>
+							<option value="28">28dBm</option>
+							<option value="29">29dBm</option>
+							<option value="30">30dBm</option>							
+						</select>						
 						<input type=button style="width:120px" value="Read Tags Once" style="color:black" onClick="readTagInfoOnce(this.form)" />
 					</td>
                 </tr>			
@@ -177,12 +199,12 @@ function readTagInfoOnce(thform)
     	}
   	}
 	var antid;
-	var power;
 	antid = thform.anten.value;
-	power = thform.power.value;
+	var e = document.getElementById("powerId");
+	var power = e.options[e.selectedIndex].value;	
 
-	//alert(antid + power);
-  	xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=6-"+antid+"-"+power, true);
+	//alert(antid + power+"00"); 2500 is 25dBm
+  	xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=6-"+antid+"-"+power+"00", true);
   	xhttp.send();
 
 }

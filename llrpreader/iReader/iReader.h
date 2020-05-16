@@ -76,7 +76,7 @@ class IReader : public MuxClient
 		IReader(char *server_ip): MuxClient(server_ip)
 		{
     		memset((void *)m_antlist, 0x00, sizeof(m_antlist));
-			m_region = 3;
+			m_region = 2;
 			m_tagserachtimeout = DEFAULT_TAG_SEARCH_TIME;
 		}
 					 ~IReader();

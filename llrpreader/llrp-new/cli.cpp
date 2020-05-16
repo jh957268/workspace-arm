@@ -49,8 +49,8 @@ struct cli_function	cli_function_list[] =
 	{"test_reader", process_test_reader, "test_reader <antid> <power> <loop_count>"},
 	{"show_debug_level", process_show_debug_level, "show_debug_level"},
 	{"set_debug_level", process_set_debug_level, "set_debug_level <newlevel>"},
-	{"show_ant_list", process_show_ant_list, "show_ant_list <ip_address>"},
-	{"rescan_slave", process_rescan_slave, "rescan_slave <ip_address> <rf_port"},
+	{"show_ant_list", process_show_ant_list, "show_ant_list"},
+	{"rescan_slave", process_rescan_slave, "rescan_slave <channel 1..8>"},
 	{"show_slave_status", process_show_slave_status, "show_slave_status <ip_address>"},
 	{"quit", process_quit, "quit"},
 	{"help", process_help, "help"}
@@ -59,25 +59,13 @@ struct cli_function	cli_function_list[] =
 void
 rescan_slave
 (
-	const char *ip_address, int rfport
+	int rfport
 )
 {
-	void * handle;
-	char iReader_ip[32];
+	IReader * handle = IReader::getInstance();;
 
-	memcpy((void *)iReader_ip, ip_address, strlen(ip_address));
 
-	iReader_ip[strlen(ip_address)] = 0;
-
-	DBG_PRINT(DEBUG_INFO, "Initialize iReader-998, please wait..."NL);
-	handle = IReaderApiInit((char *)iReader_ip, 6);
-
-	if (NULL == handle)
-	{
-		DBG_PRINT(DEBUG_WARNING, " iReader Init Fails, testing abort."NL);
-		return;
-	}
-	DBG_PRINT(DEBUG_INFO, "Initialize iReader-998 success, start rescanning on rf port %d..."NL, rfport );
+	DBG_PRINT(DEBUG_INFO, "Start rescanning on rf port %d..."NL, rfport );
 	INT32 status = IReaderApiSyncChannel(handle, rfport);
 
 	if (IREADER_SUCCESS == status)
@@ -268,14 +256,14 @@ process_rescan_slave
 	ArgvType  &argv
 )
 {
-	if (argv.size() != 3)
+	if (argv.size() != 2)
 	{
 		DBG_PRINT(DEBUG_WARNING, "%s"NL, pcMSG_INVALID_NUM_ARGS);
 		return -1;
 	}
 
-	int rfport = atoi(argv[2]);
-	rescan_slave(argv[1], rfport);
+	int rfport = atoi(argv[1]);
+	rescan_slave(rfport);
 	return 0;
 }
 
@@ -319,13 +307,13 @@ process_show_ant_list
 {
 	IReader * iReaderHandle;
 
-	if (argv.size() != 2)
+	if (argv.size() != 1)
 	{
 		DBG_PRINT(DEBUG_WARNING, "%s"NL, pcMSG_INVALID_NUM_ARGS);
 		return -1;
 	}
 	DBG_PRINT(DEBUG_INFO,"Initialize iReader %s, please wait..."NL, argv[1]);
-	iReaderHandle = IReader::getInstance();;
+	iReaderHandle = IReader::getInstance();
 
 	if ( 0 == iReaderHandle)
 	{

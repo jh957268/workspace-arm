@@ -648,7 +648,7 @@ int  IReader::IReaderGetAntMap(char *map)
 		return (IREADER_COMMAND_FAIL);
 	}
 
-	memmove(map, &m_rxMsg.data[0], 256);
+	memmove(map, &m_rxMsg.data[0], m_rxMsg.dataLen - 1);
     return (IREADER_SUCCESS);
 }
 
@@ -820,6 +820,7 @@ int IReader::MSG_receiveMsgObj(MsgObj *hMsg)
 		return RFID_CMD_FAIL;
 	}
 
+	//printf("data len = %d", hMsg->dataLen);
 	if ( MSG_MAX_DATA_LENGTH < hMsg->dataLen)
 	{
 		sprintf(debug_buffer, "Max Data length fail: datalen = %d",hMsg->dataLen );
@@ -844,6 +845,7 @@ int IReader::MSG_receiveMsgObj(MsgObj *hMsg)
 		//OutputDebugString(debug_buffer);
 		return (bytesRead);
 	}
+	//printf("read data len = %d", hMsg->dataLen - 1);
  	for(i=0; i<hMsg->dataLen - 1; i++)   // -1 because opcode is read where opcode is included in len
   	{
 		bytesRead = getChar(&hMsg->data[i]);

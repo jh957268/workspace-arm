@@ -10,6 +10,7 @@
 #include  "debug_print.h"
 #include  "iAgent_executor.h"
 #include "CSqlite.h"
+#include "CAntenna.h"
 
 #include <iostream>
 
@@ -205,7 +206,7 @@ void IAgent::iAgent_SetAntPort(iMsgObj *hMsg)
 void IAgent::iAgent_GetAntBitMap(iMsgObj *hMsg)
 {
 	uint8_t buff [264] = {HDR1, HDR2, 0x01, 1, 0xfe, 0xfd, 0x00, 0x00};
-	int antCount, antList[64];
+	//int antCount, antList[64];
 	int status = IREADER_SUCCESS;
 
 	buff[5] = ~buff[3];	
@@ -215,17 +216,17 @@ void IAgent::iAgent_GetAntBitMap(iMsgObj *hMsg)
 
 	IReader *handle = IReader::getInstance();
 
-	status = IReaderApiGetAntList(handle, &antCount, antList);
+	status = IReaderApiGetAntList(handle, &CAntenna::m_antcount, CAntenna::m_antlist);
 	//antCount = 2;      for testing
 	//antList[0] = 1;
 	//antList[1] = 9;
 
 	if (IREADER_SUCCESS == status)
 	{
-		for (int i = 0; i < antCount; i++)
+		for (int i = 0; i < CAntenna::m_antcount; i++)
 		{
 			// ant no start from 1
-			buff[6 + antList[i]] = 1;
+			buff[6 + CAntenna::m_antlist[i]] = 1;
 		}
 
 	}
@@ -275,7 +276,6 @@ void IAgent::iAgent_ReadTags(iMsgObj *hMsg)
 #endif
 }
 
-#define NL "\n"
 void IAgent::iAgent_ReadTagsRSSI(iMsgObj *hMsg)
 {
 	uint8_t buff [256] = {HDR1, HDR2, 0x00, 33, 0xff, 0xfd, 0x00, 0x00};
@@ -287,7 +287,7 @@ void IAgent::iAgent_ReadTagsRSSI(iMsgObj *hMsg)
 	int antID = (hMsg->data[0] << 8) | hMsg->data[1] ;
 	int pwr = (hMsg->data[2] << 8) | hMsg->data[3];    // e.g 2500
 
-	printf("antid = %d, power = %d\n", antID, pwr);
+	//printf("antid = %d, power = %d\n", antID, pwr);
 	
 	IReaderApiReadTagsMetaDataRSSI((void *)handle, antID, pwr, &ttagCount, (struct taginfo_rssi *)&buff[9]);
 

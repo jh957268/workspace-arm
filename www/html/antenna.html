@@ -37,10 +37,8 @@
 				<tr>			
 					<td>
 						<input type=button style="{width:120px;}" value="Refresh List" onClick="ProcessRefreshList()" />
-					</td>
-					<td>
 						<input type=button style="{width:120px;}" value="Rescan Channel" onClick="ProcessRescanChannel()" />
-						<select id="myHeader" size="1">
+						<select id="chanId" size="1">
 							<option value="1">1</option>
 							<option value="2">2</option>
 							<option value="3">3</option>
@@ -49,8 +47,37 @@
 							<option value="6">6</option>
 							<option value="7">7</option>
 							<option value="8">8</option>
-							<option value="9">All</option>							
+							<option value="9">All</option>	
+						</select>						
+					</td>
+					<td>
+						<label for="anten"><b>AntID:</b></label>
+						<input type="text" name="anten" id="AntID" value="1" size="4" />
+						<label for="power"><b>&nbsp;Power:</b></label>
+						<select id="powerId" size="1">
+							<option value="10">10dBm</option>
+							<option value="11">11dBm</option>
+							<option value="12">12dBm</option>
+							<option value="13">13dBm</option>
+							<option value="14">14dBm</option>
+							<option value="15">15dBm</option>
+							<option value="16">16dBm</option>
+							<option value="17">17dBm</option>
+							<option value="18">18dBm</option>
+							<option value="19">19dBm</option>
+							<option value="20">20dBm</option>
+							<option value="21">21dBm</option>
+							<option value="22">22dBm</option>
+							<option value="23">23dBm</option>
+							<option value="24">24dBm</option>
+							<option value="25" selected>25dBm</option>
+							<option value="26">26dBm</option>
+							<option value="27">27dBm</option>
+							<option value="28">28dBm</option>
+							<option value="29">29dBm</option>
+							<option value="30">30dBm</option>							
 						</select>
+						<input type=button style="width:120px" value="Set Ant. Power" style="color:black" onClick="ProcessSetAntPower(this.form)" />						
 					</td>
                 </tr>			
              </table>			
@@ -61,6 +88,25 @@
 
 <script>
 
+function ProcessSetAntPower(thform)
+{
+	var xhttp = new XMLHttpRequest();
+  	xhttp.onreadystatechange = function() {
+    	if (this.readyState == 4 && this.status == 200) {
+			//document.getElementById("result").innerHTML = this.responseText;
+			alert("Set Power " + this.responseText);
+    	}
+  	}
+	var antid;
+	antid = thform.anten.value;
+	var e = document.getElementById("powerId");
+	var power = e.options[e.selectedIndex].value;
+
+	//alert(antid + power);
+  	xhttp.open("GET", "cgi-bin/execgi-bin.cgi?setpower1-"+antid+"-"+power+"00", true);
+  	xhttp.send();
+}
+
 function ProcessRefreshList()
 {
 	loadAntennaMap();
@@ -68,6 +114,20 @@ function ProcessRefreshList()
 
 function ProcessRescanChannel()
 {
+	var xhttp = new XMLHttpRequest();
+  	xhttp.onreadystatechange = function() {
+    	if (this.readyState == 4 && this.status == 200) {
+			//document.getElementById("result").innerHTML = this.responseText;
+			alert("Set Power " + this.responseText);
+    	}
+  	}
+
+	var e = document.getElementById("chanId");
+	var value = e.options[e.selectedIndex].value;
+
+	//alert(value);
+  	xhttp.open("GET", "cgi-bin/execgi-bin.cgi?rescanchn-"+value, true);
+  	xhttp.send();
 }
 
  function loadDoc()
@@ -142,7 +202,7 @@ function displayAntennaMap(response)
 				}
 				else
 				{
-					cell.style.backgroundColor = "#D3D3D3";			
+					cell.style.backgroundColor = "#eeeedd";			
 				}
 				cell_idx++;				
 			}		

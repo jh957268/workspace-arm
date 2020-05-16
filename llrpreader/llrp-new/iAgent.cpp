@@ -205,32 +205,54 @@ void IAgent::iAgent_SetAntPort(iMsgObj *hMsg)
 
 void IAgent::iAgent_GetAntBitMap(iMsgObj *hMsg)
 {
-	uint8_t buff [264] = {HDR1, HDR2, 0x01, 1, 0xfe, 0xfd, 0x00, 0x00};
+	uint8_t buff [1280] = {HDR1, HDR2, 0x01, 1, 0xfe, 0xfd, 0x00, 0x00};
+	char pwr[8];
+	char pwrstr[1024];
+	
 	//int antCount, antList[64];
 	int status = IREADER_SUCCESS;
+	int i, len;
 
-	buff[5] = ~buff[3];	
-	buff[4] = ~buff[2];
 	buff[6] = hMsg->opCode;
 	memset(&buff[7], 0x0, 256);
 
 	IReader *handle = IReader::getInstance();
 
+	// should get the antenna list somewhere
+
 	status = IReaderApiGetAntList(handle, &CAntenna::m_antcount, CAntenna::m_antlist);
 	//antCount = 2;      for testing
 	//antList[0] = 1;
 	//antList[1] = 9;
+	pwrstr[0] = 0;
+	for (i = 0; i < (MAX_ANT_CNT - 1); i++)
+	{
+		sprintf(pwr, "%d;", CAntenna::m_antpower[i]/100);
+		strcat(pwrstr, pwr);
+	}
+	sprintf(pwr, "%d", CAntenna::m_antpower[MAX_ANT_CNT - 1]/100);
+	strcat(pwrstr, pwr);
+	
 
 	if (IREADER_SUCCESS == status)
 	{
-		for (int i = 0; i < CAntenna::m_antcount; i++)
+		for (i = 0; i < CAntenna::m_antcount; i++)
 		{
 			// ant no start from 1
 			buff[6 + CAntenna::m_antlist[i]] = 1;
 		}
 
 	}
-	sendMessage(buff, 263 );
+	len = 256 + 1 + 1 + strlen(pwrstr);    // 1 is the '~' char, 1 is msg code
+	buff[263] = '~';
+	
+	buff[2] = ((len >> 8) & 0xff);
+	buff[3] = (len & 0xff);
+	buff[5] = ~buff[3];	
+	buff[4] = ~buff[2];
+	sprintf((char *)&buff[264], "%s", pwrstr);
+	// printf("Total len = %d\n", len);
+	sendMessage(buff, 6 + len);
 
 }
 

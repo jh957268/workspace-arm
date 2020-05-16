@@ -180,32 +180,22 @@ int  IReader::IReaderGetSearchTimeout(int *timeout)
 }
 
 
-int  IReader::IReaderSetPowerLevel(int antid, int pwr, int doset)
+int  IReader::IReaderSetPowerLevel(int antID, int pwr)
 {
 	int ret;
-	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x04, 0xFF, 0xFB, 0x84, 0x00, 0x00, 0x00};  // use antenna porrt 0
+	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x05, 0xFF, 0xFA, 0x88, 0x00, 0x00, 0x00, 0x00}; 
 
-	buf[7] = (unsigned char)antid;
-	if ( pwr < 500)
-		pwr = 500;
-	else if (pwr > 3000)
-		pwr = 3000;
-	buf[8] = (unsigned char)(pwr >> 8);
-	buf[9] = (unsigned char)(pwr & 0xFF);
+	buf[7] = (antID >> 8) & 0xff;
+	buf[8] = antID & 0xff;
+	buf[9] = (pwr >> 8) & 0xff;
+	buf[10] = pwr & 0xff;
+
 	ret = sendmsg(buf);
-	if (m_rxMsg.opCode != 0x84)
+	if ((m_rxMsg.opCode != 0x88) || (ret != RFID_CMD_SUCCESS))
 	{
 		return (IREADER_COMMAND_FAIL);
 	}
-
-	if (ret == RFID_CMD_SUCCESS)
-	{
-		return (m_rxMsg.data[0]);
-	}
-	else
-	{
-		return (IREADER_COMMAND_FAIL);
-	}
+   return (IREADER_SUCCESS);
 }
 
 int  IReader::IReaderSetWritePowerLevel(int pwr)
@@ -718,11 +708,16 @@ int  IReader::IReaderGetScanAntList(int *antCount, int *antList)
 
 int  IReader::IReaderRescanSlave(Int32 chn)
 {
-    // retrieve the list from mux again
-    Int32 error = 0;
-    
-    //error = RescanSlave(chn);
-    return (error);
+	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x02, 0xFF, 0xFD, 0x95, 0x00}; 
+
+	buf[7] = (chn &  0xff);
+
+	int ret = sendmsg(buf);
+	if ((m_rxMsg.opCode != 0x95) || (ret != RFID_CMD_SUCCESS))
+	{
+		return (IREADER_COMMAND_FAIL);
+	}
+   return (IREADER_SUCCESS);
 }
 
 int  IReader::IReaderCreateMutex(void)

@@ -267,7 +267,51 @@ int main(void)
 		printf("%s", recordrbuf);
 		IReaderApiClose(handle);
 		return 0;
-	}	
+	}
+	else if (!strncmp(cgi_env, "rescanchn", 9))
+	{
+		int channel = cgi_env[10] - 0x30;
+
+		ret = IReaderApiScanSlave(handle, channel);
+
+		if (IREADER_SUCCESS != ret)
+		{
+			printf("fail");
+		}
+		else
+		{
+			printf("Success");
+		}
+		IReaderApiClose(handle);
+		return 0;
+	}
+	else if (!strncmp(cgi_env, "setpower1", 9))
+	{
+		int channel;
+		int ant_id, power;
+		char *tmp1, *tmp2;
+		char tmpbuff[128];
+		// Ireader read tags once
+
+		strcpy(tmpbuff, cgi_env);
+		tmp1 = &tmpbuff[10];
+		tmp2 = strchr(tmp1, '-');
+		*tmp2++ = 0;
+		ant_id = atoi(tmp1);
+		power = atoi(tmp2);
+		ret = IReaderApiSetPowerLevel(handle, ant_id, power);
+
+		if (IREADER_SUCCESS != ret)
+		{
+			printf("fail");
+		}
+		else
+		{
+			printf("Success");
+		}
+		IReaderApiClose(handle);
+		return 0;
+	}
 	else if (!strcmp(cgi_env, "dbtag=1"))
 	{
 		int ttagCount;

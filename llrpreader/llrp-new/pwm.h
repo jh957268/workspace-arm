@@ -5,6 +5,9 @@
 #include "OwTask.h"
 #include "OwSemaphore.h"
 
+#define MAX_DUTY	2500000
+#define MIN_DUTY	1500000
+
 class PWM:
 	public OwTask
 {
@@ -25,6 +28,8 @@ class PWM:
     private:
         static  PWM* spInstance; ///< Points to the instance
         FILE    *fp;
+		int 	duty;
+		int 	step;
 
 	    static	int		semaphoreTake(int timeout);
 

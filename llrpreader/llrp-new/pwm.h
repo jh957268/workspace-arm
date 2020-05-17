@@ -21,13 +21,12 @@ class PWM:
 
 		void 	do_open();
 		void 	do_close();
-
+	    static	int		semaphoreGive();
     private:
         static  PWM* spInstance; ///< Points to the instance
         FILE    *fp;
 
 	    static	int		semaphoreTake(int timeout);
-	    static	int		semaphoreGive();
 
 	    static OwSemaphore 		*m_hSem;
  };

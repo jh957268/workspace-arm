@@ -11,6 +11,7 @@
 #include  "iAgent_executor.h"
 #include "CSqlite.h"
 #include "CAntenna.h"
+#include "pwm.h"
 
 #include <iostream>
 
@@ -485,6 +486,10 @@ int IAgent::iAgent_CallBack(int fd, uint8_t *tReadBuf, int itReadCnt, int antID)
 				Sqlite_db->user_tag_action(epcdata, antID, &action);
 				
 				// Now process the action according
+				if (action == 1)    // open gate
+				{
+					PWM::semaphoreGive();  // too many give
+				}
 			
 			}
 			else

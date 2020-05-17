@@ -19,6 +19,8 @@ PWM::PWM():
     fclose(fp);
 
 	m_hSem = new OwSemaphore(1);
+	duty = MIN_DUTY;
+	step = 50000;
 }
 
 PWM::~PWM()
@@ -79,15 +81,14 @@ PWM::main( OwTask *)
 void
 PWM::do_open(void)
 {
-	int duty = 1500000;
-
 	enable(1);
 	//polarity("normal");
 	OwTask::sleep(500);
 
-	for (int i = 0; i < 21; i++)
+	while (duty < MAX_DUTY)
 	{
-		duty_cycle(duty + (i * 50000));
+		duty_cycle(duty);
+		duty += step;
 		OwTask::sleep(200);
 	}
 	enable(0);
@@ -96,17 +97,16 @@ PWM::do_open(void)
 void
 PWM::do_close(void)
 {
-	int duty = 2500000;
-
 	enable(1);
 	//polarity("normal");
 	OwTask::sleep(500);
-
-	for (int i = 0; i < 21; i++)
+	
+	while (duty > MIN_DUTY)
 	{
-		duty_cycle(duty - (i * 50000));
+		duty_cycle(duty);
+		duty -= step;
 		OwTask::sleep(200);
-	}
+	}	
 	enable(0);
 }
 

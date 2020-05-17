@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
  #include <sstream>
+ #include <unistd.h>
 #include "CWatchDogFeeder.h"
 #include "iReaderapi.h"
 #include "llrp_MntServer.h"
@@ -390,9 +391,33 @@ VALUES('Gulha', 55, 'Problems');
 	}
 	GPIO::getInstance(0, 11);
 	GPIO::getInstance(1, 74);
+
+#if 0
 	PWM::getInstance()->period(20000000);   // 20ms, 50Hz
 	//PWM::getInstance()->duty_cycle(2400000);   // 2.4ms, 12% will drive to 180 degree
-	PWM::getInstance()->duty_cycle(400000);   // 0.4ms, 2% will drive to 0 degree
+	PWM::getInstance()->duty_cycle(1500000);   // 0.4ms, 2% will drive to 0 degree
+	PWM::getInstance()->polarity("normal");
+	PWM::getInstance()->enable(1);
+	PWM::getInstance()->polarity("normal");
+	sleep(1);
+	int duty = 1500000;
+	for (int i = 0; i < 11; i++)
+	{
+		PWM::getInstance()->duty_cycle(duty + (i * 100000));
+		sleep(1);
+	}
+
+	duty = 2500000;
+	for (int i = 0; i < 11; i++)
+	{
+		PWM::getInstance()->duty_cycle(duty - (i * 100000));
+		sleep(1);
+	}
+	//PWM::getInstance()->enable(0);
+#endif
+
+	PWM *pPWM = PWM::getInstance();
+	pPWM->run();
 
 
 	if (LLRP_MntServer::initRegistry() == -1)

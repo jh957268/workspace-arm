@@ -259,7 +259,7 @@ CSqlite::user_tag_action(char *tag, int antid, int *action)
 	    } else {
 	       fprintf(stdout, "Record updated successfully\n");
 	    }
-		*action = parm[2];
+		*action = parm[1];
 	}
 	
 	return (rc);

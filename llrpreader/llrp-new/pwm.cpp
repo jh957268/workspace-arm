@@ -21,6 +21,7 @@ PWM::PWM():
 	m_hSem = new OwSemaphore(1);
 	duty = MIN_DUTY;
 	step = 50000;
+	pmDoCloseTimer = 0;
 }
 
 PWM::~PWM()
@@ -59,9 +60,11 @@ PWM::main( OwTask *)
 	}
 	enable(0);
 #endif
-
+	enable(1);
 	do_open();
-	do_close();
+	// do_close();
+
+	pmDoCloseTimer = new OwTimer(this,"PWMTimer");
 
 	while (1)
 	{
@@ -73,17 +76,29 @@ PWM::main( OwTask *)
 			OwTask::sleep(2);
 			continue;
 		}
+
+		pmDoCloseTimer->cancel();
 		do_open();
-		do_close();
+		pmDoCloseTimer->start( PWM_DOCLOSE_TIMEOUT );
+
+		//sleep();
+		//OwTask::sleep(2000);
+		//pmDoCloseTimer->cancel();
+
+		//pmDoCloseTimer->start( PWM_DOCLOSE_TIMEOUT );
+		// do_close();
 	}
 }
 
 void
 PWM::do_open(void)
 {
-	enable(1);
+	// enable(1);
 	//polarity("normal");
 	OwTask::sleep(500);
+
+	printf("current duty cycle = %d\n", duty);
+	duty_cycle(duty);
 
 	while (duty < MAX_DUTY)
 	{
@@ -91,13 +106,13 @@ PWM::do_open(void)
 		duty += step;
 		OwTask::sleep(200);
 	}
-	enable(0);
+	//enable(0);
 }
 
 void
 PWM::do_close(void)
 {
-	enable(1);
+	//enable(1);
 	//polarity("normal");
 	OwTask::sleep(500);
 	
@@ -107,7 +122,7 @@ PWM::do_close(void)
 		duty -= step;
 		OwTask::sleep(200);
 	}	
-	enable(0);
+	//enable(0);
 }
 
 void
@@ -214,5 +229,44 @@ PWM::semaphoreGive()
 	error = m_hSem->give();
 
 	return (error);
+}
+
+//=============================================================================
+//handleTimeout
+
+void
+PWM::handleTimeout
+(
+	OwTimer*  timer
+)
+{
+	do_close();
+
+#if 0
+	switch ( meInputVoltageState )
+	{
+		case  eOVER_VOLT:
+		SPrintf( "eOVER_VOLT - alarm raised"NL );
+		meInputVoltageState = eOVER_VOLT_ALARM;
+		// raise Alarm
+		setAlarmWithId( INPUT_VOLTAGE_FAILURE, RAISE );
+		break;
+
+		case  eUNDER_VOLT:
+		SPrintf( "eUNDER_VOLT_ALARM - alarm raised"NL );
+		meInputVoltageState = eUNDER_VOLT_ALARM;
+		// raise Alarm
+		setAlarmWithId( INPUT_VOLTAGE_FAILURE, RAISE );
+		break;
+
+		default:
+		SPrintf( "Illegal state when timer elapsed"NL );
+		break;
+	}
+
+	FlightRecorder::getInstance()->logError( "Input Voltage Failure - %7.3f"NL,
+												mfLastInputVoltage );
+#endif
+
 }
 

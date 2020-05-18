@@ -112,7 +112,7 @@ IAgent_Executor::main( OwTask * )
 					executor_start_flag = 0;
 					break;
 				}
-				OwTask::sleep(10);
+				OwTask::sleep(100);
 			}
 		}
 	}

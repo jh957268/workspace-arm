@@ -20,8 +20,9 @@ PWM::PWM():
 
 	m_hSem = new OwSemaphore(1);
 	duty = MIN_DUTY;
-	step = 50000;
+	step = 25000;
 	pmDoCloseTimer = 0;
+	m_hMutex = 	new OwMutex();
 }
 
 PWM::~PWM()
@@ -95,18 +96,20 @@ PWM::do_open(void)
 {
 	// enable(1);
 	//polarity("normal");
+	PWMTakeMutex();
 	OwTask::sleep(500);
 
-	printf("current duty cycle = %d\n", duty);
-	duty_cycle(duty);
-
-	while (duty < MAX_DUTY)
+	//printf("current duty cycle = %d\n", duty);
+	// duty_cycle(duty);
+	while (duty <= MAX_DUTY)
 	{
-		duty_cycle(duty);
+		//printf("open current duty cycle = %d\n", duty);
 		duty += step;
-		OwTask::sleep(200);
+		duty_cycle(duty);
+		OwTask::sleep(100);
 	}
 	//enable(0);
+	PWMGiveMutex();
 }
 
 void
@@ -114,14 +117,17 @@ PWM::do_close(void)
 {
 	//enable(1);
 	//polarity("normal");
+	PWMTakeMutex();
 	OwTask::sleep(500);
 	
-	while (duty > MIN_DUTY)
+	while (duty >= MIN_DUTY)
 	{
-		duty_cycle(duty);
+		// printf("close current duty cycle = %d\n", duty);
 		duty -= step;
-		OwTask::sleep(200);
-	}	
+		duty_cycle(duty);
+		OwTask::sleep(100);
+	}
+	PWMGiveMutex();
 	//enable(0);
 }
 
@@ -240,6 +246,7 @@ PWM::handleTimeout
 	OwTimer*  timer
 )
 {
+
 	do_close();
 
 #if 0
@@ -270,3 +277,20 @@ PWM::handleTimeout
 
 }
 
+int  PWM::PWMTakeMutex(void)
+{
+	int error = 0;
+
+	m_hMutex->take( PI_FOREVER );
+
+	return (error);
+}
+
+int  PWM::PWMGiveMutex(void)
+{
+	int error = 0;
+
+	m_hMutex->give();
+
+	return (error);
+}

@@ -70,10 +70,13 @@ CSqlite::callback(void *NotUsed, int argc, char **argv, char **azColName)
 {
    int i;
    int *parm = (int *)NotUsed;
-   
+
+#if 0   
    for(i = 0; i<argc; i++) {
       printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
    }
+#endif
+   
    if (NotUsed)
    {
 	   //*(int *)NotUsed = atoi(argv[0]);
@@ -83,7 +86,7 @@ CSqlite::callback(void *NotUsed, int argc, char **argv, char **azColName)
 		   //parm[1] = atoi(argv[1]);
 	   }
    }
-   printf("\n");
+  // printf("\n");
    return 0;
 }
 

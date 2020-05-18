@@ -45,7 +45,29 @@ OwTimer::OwTimer
 	strncpy( mcTimerName, pcName, 32 );
 	// initialize the pthread attribute
 	pthread_attr_init( &mpThreadAttr );
+
+	// pthread_attr_setstacksize( &mpThreadAttr, 32768 );
+
+	// Set schedule policy
+	// if SCHED_RR is not supported, default SCHED_OTHER will be used
+	// pthread_attr_setschedpolicy( &mpThreadAttr, SCHED_RR );
+
 	pthread_attr_setinheritsched( &mpThreadAttr, PTHREAD_EXPLICIT_SCHED );
+
+#if 0
+	// Set detach state. the thread resources are immediately freed when it
+	// terminates
+	//pthread_attr_setdetachstate( &m_pthreadAttr, PTHREAD_CREATE_DETACHED );
+	pthread_attr_setdetachstate( &mpThreadAttr, PTHREAD_CREATE_DETACHED );
+
+	// Set priority
+	// priority does matter only when the thread schedule policy is
+	// either SCHED_RR or SCHED_FIFO
+	pthread_attr_getschedparam( &mpThreadAttr, &m_schedParam );
+	m_schedParam.sched_priority = 50 + 3;
+	pthread_attr_setschedparam( &mpThreadAttr, &m_schedParam );
+	pthread_attr_setscope( &mpThreadAttr, PTHREAD_SCOPE_SYSTEM );
+#endif
 
 	// Mutex used for condition wait
 	pthread_mutex_init( &mMutex, NULL ); // 'fast' mutex
@@ -105,18 +127,25 @@ OwTimer::threadStart
 
 	struct sched_param SchedParam;
 
-	printf( "Timer started, PID = %d, TID = %lu"NL, getpid(), pthread_self() );
+	printf( "Timer started, PID = %d, TID = %lu" NL, getpid(), pthread_self() );
+
+	// printf("Timer started---\n");
 
 	SchedParam.sched_priority = sched_get_priority_max(SCHED_RR);
+	// SchedParam.sched_priority = 0;
+	// printf("After\n");
 
 	if ( sched_setscheduler( getpid(), SCHED_RR, &SchedParam) == -1 )
 	{
-		printf( "OwTimer::threadStart set priority failed"NL );
+		printf( "OwTimer::threadStart set priority failed" NL );
 	}
-//	else
-//	{
-//		printf( "OwTimer::threadStart set priority successfully"NL );
-//	}
+	//else
+	//{
+	//	printf( "OwTimer::threadStart set priority successfully" NL );
+	//}
+
+	// printf("After---\n");
+
 
 	while ( ! shutdown )
 	{
@@ -145,7 +174,12 @@ OwTimer::threadStart
 			{
 				timerPtr->mbIsStarted = false;
 				// invoke the timer callback function
+				//printf("Timer expired, call handler!\n");
 				timerPtr->mpHandler->handleTimeout( timerPtr );
+			}
+			else
+			{
+				//printf("Timer Canceled!\n");
 			}
 
 			pthread_mutex_unlock( &(timerPtr->mMutex) );
@@ -220,6 +254,7 @@ OwTimer::cancel()
 		pthread_mutex_lock( &mMutex );
 		mbIsStarted = false;
 		pthread_cond_signal( &mTimerCond );
+		//printf( "Timer %s did canceled"NL, mcTimerName );
 		pthread_mutex_unlock( &mMutex );
 	}
 

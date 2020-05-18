@@ -5,6 +5,7 @@
 #include "OwTask.h"
 #include "OwSemaphore.h"
 #include "OwTimer.h"
+#include "OwMutex.h"
 
 
 #define MAX_DUTY	2500000
@@ -40,7 +41,10 @@ class PWM:
 	    static	int		semaphoreTake(int timeout);
 
 	    static OwSemaphore 		*m_hSem;
+		OwMutex					*m_hMutex;
 		void	handleTimeout( OwTimer*  timer );
+		int		PWMTakeMutex(void);
+		int 	PWMGiveMutex(void);
  };
 
 

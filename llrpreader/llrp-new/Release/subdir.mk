@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../CAntenna.cpp \
 ../CSqlite.cpp \
 ../CWatchDogFeeder.cpp \
 ../cli.cpp \
@@ -18,6 +19,7 @@ CPP_SRCS += \
 ../pwm.cpp 
 
 OBJS += \
+./CAntenna.o \
 ./CSqlite.o \
 ./CWatchDogFeeder.o \
 ./cli.o \
@@ -32,6 +34,7 @@ OBJS += \
 ./pwm.o 
 
 CPP_DEPS += \
+./CAntenna.d \
 ./CSqlite.d \
 ./CWatchDogFeeder.d \
 ./cli.d \

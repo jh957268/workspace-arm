@@ -166,6 +166,9 @@ OwTimer::threadStart
 			tout.tv_sec  = secs;
 			tout.tv_nsec = msecs * 1000000; // nanoseconds
 
+			time_t T= time(NULL);
+			struct  tm tm = *localtime(&T);
+			printf("%02d:%02d:%02d Timer Wait timeour!\n", tm.tm_hour, tm.tm_min, tm.tm_sec);
 			// need to wait till timeout expires or cancel from parent thread
 			retcode = pthread_cond_timedwait( &(timerPtr->mTimerCond),
 					 &(timerPtr->mMutex), &tout );
@@ -174,12 +177,17 @@ OwTimer::threadStart
 			{
 				timerPtr->mbIsStarted = false;
 				// invoke the timer callback function
-				//printf("Timer expired, call handler!\n");
+				T= time(NULL);
+				tm = *localtime(&T);
+				printf("%02d:%02d:%02d Timer expired, call handler!\n", tm.tm_hour, tm.tm_min, tm.tm_sec);
 				timerPtr->mpHandler->handleTimeout( timerPtr );
 			}
 			else
 			{
 				//printf("Timer Canceled!\n");
+				T= time(NULL);
+				tm = *localtime(&T);
+				printf("%02d:%02d:%02d Timer canceled!\n", tm.tm_hour, tm.tm_min, tm.tm_sec);
 			}
 
 			pthread_mutex_unlock( &(timerPtr->mMutex) );
@@ -227,8 +235,10 @@ OwTimer::start
 
 	if ( mbThreadIsCreated && ! mbIsStarted )
 	{
+		time_t T= time(NULL);
+		struct  tm tm = *localtime(&T);
 		mbIsStarted = true;
-		printf( "Timer %s started"NL, mcTimerName );
+		printf( "%02d:%02d:%02d Timer %s started"NL, tm.tm_hour, tm.tm_min, tm.tm_sec, mcTimerName );
 		mTimeout_ms = timeout_ms;
 
 		// signal the thread
@@ -250,7 +260,10 @@ OwTimer::cancel()
 	// If the timer is running, signal to cancel the timer
 	if ( mbIsStarted )
 	{
-		printf( "Timer %s canceled"NL, mcTimerName );
+		time_t T= time(NULL);
+		struct  tm tm = *localtime(&T);
+		
+		printf( "%02d:%02d:%02d Timer %s canceled"NL, tm.tm_hour, tm.tm_min, tm.tm_sec, mcTimerName );
 		pthread_mutex_lock( &mMutex );
 		mbIsStarted = false;
 		pthread_cond_signal( &mTimerCond );

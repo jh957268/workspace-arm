@@ -4,12 +4,17 @@
 #include <stdio.h>
 #include "OwTask.h"
 #include "OwSemaphore.h"
+#include "OwTimer.h"
+
 
 #define MAX_DUTY	2500000
 #define MIN_DUTY	1500000
 
+#define  PWM_DOCLOSE_TIMEOUT  10000
+
 class PWM:
-	public OwTask
+	public OwTask,
+	public OwTimer::Handler
 {
     public:
 		        PWM();
@@ -30,10 +35,12 @@ class PWM:
         FILE    *fp;
 		int 	duty;
 		int 	step;
+		OwTimer		*pmDoCloseTimer;			// Timeout to perform closing the gate
 
 	    static	int		semaphoreTake(int timeout);
 
 	    static OwSemaphore 		*m_hSem;
+		void	handleTimeout( OwTimer*  timer );
  };
 
 

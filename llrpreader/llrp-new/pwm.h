@@ -10,7 +10,7 @@
 #define MAX_DUTY	2500000
 #define MIN_DUTY	1500000
 
-#define  PWM_DOCLOSE_TIMEOUT  10000
+#define  PWM_DOCLOSE_TIMEOUT  5000
 
 class PWM:
 	public OwTask,

@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../CCLI.cpp \
 ../iReader.cpp \
 ../iReaderapi.cpp \
 ../main.cpp \
@@ -11,6 +12,7 @@ CPP_SRCS += \
 ../post_var.cpp 
 
 OBJS += \
+./CCLI.o \
 ./iReader.o \
 ./iReaderapi.o \
 ./main.o \
@@ -18,6 +20,7 @@ OBJS += \
 ./post_var.o 
 
 CPP_DEPS += \
+./CCLI.d \
 ./iReader.d \
 ./iReaderapi.d \
 ./main.d \

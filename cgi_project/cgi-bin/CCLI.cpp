@@ -21,6 +21,7 @@ struct cli_function	cli_function_list[] =
 	{"rescanchn", CCLI::process_rescanchn, "rescanchn <1..8>"},
 	{"getregion", CCLI::process_getregion, "getregion"},
 	{"startstreamtag", CCLI::process_startstreamtag, "Start straming tags"},
+	{"stopstreamtag", CCLI::process_stopstreamtag, "Stop straming tags"},	
 	{"readtagonce", CCLI::process_readtagonce, "read tags once"},	
 	{"getsearchtimeout", CCLI::process_getsearchtimeout, "getsearchtimeout"}		
 };
@@ -91,6 +92,21 @@ CCLI::process_readtagonce(ArgvType  &argv)
 			
 	}
 	printf("%s", recordrbuf);
+	return 0;
+}
+
+int
+CCLI::process_stopstreamtag(ArgvType  &argv)
+{
+	int ret = IReaderApiStartExecutor(handle, 0, 0);
+	if (ret != 0)
+	{
+		printf("Command Fail");
+	}
+	else
+	{
+		printf("ok");
+	}
 	return 0;
 }
 

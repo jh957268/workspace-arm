@@ -1,5 +1,6 @@
 #include "pwm.h"
 #include "stdlib.h"
+#include <time.h>
 
 using namespace std;
 
@@ -101,6 +102,9 @@ PWM::do_open(void)
 
 	//printf("current duty cycle = %d\n", duty);
 	// duty_cycle(duty);
+	time_t T= time(NULL);
+	struct  tm tm = *localtime(&T);
+	printf("%02d:%02d:%02d do_open duty = %d!\n", tm.tm_hour, tm.tm_min, tm.tm_sec, duty);	
 	while (duty <= MAX_DUTY)
 	{
 		//printf("open current duty cycle = %d\n", duty);
@@ -108,6 +112,9 @@ PWM::do_open(void)
 		duty_cycle(duty);
 		OwTask::sleep(100);
 	}
+	T= time(NULL);
+	tm = *localtime(&T);
+	printf("%02d:%02d:%02d end do_open duty = %d!\n", tm.tm_hour, tm.tm_min, tm.tm_sec, duty);		
 	//enable(0);
 	PWMGiveMutex();
 }
@@ -119,7 +126,10 @@ PWM::do_close(void)
 	//polarity("normal");
 	PWMTakeMutex();
 	OwTask::sleep(500);
-	
+
+	time_t T= time(NULL);
+	struct  tm tm = *localtime(&T);
+	printf("%02d:%02d:%02d do_close duty = %d!\n", tm.tm_hour, tm.tm_min, tm.tm_sec, duty);	
 	while (duty >= MIN_DUTY)
 	{
 		// printf("close current duty cycle = %d\n", duty);
@@ -127,6 +137,9 @@ PWM::do_close(void)
 		duty_cycle(duty);
 		OwTask::sleep(100);
 	}
+	T= time(NULL);
+	tm = *localtime(&T);
+	printf("%02d:%02d:%02d end do_close duty = %d!\n", tm.tm_hour, tm.tm_min, tm.tm_sec, duty);	
 	PWMGiveMutex();
 	//enable(0);
 }

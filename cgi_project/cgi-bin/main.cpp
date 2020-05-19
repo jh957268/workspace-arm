@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include "CCLI.h"
 
 #include "iReaderapi.h"
 char antmap[1280];
@@ -19,8 +20,44 @@ int main(void)
 	int ret;
 	int region;
 	const char *cgi_env = getenv("QUERY_STRING");
-	//const char *cgi_env = "readtag=6-1-2500";
+	//const char *cgi_env = "seltag&1&0";
 	// parse the cgi_env
+	char cgi_buffer[128];
+	
+	sprintf(cgi_buffer, "%s", cgi_env);
+	
+	for (unsigned int i = 0; i < strlen(cgi_buffer); i++)
+	{
+		if (cgi_buffer[i] == '&')
+		{
+			cgi_buffer[i] = ' ';
+		}
+	}
+	std::string cgi_string(cgi_buffer);
+
+#if 1
+
+	CCLI::handle = IReaderApiInit();
+
+
+	if (NULL == CCLI::handle)
+	{
+		printf("Create IReader Fails");
+		exit(-1);
+	}
+	//printf("connecting...\n");
+	ret = IReaderApiConnect(CCLI::handle, (char *)"127.0.0.1");
+	if (IREADER_SUCCESS != ret)
+	{
+		printf("Connect IReader Fails");
+		IReaderApiClose(CCLI::handle);
+		exit(-1);
+	}
+#endif
+	CCLI::process_cli_command(cgi_string);
+	IReaderApiClose(CCLI::handle);
+	return 0;
+	
 
 #if 0
 	if (cgi_env)

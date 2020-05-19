@@ -103,7 +103,7 @@ function ProcessSetAntPower(thform)
 	var power = e.options[e.selectedIndex].value;
 
 	//alert(antid + power);
-  	xhttp.open("GET", "cgi-bin/execgi-bin.cgi?setpower1-"+antid+"-"+power+"00", true);
+  	xhttp.open("GET", "cgi-bin/execgi-bin.cgi?setantpower&"+antid+"&"+power+"00", true);
   	xhttp.send();
 }
 
@@ -126,7 +126,7 @@ function ProcessRescanChannel()
 	var value = e.options[e.selectedIndex].value;
 
 	//alert(value);
-  	xhttp.open("GET", "cgi-bin/execgi-bin.cgi?rescanchn-"+value, true);
+  	xhttp.open("GET", "cgi-bin/execgi-bin.cgi?rescanchn&"+value, true);
   	xhttp.send();
 }
 
@@ -249,7 +249,7 @@ function displayAntennaMap(response)
       displayAntennaMap(this.responseText);
     }
   }
-  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?antmap=1", true);
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?antmap", true);
   xhttp.send();
  }
 

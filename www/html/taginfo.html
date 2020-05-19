@@ -163,15 +163,19 @@ function startTagInfoSSe()
 function stopTagInfoSSe()
 {
   // alert("Close SSE now!");
+  // Doing stopstreamtag is no use (has no effect) since it does not close the agent socket cteated from startstreamtag command
+  // However, without calling stopstreamtag, the source.close even close the socket, the executor_task still does reading tag and if no tag is detected
+  // it does know the socket is closed, since it does not attempt to send the tag info. We should check if the socket is closed instead of using the ::send call
+  // return -1 to indicate the socket is closed.  
   
-  //var xhttp = new XMLHttpRequest();
-  //xhttp.onreadystatechange = function() {
-    //if (this.readyState == 4 && this.status == 200) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
          // do nothing
-    //}
-  //}
-  //xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=0", true);
-  //xhttp.send();
+    }
+  }
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?stopstreamtag", true);
+  xhttp.send();
  
 	if (isOpenOnce == true) 
 	{

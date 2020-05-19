@@ -107,7 +107,7 @@ function LoadDBTag()
 	   }
     }
   }
-  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?seltag=1-"+tagCount, true);
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?seltag&0&"+tagCount, true);
   xhttp.send();
  }
  
@@ -125,7 +125,7 @@ function LoadDBTag()
          // do nothing
     }
   }
-  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=2", true);
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?starttagtodb", true);
   xhttp.send();
    isOpenDB = true;
 }
@@ -143,7 +143,7 @@ function stopTagInfoDB()
          // do nothing
     }
   }
-  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=3", true);
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?stoptagtodb", true);
   xhttp.send();
   isOpenDB = false;
   

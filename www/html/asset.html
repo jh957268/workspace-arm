@@ -68,11 +68,11 @@
 				</tr>
             	<tr>
                     <td class="label">Asset EPC Data</label></td>
-					<td class="input" ><input type="text" name="tagval" id="tagvalid" </td>
+					<td class="input" ><input type="text" name="tagval" id="tagvalid" size="28" </td>
                 </tr>
                 <tr>
                     <td class="label">Asset Location(AntID)</td>
-                    <td class="input"><input type="text" name="antloc" id="antlocid"></td>
+                    <td class="input"><input type="text" name="antloc" id="antlocid" size="6"></td>
                 </tr>
                 <tr>
                     <td class="label">Action Upon Detect</td>
@@ -85,9 +85,10 @@
 					</td>
                 </tr>					
                 <tr>
-                    <td ><input type=button style="{width:120px;}" value="insert tag" onClick="insertEPC()" /></td>
-                    <td class="submit"><input type="submit" value="Insert" name="submit" style="color:black"></td>
-                </tr>		
+					<td></td>
+                    <td class="submit"><input type=button style="{width:120px;}" value="insert tag" onClick="insertEPC(this.form)" /></td>
+                    <!-- <td class="submit"><input type="submit" value="Insert" name="submit" style="color:black"></td> -->
+	                </tr>		
             </table>
         </td>
     </tr>	
@@ -96,15 +97,32 @@
 
 <script>
 
-function insertEPC()
+function insertEPC(thform)
 {
-	var data = new FormData();
-	data.set('Foo',1)
-	data.set('Bar','boo')
+	//var data = new FormData();
+	//data.set('Foo',1)
+	//data.set('Bar','boo')
 
-	var request = new XMLHttpRequest();
-	request.open("POST", "/cgi-bin/sse.cgi?inserttag", true);
-	request.send(data)
+	//var request = new XMLHttpRequest();
+	//request.open("POST", "/cgi-bin/sse.cgi?inserttag", true);
+	//request.send(data)
+	var xhttp = new XMLHttpRequest();
+  	xhttp.onreadystatechange = function() {
+    	if (this.readyState == 4 && this.status == 200) {
+			//document.getElementById("result").innerHTML = this.responseText;
+			alert("Insert Tag " + this.responseText);
+    	}
+  	}
+	var antid;
+	antid = thform.antloc.value;
+	var e = document.getElementById("actionid");
+	var action = e.options[e.selectedIndex].value;
+	var epc = thform.tagval.value;
+
+	//alert(antid + power);
+	// alert("cgi-bin/execgi-bin.cgi?inserttag&"+epc+"&"+antid+"&"+action);
+  	xhttp.open("GET", "cgi-bin/execgi-bin.cgi?inserttag&"+epc+"&"+antid+"&"+action, true);
+  	xhttp.send();	
 }
 
 var tagCount = 0; 
@@ -159,7 +177,8 @@ function LoadDBTag()
 	   }
     }
   }
-  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?seltag=2-"+tagCount, true);
+  // xhttp.open("GET", "cgi-bin/execgi-bin.cgi?seltag=2-"+tagCount, true);
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?seltag&1&"+tagCount, true);
   xhttp.send();
  }
  
@@ -177,7 +196,7 @@ function LoadDBTag()
          // do nothing
     }
   }
-  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=4", true);
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?startmonitor", true);
   xhttp.send();
    isOpenDB = true;
 }
@@ -195,7 +214,7 @@ function stopTagInfoDB()
          // do nothing
     }
   }
-  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=5", true);
+  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?stoptmonitor", true);
   xhttp.send();
   isOpenDB = false;
   

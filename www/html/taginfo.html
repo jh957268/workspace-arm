@@ -146,7 +146,7 @@ function startTagInfoSSe()
 	 //alert("Start SSE now!");
 	if(typeof(EventSource) !== "undefined") 
 	{
-		source = new EventSource("/cgi-bin/execgi-bin.cgi?readtag=1");
+		source = new EventSource("/cgi-bin/execgi-bin.cgi?startstreamtag");
 
 		source.onmessage = function(event) 
 		{
@@ -204,7 +204,7 @@ function readTagInfoOnce(thform)
 	var power = e.options[e.selectedIndex].value;	
 
 	//alert(antid + power+"00"); 2500 is 25dBm
-  	xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtag=6-"+antid+"-"+power+"00", true);
+  	xhttp.open("GET", "cgi-bin/execgi-bin.cgi?readtagonce&"+antid+"&"+power+"00", true);
   	xhttp.send();
 
 }

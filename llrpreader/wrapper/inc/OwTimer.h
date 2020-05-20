@@ -78,6 +78,10 @@ class OwTimer
 		 *	  FALSE if the timer is not running
 		 */
 		bool hasStarted() { return mbIsStarted; }
+		
+		void suspend() {suspended = true; }
+		bool hasSuspended() { return suspended; }
+		bool hasRun()		{ return running; }
 
 	protected:
 
@@ -108,11 +112,14 @@ class OwTimer
 		pthread_cond_t	mTimerCond;	/**< condition variable to implement
 											 suspend and resume operation */
 				bool	mbIsStarted;		/**< task suspend status */
+				char	pad[7];
 				PiTime	mTimeout_ms;		/**< timeout period in millisecs */
 				sem_t	mSemaphore;		/**< semaphore to start thread */
 				bool	mbThreadIsCreated;	/**< command to exit thread
 											 0 = NOT RUNNING/STOP
 											 1 = RUNNING */
+				bool	suspended;			/* suspend the current timeout opration if already started */
+				bool	running;
 
 				char	mcTimerName[ 32 ];
 

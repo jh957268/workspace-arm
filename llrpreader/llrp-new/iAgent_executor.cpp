@@ -27,6 +27,8 @@ IAgent_Executor::IAgent_Executor():
 
 }
 
+// The Executor will not know if the socket is already closed if no tag is detected since it does not call ::send function. In this case, the executor 
+// will keep reading the antenna even the remote SSE agent has already stopped.
 void
 IAgent_Executor::main( OwTask * )
 {

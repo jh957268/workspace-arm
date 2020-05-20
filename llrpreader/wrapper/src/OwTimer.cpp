@@ -176,6 +176,8 @@ OwTimer::threadStart
 			if ( retcode == ETIMEDOUT )
 			{
 				timerPtr->mbIsStarted = false;
+				timerPtr->running = true;
+				
 				// invoke the timer callback function
 				T= time(NULL);
 				tm = *localtime(&T);
@@ -238,6 +240,8 @@ OwTimer::start
 		time_t T= time(NULL);
 		struct  tm tm = *localtime(&T);
 		mbIsStarted = true;
+		suspended = false;
+		running = false;
 		printf( "%02d:%02d:%02d Timer %s started"NL, tm.tm_hour, tm.tm_min, tm.tm_sec, mcTimerName );
 		mTimeout_ms = timeout_ms;
 

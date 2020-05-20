@@ -1,6 +1,5 @@
 #include "pwm.h"
 #include "stdlib.h"
-#include <time.h>
 
 using namespace std;
 
@@ -63,6 +62,7 @@ PWM::main( OwTask *)
 	enable(0);
 #endif
 	enable(1);
+
 	do_open();
 	// do_close();
 
@@ -80,6 +80,14 @@ PWM::main( OwTask *)
 		}
 
 		pmDoCloseTimer->cancel();
+		if (pmDoCloseTimer->hasRun() == true)
+		{
+			
+			time_t T= time(NULL);
+			struct  tm tm = *localtime(&T);
+			printf("%02d:%02d:%02d suspend = %d!\n", tm.tm_hour, tm.tm_min, tm.tm_sec, duty);
+			pmDoCloseTimer->suspend();	// If timer is already expired and handler is running
+		}
 		do_open();
 		pmDoCloseTimer->start( PWM_DOCLOSE_TIMEOUT );
 
@@ -120,7 +128,7 @@ PWM::do_open(void)
 }
 
 void
-PWM::do_close(void)
+PWM::do_close(	OwTimer*  timer)
 {
 	//enable(1);
 	//polarity("normal");
@@ -136,6 +144,10 @@ PWM::do_close(void)
 		duty -= step;
 		duty_cycle(duty);
 		OwTask::sleep(100);
+		if (timer->hasSuspended() == true)
+		{
+			break;
+		}
 	}
 	T= time(NULL);
 	tm = *localtime(&T);
@@ -260,7 +272,7 @@ PWM::handleTimeout
 )
 {
 
-	do_close();
+	do_close(timer);
 
 #if 0
 	switch ( meInputVoltageState )

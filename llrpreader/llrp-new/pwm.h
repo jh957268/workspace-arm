@@ -2,10 +2,13 @@
 #define _PWM_H_
 
 #include <stdio.h>
+//#include "OwTimer.h"
 #include "OwTask.h"
-#include "OwSemaphore.h"
 #include "OwTimer.h"
+#include "OwSemaphore.h"
+//#include "OwTimer.h"
 #include "OwMutex.h"
+
 
 
 #define MAX_DUTY	2500000
@@ -29,7 +32,7 @@ class PWM:
 		void  	polarity(char *pol);
 
 		void 	do_open();
-		void 	do_close();
+		void 	do_close(OwTimer*  timer);
 	    static	int		semaphoreGive();
     private:
         static  PWM* spInstance; ///< Points to the instance

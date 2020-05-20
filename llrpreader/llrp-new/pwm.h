@@ -7,8 +7,8 @@
 #include "OwSemaphore.h"
 #include "OwMutex.h"
 
-#define MAX_DUTY	2500000
-#define MIN_DUTY	1500000
+#define MAX_DUTY	2400000
+#define MIN_DUTY	1400000
 
 #define  PWM_DOCLOSE_TIMEOUT  5000
 

@@ -154,7 +154,7 @@ OwTimer::threadStart
 		retcode = 0;
 
 		// on OwTimer object destruction, exit the thread
-		if ( timerPtr->mbThreadIsCreated )
+		if ( (timerPtr->mbThreadIsCreated) && (timerPtr->mbIsStarted == true) )
 		{
 			pthread_mutex_lock( &(timerPtr->mMutex) );
 			currTime_ms = OwSystemTime::get_ms();
@@ -168,7 +168,7 @@ OwTimer::threadStart
 
 			time_t T= time(NULL);
 			struct  tm tm = *localtime(&T);
-			printf("%02d:%02d:%02d Timer Wait timeour!\n", tm.tm_hour, tm.tm_min, tm.tm_sec);
+			printf("%02d:%02d:%02d Timer Wait timeout!\n", tm.tm_hour, tm.tm_min, tm.tm_sec);
 			// need to wait till timeout expires or cancel from parent thread
 			retcode = pthread_cond_timedwait( &(timerPtr->mTimerCond),
 					 &(timerPtr->mMutex), &tout );

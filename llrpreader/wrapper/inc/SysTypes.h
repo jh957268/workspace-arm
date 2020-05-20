@@ -16,7 +16,7 @@
 // By default in Windows the padding is for 8 bytes, not compatible
 // with Linux, so ensure that packing is done for 4 bytes
 
-#pragma pack (4)
+// #pragma pack (4)  ==> 64-bits machine, let's the compiler do the default memory padding, i.e. __time_t is 64-bits and should be 8 bytes
 
 //=============================================================================
 

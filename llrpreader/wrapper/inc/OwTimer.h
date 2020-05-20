@@ -112,7 +112,7 @@ class OwTimer
 		pthread_cond_t	mTimerCond;	/**< condition variable to implement
 											 suspend and resume operation */
 				bool	mbIsStarted;		/**< task suspend status */
-				char	pad[7];
+				// char	pad[7];			/* fixed in Systypes.h remove pragma pack (4), so mTimeout_ms will be 8-bytes alignment for 64-bit machine
 				PiTime	mTimeout_ms;		/**< timeout period in millisecs */
 				sem_t	mSemaphore;		/**< semaphore to start thread */
 				bool	mbThreadIsCreated;	/**< command to exit thread

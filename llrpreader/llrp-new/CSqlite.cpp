@@ -252,7 +252,7 @@ CSqlite::user_tag_action(char *tag, int antid, int *action)
 	}
 	if (parm[0] != 0)	
 	{
-		int seen_cnt = parm[1] + 1;
+		int seen_cnt = parm[2] + 1;
 		sprintf(sql_buff, "update TAG_USER_DATA SET tag_seen_count=%d,tag_last_seen=datetime('now') where tag_id=%d;", seen_cnt, parm[0]);
 		rc = sqlite3_exec(rfid_db, sql_buff, callback, 0, &zErrMsg);
 

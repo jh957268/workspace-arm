@@ -159,6 +159,7 @@ CCLI::process_startstreamtag(ArgvType  &argv)
 			rssi = (rssi << 8) | ((pTaginfo_rssi->tagid[15]) & 0xff);
 			sprintf(rssidata, "%f dBm",(float)(rssi/10.0));
 			printf("data:%s~%s~%s~%d~%ld\r\n\r\n",epcdata, pcbits, rssidata, ant_id, now);
+			fflush(stdout);
 			pTaginfo_rssi++;
 		}
 	}

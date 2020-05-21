@@ -45,11 +45,13 @@ class CCLI
 		static int process_rescanchn(ArgvType &argv);
 		static int process_getregion(ArgvType &argv);
 		static int process_getsearchtimeout(ArgvType &argv);
+		static int process_setsearchtimeout(ArgvType &argv);
 		static int process_starttagtodb(ArgvType &argv);
 		static int process_stoptagtodb(ArgvType &argv);
 		static int process_startstreamtag(ArgvType &argv);
 		static int process_stopstreamtag(ArgvType &argv);
 		static int process_readtagonce(ArgvType &argv);
+		static int process_getmoduletemperature(ArgvType &argv);
 		static IReader *handle;
 
     private:

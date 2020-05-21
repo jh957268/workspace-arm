@@ -36,28 +36,31 @@
                     <td class="label">iReader Region</td>
                     <td class="input">
                       <select id="myHeader" size="1">
-                        <option value="0">JAPAN</option>
-                        <option value="1">KOREA</option>
+                        <option value="0" disabled>JAPAN</option>
+                        <option value="1" disabled>KOREA</option>
                         <option value="2">USA</option>
-                        <option value="3">CHINA</option>
-                        <option value="4">CANADA</option>  
+                        <option value="3" disabled>CHINA</option>
+                        <option value="4" disabled>CANADA</option>  
                       </select>
                     </td>
                 </tr>
                 <tr>
                     <td class="label">Tag Search Timeout(ms)</td>
-                    <td class="input"><input type="text" name="subnetmask1" id="myHeader1" value="$%subnetmask1%$" /></td>
+                    <td class="input"><input type="text" name="searchtime" id="myHeader1" value="100" /></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td class="submit"><input type="submit" name="submitbutton" id="submitbutton" value="SUBMIT" style="color:black;" /></td>
+ 					<td class="submit"><input type=button style="width:120px" value="Submit" style="color:black" onClick="ProcessSetSearchTime(this.form)" /></td>
                 </tr>
             	<tr>
                 	<th colspan="2">Reader Status</th>
                 </tr>
             	<tr>
                     <td class="label"><label for="temperature">Temperature</label></td>
-                    <td class="input"><input type="text" name="Temperature" value="$%ipaddress1%$" /></td>
+                    <td class="input">
+						<input type="text" name="Temperature" id="tempId" value="50"/>
+						<input type=button style="width:120px" value="Submit" style="color:black" onClick="ProcessGetTemp()" />
+					</td>
                 </tr>				
             </table>
         </td>
@@ -93,6 +96,28 @@
 </form>
 
 <script>
+
+function ProcessSetSearchTime(thform)
+{
+	var xhttp = new XMLHttpRequest();
+  	xhttp.onreadystatechange = function() {
+    	if (this.readyState == 4 && this.status == 200) {
+			//document.getElementById("result").innerHTML = this.responseText;
+			alert("Set timeout " + this.responseText);
+    	}
+  	}
+	var timeout;
+	timeout = thform.searchtime.value;
+
+	//alert(antid + power);
+  	xhttp.open("GET", "cgi-bin/execgi-bin.cgi?setsearchtimeout&"+timeout, true);
+  	xhttp.send();
+}
+
+function ProcessGetTemp()
+{
+	loadField('cgi-bin/execgi-bin.cgi?getmoduletemp', 'tempId');
+}
 
  function loadDoc()
  { 

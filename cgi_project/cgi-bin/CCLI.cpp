@@ -23,7 +23,9 @@ struct cli_function	cli_function_list[] =
 	{"startstreamtag", CCLI::process_startstreamtag, "Start straming tags"},
 	{"stopstreamtag", CCLI::process_stopstreamtag, "Stop straming tags"},	
 	{"readtagonce", CCLI::process_readtagonce, "read tags once"},	
-	{"getsearchtimeout", CCLI::process_getsearchtimeout, "getsearchtimeout"}		
+	{"getsearchtimeout", CCLI::process_getsearchtimeout, "getsearchtimeout"},
+	{"setsearchtimeout", CCLI::process_setsearchtimeout, "setsearchtimeout"},
+	{"getmoduletemp", CCLI::process_getmoduletemperature, "getmoduletemp"}	
 };
 
 CCLI::CCLI()
@@ -196,6 +198,22 @@ CCLI::process_stoptagtodb(ArgvType  &argv)
 	return 0;
 }
 
+int
+CCLI::process_getmoduletemperature(ArgvType  &argv)
+{
+	int temp;
+	
+	int ret = IReaderApiEquipTempGet(handle, &temp);
+	if (IREADER_SUCCESS != ret)
+	{
+		printf("0");
+	}
+	else
+	{
+		printf("%d", temp);
+	}
+	return 0;	
+}
 
 int
 CCLI::process_getregion(ArgvType  &argv)
@@ -220,6 +238,23 @@ CCLI::process_getsearchtimeout(ArgvType  &argv)
 	int timeout;
 	
 	int ret = IReaderApiGetSearchTimeout(handle, &timeout);
+	if (IREADER_SUCCESS != ret)
+	{
+		printf("0");
+	}
+	else
+	{
+		printf("%d", timeout);
+	}
+	return 0;	
+}
+
+int
+CCLI::process_setsearchtimeout(ArgvType  &argv)
+{
+
+	int timeout = atoi(argv[1]);	
+	int ret = IReaderApiTagSearchTimeout(handle, timeout);
 	if (IREADER_SUCCESS != ret)
 	{
 		printf("0");

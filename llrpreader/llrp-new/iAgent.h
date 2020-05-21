@@ -72,6 +72,7 @@ private:
     void iAgent_StartExecutor(iMsgObj *hMsg);
     void iAgent_GetRegion(iMsgObj *hMsg);
     void iAgent_GetSearchTimeout(iMsgObj *hMsg);
+	void iAgent_SetSearchTimeout(iMsgObj *hMsg);
     void iAgent_Sqlite_Select(iMsgObj *hMsg);
     void iAgent_Sqlite_Insert(iMsgObj *hMsg);
     void iAgent_Rescan_Salve(iMsgObj *hMsg);

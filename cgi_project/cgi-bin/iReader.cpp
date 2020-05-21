@@ -209,7 +209,17 @@ int  IReader::IReaderSetWritePowerLevel(int pwr)
 
 int  IReader::IReaderTagSearchTimeout(int timeout)
 {
-    m_tagserachtimeout = timeout;
+ 	int ret;
+	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x03, 0xFF, 0xFc, 0x96, 0x00, 0x00, 0x00, 0x00}; 
+
+	buf[7] = (timeout >> 8) & 0xff;
+	buf[8] = timeout & 0xff;
+
+	ret = sendmsg(buf);
+	if ((m_rxMsg.opCode != 0x96) || (ret != RFID_CMD_SUCCESS))
+	{
+		return (IREADER_COMMAND_FAIL);
+	}
     return (IREADER_SUCCESS);
 }
 

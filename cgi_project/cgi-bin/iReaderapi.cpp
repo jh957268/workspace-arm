@@ -136,7 +136,7 @@ IReader * __cdecl IReaderApiInit(void)
 
     // for (i = 0; i < 256; i++)
 	//    devHandle->IReaderSetPowerLevel(i, 2500, 0);  // setup dedfault power level 25dBm
-	devHandle->IReaderTagSearchTimeout(80);     // default 80ms
+	// devHandle->IReaderTagSearchTimeout(80);     // default 80ms
     
 	// devHandle->IReaderGetAntMap();      //  setup the antenna map at iReader object 
 	devHandle->IReaderCreateMutex(); 

@@ -263,6 +263,55 @@ int  IReader::IReaderReadTagsMetaDataRSSI(int *tagcount, struct taginfo_rssi *ta
 	return (IREADER_SUCCESS);
 }
 
+int  IReader::IReaderEquipTempGet(int *temp)
+{
+	unsigned char  buf[] = {HDR1, HDR2, 0x00, 0x08, RFID_GET_TEMP_CMD, 0x00, 0x0D, 0x0A};
+	int temperature = 0;
+
+	Int32 error = sendmsg(buf);
+	IF_ERROR_RETURN(error);
+
+	//MSG_dumpMsgObj(&m_rxMsg);
+
+	if ( (m_rxMsg.opCode != RFID_GET_TEMP_RESP) || (m_rxMsg.data[0] != RFID_CMD_SUCCESS))
+	{
+		printf ("IReaderEquipTempGet Fails\n");
+		return ( -1 );
+	}
+	// temperature = (int)((m_rxMsg.data[1] << 8) || m_rxMsg.data[2]);
+	
+	//printf("temp = %d, %d \n", m_rxMsg.data[1], m_rxMsg.data[2]);
+	temperature = (int)(m_rxMsg.data[1]);
+	//printf("temperature : %d \n", temperature);
+	temperature <<= 8;
+	//printf("temperature : %d\n", temperature);
+
+	temperature |= m_rxMsg.data[2];
+	//printf("temperature : %d\n", temperature);
+
+	// *temp = (m_rxMsg.data[1] << 8) || m_rxMsg.data[2];
+	*temp = temperature;
+
+	//MSG_dumpMsgObj(&m_rxMsg);
+    return (IREADER_SUCCESS);
+}
+
+int  IReader::IReaderTempProtectSet(int protect)
+{
+	unsigned char  buf[] = {HDR1, HDR2, 0x00, 0x09, RFID_SET_TEMP_PROTECT_CMD, 0x00, 0x00, 0x0D, 0x0A};
+
+	buf[5] = (unsigned char)protect;
+	Int32 error = sendmsg(buf);
+	
+	IF_ERROR_RETURN(error);
+
+	if ( (m_rxMsg.opCode != RFID_SET_TEMP_PROTECT_RESP) || (m_rxMsg.data[0] != RFID_CMD_SUCCESS))
+		return ( -1 );
+
+	return (IREADER_SUCCESS);
+}
+
+
 int  IReader::IReaderGetTagCount(int *tagcount)
 {
 	unsigned char  buf[] = {0xff, 0x4, 0x22, 0, 0, 0x0, 0x50, 0, 0, 0, 0, 0, 0};

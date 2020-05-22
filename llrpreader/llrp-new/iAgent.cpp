@@ -189,7 +189,13 @@ int IAgent::iAgent_ProcessMsgObj(iMsgObj *hMsg)
 			break;
 		case 0x96:
 			iAgent_SetSearchTimeout(hMsg);
-			break;			
+			break;
+		case 0x97:
+			iAgent_ReadEquipTemp(hMsg);
+			break;
+		case 0x98:
+			iAgent_SetEquipTempProtect(hMsg);
+			break;											
 		default:
 			break;
 	}
@@ -290,6 +296,37 @@ void IAgent::iAgent_GetSearchTimeout(iMsgObj *hMsg)
 	buff[7] = (timeout >> 8) & 0xff;   // upper byte first
 	buff[8] = (timeout) & 0xff;
 	sendMessage(buff, 9);
+}
+
+void IAgent::iAgent_ReadEquipTemp(iMsgObj *hMsg)
+{
+	uint8_t buff [12] = {HDR1, HDR2, 0x00, 3, 0xff, 0xfd, 0x00, 0x00};
+
+	int temp;
+	IReader *handle = IReader::getInstance();
+	IReaderApiEquipTempGet(handle, &temp);
+
+	//printf("Temp Return = %d\n", temp);
+
+	buff[5] = ~buff[3];
+	buff[6] = hMsg->opCode;
+	buff[7] = (temp >> 8) & 0xff;   // upper byte first
+	buff[8] = (temp) & 0xff;
+	sendMessage(buff, 9);
+}
+
+void IAgent::iAgent_SetEquipTempProtect(iMsgObj *hMsg)
+{
+	uint8_t buff [12] = {HDR1, HDR2, 0x00, 2, 0xff, 0xfd, 0x00, 0x00};
+
+	int protect = hMsg->data[0];
+	IReader *handle = IReader::getInstance();
+	IReaderApiTempProtectSet(handle, protect);
+
+	buff[5] = ~buff[3];
+	buff[6] = hMsg->opCode;
+
+	sendMessage(buff, 8);
 }
 
 void IAgent::iAgent_SetSearchTimeout(iMsgObj *hMsg)

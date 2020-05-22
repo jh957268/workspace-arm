@@ -76,6 +76,8 @@ private:
     void iAgent_Sqlite_Select(iMsgObj *hMsg);
     void iAgent_Sqlite_Insert(iMsgObj *hMsg);
     void iAgent_Rescan_Salve(iMsgObj *hMsg);
+    void iAgent_ReadEquipTemp(iMsgObj *hMsg);
+    void iAgent_SetEquipTempProtect(iMsgObj *hMsg);
     int sendMessage(const char *msg);
     int sendMessage(uint8_t *buff, int len);
 	int sendResponse(uint8_t resp_code, int msg_len, uint8_t *msg);

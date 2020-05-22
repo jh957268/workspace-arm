@@ -21,5 +21,7 @@ extern "C"  Int32  IReaderApiSelectAnt(void * handle, int antid);
 extern "C"  Int32  IReaderApiTagSearchTimeout(void * handle, int timeout);
 extern "C"  Int32  IReaderApiScanSlave(void * handle, int channel);
 extern "C"  Int32  IReaderApiSelectLed(void * handle, int ledid);
+extern "C"  Int32  IReaderApiTempProtectSet( void * handle, int protect);
+extern "C"  Int32  IReaderApiEquipTempGet(void * handle, int *temp );
 
 #endif

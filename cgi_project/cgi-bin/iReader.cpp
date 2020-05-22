@@ -1068,10 +1068,10 @@ int IReader::setscanantid(int id, int flag)
 int IReader::GetEquipTemp(int *temp)
 {
 	int ret, temperature;
-	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x01, 0xFF, 0xFE, 0x34};  // use antenna porrt 0
+	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x01, 0xFF, 0xFE, 0x97};  // use antenna porrt 0
 	// unsigned char buf[] = {0xff, 0x2, 0x91, 0x2, 0x2, 0,0};
 	ret = sendmsg(buf);
-	if (m_rxMsg.opCode != 0x34)
+	if (m_rxMsg.opCode != 0x97)
 	{
 		return (IREADER_COMMAND_FAIL);
 	}
@@ -1095,11 +1095,11 @@ int IReader::GetEquipTemp(int *temp)
 int IReader::SetEquipTempProtect(int flag)
 {
 	int ret;
-	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x02, 0xFF, 0xFD, 0x38, 0x00};  // use antenna porrt 0
+	unsigned char buf[] = {HDR1, HDR2, 0x00, 0x02, 0xFF, 0xFD, 0x98, 0x00};  // use antenna porrt 0
 	// unsigned char buf[] = {0xff, 0x2, 0x91, 0x2, 0x2, 0,0};
 	buf[7] = (unsigned char)flag;
 	ret = sendmsg(buf);
-	if (m_rxMsg.opCode != 0x38)
+	if (m_rxMsg.opCode != 0x98)
 	{
 		return (IREADER_COMMAND_FAIL);
 	}

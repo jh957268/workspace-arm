@@ -24,7 +24,10 @@
 #define CMD_CONTINUE_INVENTORY	0x82
 #define CMD_ONE_INVENTORY		0x81
 #define CMD_ANT_WORKING_TIME	0x4A
-
+#define RFID_GET_TEMP_CMD	  	0x34
+#define RFID_GET_TEMP_RESP  	0x35
+#define RFID_SET_TEMP_PROTECT_CMD 	0x38
+#define RFID_SET_TEMP_PROTECT_RESP 	0x39
 
 #define HDR1	0xA5
 #define HDR2	0x5A
@@ -93,6 +96,8 @@ class IReader : public MuxClient
 		int 		  IReaderTagSearchTimeout(int timeout);
 		int  		  IReaderReadTags(int *tagcount, struct taginfo *tagrbuf);
 		int  		  IReaderReadTagsMetaDataRSSI(int *tagcount, struct taginfo_rssi *tagrbuf);
+		int  		  IReaderEquipTempGet(int *temp);
+		int			  IReaderTempProtectSet(int protect);
 		int  		  IReaderGetTagCount(int *tagcount);
 		int  		  IReaderWriteTag(int timeout, unsigned char *tagid);
 		int           IReaderReadTagsAll(void);

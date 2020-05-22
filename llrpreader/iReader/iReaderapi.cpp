@@ -315,6 +315,30 @@ Int32 __cdecl IReaderApiReadTagsMetaDataRSSI(void * handle, int antid, int pwr, 
     return IREADER_SUCCESS;
 }
 
+Int32 IReaderApiTempProtectSet(void * handle, int protect)
+{
+    IF_ERROR_RETURN(IReaderHandleValid(handle));
+	((IReader *)handle)->IReaderTakeMutex();
+ 	IF_ERROR_RETURN(((MuxClient *)handle)->SelectModule(READER_MODULE));
+
+    IF_ERROR_RETURN(((IReader *)handle)->IReaderTempProtectSet(protect));
+	((IReader *)handle)->IReaderGiveMutex();
+    return IREADER_SUCCESS;
+}
+
+Int32 IReaderApiEquipTempGet(void * handle, int *temp)
+{
+	*temp = 0;
+    IF_ERROR_RETURN(IReaderHandleValid(handle));
+	((IReader *)handle)->IReaderTakeMutex();
+ 	IF_ERROR_RETURN(((MuxClient *)handle)->SelectModule(READER_MODULE));	
+
+    IF_ERROR_RETURN(((IReader *)handle)->IReaderEquipTempGet(temp));
+
+	((IReader *)handle)->IReaderGiveMutex();
+    return IREADER_SUCCESS;
+}
+
 Int32 __cdecl IReaderApiWriteTag(void * handle, int pwr, int timeout, unsigned char *tagid)
 {
 	int error;

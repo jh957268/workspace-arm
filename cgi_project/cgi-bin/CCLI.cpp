@@ -210,7 +210,7 @@ CCLI::process_getmoduletemperature(ArgvType  &argv)
 	}
 	else
 	{
-		printf("%d", temp);
+		printf("%.2fC", (float)((float)temp/100));
 	}
 	return 0;	
 }

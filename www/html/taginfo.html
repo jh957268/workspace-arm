@@ -20,9 +20,9 @@
         	<ul>
             <li><a href="sysinfo.html" id="sysinfo">System</a></li>
             <li><a href="antenna.html" id="antenna">Antenna Status</a></li>
-            <li><a href="taginfo.html" id="taginfo">Read Tags</a></li>
+            <li><a href="taginfo.html" id="taginfo">Asset Tracking</a></li>
             <li><a href="tagdb.html" id="tagdb">Database Tags</a></li>
-			<li><a href="asset.html" id="asset">Asset Monitoring</a></li>
+			<li><a href="asset.html" id="asset">Access Control</a></li>
 			<li><a href="network.html" id="network">Network Settings</a></li>			
             </ul>
         </td>
@@ -168,14 +168,14 @@ function stopTagInfoSSe()
   // it does know the socket is closed, since it does not attempt to send the tag info. We should check if the socket is closed instead of using the ::send call
   // return -1 to indicate the socket is closed.  
   
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
+  //var xhttp = new XMLHttpRequest();
+  //xhttp.onreadystatechange = function() {
+  //  if (this.readyState == 4 && this.status == 200) {
          // do nothing
-    }
-  }
-  xhttp.open("GET", "cgi-bin/execgi-bin.cgi?stopstreamtag", true);
-  xhttp.send();
+   // }
+  // }
+  //xhttp.open("GET", "cgi-bin/execgi-bin.cgi?stopstreamtag", true);
+  // xhttp.send();
  
 	if (isOpenOnce == true) 
 	{

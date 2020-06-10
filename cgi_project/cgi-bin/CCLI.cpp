@@ -132,7 +132,7 @@ CCLI::process_startstreamtag(ArgvType  &argv)
 		int ret = IReaderApiGetTagsMetaDataRSSI(handle, &ant_id, &ttagCount, (struct taginfo_rssi *)ttagrbuf);
 		if (IREADER_SUCCESS != ret)
 		{
-			return 0;
+			return -1;
 		}
 		pTaginfo_rssi = (struct taginfo_rssi *)ttagrbuf;
 		time_t now = time(NULL);

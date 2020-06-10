@@ -879,6 +879,10 @@ int IReader::MSG_receiveMsgObj_1(MsgObj *hMsg)
 	while(1)
 	{
 		bytesRead = getChars_1(&soh, 1);
+		if (bytesRead == SOCKET_ERROR)
+		{
+			return (SOCKET_ERROR);		// -1
+		}
 		if (  bytesRead != 1)
 		{
 			return (0);

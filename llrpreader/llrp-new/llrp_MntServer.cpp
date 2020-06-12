@@ -118,12 +118,20 @@ LLRP_MntServer::main( OwTask * )
         	case SOCKET_ACCEPT:
         	if (-1 != clientSocket)
         	{
-        		socketDeliver();
+        		socketDeliver<LLRP_MntAgent,vector<LLRP_MntAgent*>>(agentPool,clientSocket);
         	}
-        	else if (-1 != iclientSocket)
+        	if (-1 != iclientSocket)
         	{
-        		isocketDeliver();
+           		socketDeliver<IAgent,vector<IAgent*>>(iagentPool,iclientSocket);
+        		//isocketDeliver();
         	}
+        	if (-1 != sclientSocket)
+        	{
+          		socketDeliver<SAgent,vector<SAgent*>>(sagentPool,sclientSocket);
+        		//ssocketDeliver();
+        	}
+
+			socketState = SOCKET_LISTEN;			
 										//return;	kill the thread
             break;
         }
@@ -225,6 +233,26 @@ LLRP_MntServer::socketCreate()
     {
         perror("setsockopt(SO_REUSEADDR) failed");
     }
+	
+    slistenSocket = ::socket(AF_INET, SOCK_STREAM, 0);
+
+    if ( -1 == slistenSocket )
+    {
+        DBG_PRINT(DEBUG_CRITICAL, "AkMntServer:: Socket creation failed"NL );
+        socketState = SOCKET_INITIAL;
+
+        return;
+    }
+
+    if (::setsockopt(slistenSocket, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
+    {
+        perror("setsockopt(SO_REUSEADDR) failed");
+    }
+    if (::setsockopt(slistenSocket, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int)) < 0)
+    {
+        perror("setsockopt(SO_REUSEADDR) failed");
+    }
+	
 
     socketState = SOCKET_CREATE;
 }
@@ -258,6 +286,17 @@ LLRP_MntServer::socketBind()
         bill_out = true;
         return;
     }
+	
+    saServer.sin_port = htons( SSERVER_PORT );
+    iResult = ::bind( slistenSocket, (SOCKADDR*) &saServer,
+    		sizeof(saServer) );
+
+    if ( SOCKET_ERROR == iResult )
+    {
+        socketState = SOCKET_CREATE;
+        bill_out = true;
+        return;
+    }	
 
     socketState = SOCKET_BIND;
 }
@@ -291,6 +330,18 @@ LLRP_MntServer::socketListen()
         bill_out = true;
         return;
     }
+	
+    DBG_PRINT(DEBUG_INFO, "LLRP_MntServer: Listening to port %d"NL, SSERVER_PORT);
+    iResult = ::listen( slistenSocket, SOMAXCONN );
+
+    if ( SOCKET_ERROR == iResult )
+    {
+        DBG_PRINT(DEBUG_CRITICAL, "AkMntServer:: iListen failed: %d"NL, iResult);
+
+        socketState = SOCKET_BIND;
+        bill_out = true;
+        return;
+    }	
 
     socketState = SOCKET_LISTEN;
 }
@@ -324,9 +375,16 @@ LLRP_MntServer::socketAccept()
     {
     	maxfd = ilistenSocket;
     }
+    FD_SET(slistenSocket, &readfds);
+    if (slistenSocket > maxfd)
+    {
+    	maxfd = slistenSocket;
+    }	
 
+    do {
+		status = ::select(maxfd + 1, &readfds, NULL, NULL, NULL);			
+    } while (status < 0 && errno == EINTR);
 
-    status = ::select(maxfd + 1, &readfds, NULL, NULL, NULL);
     if (status < 0)
     {
         bill_out = true;
@@ -334,6 +392,7 @@ LLRP_MntServer::socketAccept()
     }
     fd = INVALID_SOCKET;
 
+#if 0	
     if (FD_ISSET(listenSocket, &readfds))
     {
     	fd = listenSocket;
@@ -342,17 +401,25 @@ LLRP_MntServer::socketAccept()
     {
     	fd = ilistenSocket;
     }
+    else if (FD_ISSET(slistenSocket, &readfds))
+    {
+    	fd = slistenSocket;
+    }	
+	
     if (fd == INVALID_SOCKET)
     {
         bill_out = true;
         return;
     }
+#endif
 
     clientSocket = -1;
     iclientSocket = -1;
+	sclientSocket = -1;
 
 
-    if (fd == listenSocket)
+    //if (fd == listenSocket)
+	if (FD_ISSET(listenSocket, &readfds))	
     {
     	clientSocket = ::accept( listenSocket, (SOCKADDR *) &pin,(socklen_t *) &addrLen );
 
@@ -365,8 +432,12 @@ LLRP_MntServer::socketAccept()
 
     		return;
     	}
+		DBG_PRINT(DEBUG_INFO, "LLRP_MntServer:: Accepting client from %s:%d "
+            "at socket %d"NL,
+            inet_ntoa(pin.sin_addr), ntohs(pin.sin_port), clientSocket);		
     }
-    else if (fd == ilistenSocket)
+    // else if (fd == ilistenSocket)
+	if (FD_ISSET(ilistenSocket, &readfds))		
     {
     	iclientSocket = ::accept( ilistenSocket, (SOCKADDR *) &pin,(socklen_t *) &addrLen );
 
@@ -379,11 +450,32 @@ LLRP_MntServer::socketAccept()
 
     		return;
     	}
-    }
-
-    DBG_PRINT(DEBUG_INFO, "LLRP_MntServer:: Accepting client from %s:%d "
+		DBG_PRINT(DEBUG_INFO, "LLRP_MntServer:: Accepting iClient from %s:%d "
             "at socket %d"NL,
-            inet_ntoa(pin.sin_addr), ntohs(pin.sin_port), fd);
+            inet_ntoa(pin.sin_addr), ntohs(pin.sin_port), iclientSocket);		
+    }
+    // else if (fd == slistenSocket)
+	if (FD_ISSET(slistenSocket, &readfds))	
+    {
+    	sclientSocket = ::accept( slistenSocket, (SOCKADDR *) &pin,(socklen_t *) &addrLen );
+
+    	if ( -1 == sclientSocket )
+    	{
+    		// Failure
+    		DBG_PRINT(DEBUG_CRITICAL, "LLRP_MntServer:: iaccept failed"NL );
+    		bill_out = true;
+    		socketState = SOCKET_LISTEN;
+
+    		return;
+    	}
+		DBG_PRINT(DEBUG_INFO, "LLRP_MntServer:: Accepting sClient from %s:%d "
+            "at socket %d"NL,
+            inet_ntoa(pin.sin_addr), ntohs(pin.sin_port), sclientSocket);		
+    }	
+
+    //DBG_PRINT(DEBUG_INFO, "LLRP_MntServer:: Accepting client from %s:%d "
+    //        "at socket %d"NL,
+    //        inet_ntoa(pin.sin_addr), ntohs(pin.sin_port), fd);
 
     socketState = SOCKET_ACCEPT;
 
@@ -406,39 +498,42 @@ unsigned char response[128] = {0x04, 0x0D, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0
 
 //char keepAlive[64] = { 0x04, 0x3E, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x00, 0x00, 0x00 };
 
+template <class T, class P>
 void
-LLRP_MntServer::socketDeliver()
+LLRP_MntServer::socketDeliver(P &aPool, int fd)
 {
     unsigned int ii;
-    LLRP_MntAgent* ap;
+    T* ap;
 
 	mpMutex->take(0);
-    for ( ii = 0; ii < agentPool.size(); ii++ )
+	
+    for ( ii = 0; ii < aPool.size(); ii++ )
     {
-        if ( agentPool[ ii ]->isIdle() )
+        if ( aPool[ ii ]->isIdle() )
         {
             // We found an idle agent
-            ap = agentPool[ ii ];
+            ap = aPool[ ii ];
 			DBG_PRINT(DEBUG_INFO, "Found an idle agent ID[%d]"NL, ap->getObjectID());
             break;
         }
     }
 
-    if ( ii == agentPool.size() )
+    if ( ii == aPool.size() )
     {
         // No idle agent found
-        ap = new LLRP_MntAgent;
-        agentPool.push_back( ap );
+        ap = new T;
+        aPool.push_back( ap );
     }
 	//mpMutex->give();
     // Now ap is a usable agent
-    ap->setConnection( clientSocket );
+    ap->setConnection( fd );
 	ap->setRunning();
 	mpMutex->give();
 	ap->run();			// start the thread
 
-    socketState = SOCKET_LISTEN;
+    //socketState = SOCKET_LISTEN;
 }
+
 
 void
 LLRP_MntServer::isocketDeliver()
@@ -471,9 +566,44 @@ LLRP_MntServer::isocketDeliver()
 	mpMutex->give();
 	ap->run();			// start the thread
 
-    socketState = SOCKET_LISTEN;
+    //socketState = SOCKET_LISTEN;
 }
 
+#if 0
+void
+LLRP_MntServer::ssocketDeliver()
+{
+    unsigned int ii;
+    SAgent* ap;
+
+	mpMutex->take(0);
+    for ( ii = 0; ii < sagentPool.size(); ii++ )
+    {
+        if ( sagentPool[ ii ]->isIdle() )
+        {
+            // We found an idle agent
+            ap = sagentPool[ ii ];
+			DBG_PRINT(DEBUG_INFO, "Found an idle agent ID[%d]"NL, ap->getObjectID());
+            break;
+        }
+    }
+
+    if ( ii == sagentPool.size() )
+    {
+        // No idle agent found
+        ap = new IAgent;
+        sagentPool.push_back( ap );
+    }
+	//mpMutex->give();
+    // Now ap is a usable agent
+    ap->setConnection( iclientSocket );
+	ap->setRunning();
+	mpMutex->give();
+	ap->run();			// start the thread
+
+    //socketState = SOCKET_LISTEN;
+}
+#endif
 
 //=============================================================================
 // complete

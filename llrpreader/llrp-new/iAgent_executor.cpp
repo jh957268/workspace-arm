@@ -24,6 +24,7 @@ IAgent_Executor::IAgent_Executor():
 	executor_start_flag = 0;
 	// m_antcount = 0;
 	m_hSem = new OwSemaphore(1);
+	m_hMutex = 	new OwMutex();
 
 }
 
@@ -252,5 +253,66 @@ IAgent_Executor::semaphoreGive()
 	error = m_hSem->give();
 
 	return (error);
+}
+
+void
+IAgent_Executor::SetCallbackHandler
+(
+	callbackHandler* handler
+)
+{
+	// Mutex may not be needed, since context switch cannot happen at this moment for non-preemtive OS, and no sleep in between
+	TakeMutex();
+	moRegistry.push_back( handler );
+	GiveMutex();
+}
+
+void
+IAgent_Executor::RemoveCallbackHandler
+(
+	callbackHandler* handler
+)
+{
+	// Mutex may not be needed, since context switch cannot happen at this moment for non-preemtive OS, and no sleep in between
+	TakeMutex();
+	for ( int i = 0; i < moRegistry.size(); i++ )
+    {
+		if (moRegistry[i] == handler)
+		{
+			moRegistry.erase(moRegistry.begin() + i);
+			break;
+		}
+    }
+	GiveMutex();
+}
+
+void
+IAgent_Executor::callbackHandler::TagEventCallback(const char *tag_data)
+{}
+
+void
+IAgent_Executor::Do_Callback(void)
+{
+	for ( int i = 0; i < moRegistry.size(); i++ )
+    {
+		moRegistry[i]->TagEventCallback((const char *)ttagrbuf);
+    }
+	
+}
+
+int  IAgent_Executor::TakeMutex(void)
+{
+	int error = 0;
+
+	m_hMutex->take( PI_FOREVER );
+
+	return (error);
+}
+
+int  IAgent_Executor::GiveMutex(void)
+{
+	m_hMutex->give();
+
+    return ( 0 );
 }
 

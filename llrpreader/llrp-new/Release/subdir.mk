@@ -5,6 +5,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../CAntenna.cpp \
+../CCLI.cpp \
 ../CSqlite.cpp \
 ../CWatchDogFeeder.cpp \
 ../cli.cpp \
@@ -16,10 +17,12 @@ CPP_SRCS += \
 ../llrp_MntServer.cpp \
 ../llrp_MsgProcessor.cpp \
 ../llrp_ROSpecExecutor.cpp \
-../pwm.cpp 
+../pwm.cpp \
+../sAgent.cpp 
 
 OBJS += \
 ./CAntenna.o \
+./CCLI.o \
 ./CSqlite.o \
 ./CWatchDogFeeder.o \
 ./cli.o \
@@ -31,10 +34,12 @@ OBJS += \
 ./llrp_MntServer.o \
 ./llrp_MsgProcessor.o \
 ./llrp_ROSpecExecutor.o \
-./pwm.o 
+./pwm.o \
+./sAgent.o 
 
 CPP_DEPS += \
 ./CAntenna.d \
+./CCLI.d \
 ./CSqlite.d \
 ./CWatchDogFeeder.d \
 ./cli.d \
@@ -46,14 +51,15 @@ CPP_DEPS += \
 ./llrp_MntServer.d \
 ./llrp_MsgProcessor.d \
 ./llrp_ROSpecExecutor.d \
-./pwm.d 
+./pwm.d \
+./sAgent.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
 %.o: ../%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross G++ Compiler'
-	aarch64-linux-gnu-g++ -I/home/joohong/workspace-arm/llrpreader/wrapper/inc -I/home/joohong/workspace-arm/llrpreader/iReader -I/home/joohong/workspace-arm/LTK/LTKCPP/Library -I/home/joohong/workspace-arm/install/include -O0 -g -Wall -c -fmessage-length=0 -Wno-write-strings -Wno-literal-suffix -Wno-pointer-arith -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	aarch64-linux-gnu-g++ -I/home/joohong/workspace-arm/llrpreader/wrapper/inc -I/home/joohong/workspace-arm/llrpreader/iReader -I/home/joohong/workspace-arm/LTK/LTKCPP/Library -I/home/joohong/workspace-arm/install/include -O0 -g -Wall -c -fmessage-length=0 -Wno-write-strings -Wno-literal-suffix -fpermissive -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

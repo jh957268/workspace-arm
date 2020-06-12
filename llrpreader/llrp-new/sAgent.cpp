@@ -27,11 +27,11 @@ extern CSqlite *Sqlite_db;
 // Constructor
 
 SAgent::SAgent():
-	OwTask( MEDIUM, 2048, "IAgent" ),
+	OwTask( MEDIUM, 2048, "SAgent" ),
 	isSocketClosed ( false ),
 	id( ++nextId )
 {
-	DBG_PRINT( DEBUG_INFO, "IAgent[%d]:: Created"NL, id );
+	DBG_PRINT( DEBUG_INFO, "SAgent[%d]:: Created"NL, id );
 	idle = false;					// Assume it will be run right away to avoid race condition 
 									// that the MntServer will use it again if another connection coming in
 } // SAgent::SAgent()
@@ -46,29 +46,21 @@ SAgent::main
 	//char data[128];
 	
 	IAgent_Executor::getInstance()->SetCallbackHandler(this);
+	int fd;
+
+	fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) & ~O_NONBLOCK);
+
+	//close(STDOUT_FILENO); /*(so that accept() returns fd to STDOUT_FILENO)*/
 
 	while (true)
 	{
-#if 0
-		OwTask::sleep(1000);
-        now = time(NULL);
-        sprintf(data, "the server time is %ld\r\n\r\n",now);
-        if (sendMessage(data) <= 0)
-        {
-        	break;
-        }
-#endif
-#if 0
-		if (iAgent_receiveMsgObj(&t_rxMsg) <= 0)
-		{
-			break;
-		}
-		// Now process the receive message
-		iAgent_ProcessMsgObj(&t_rxMsg);
-#endif
-		
+        fd = clientSocket;
+        //dup2(clientSocket, fd);
+        //assert(fd == STDOUT_FILENO);
+        scgi_process(fd);
+        break;
 	}
-	DBG_PRINT( DEBUG_INFO, "IAgent[%d]:: Closed"NL, id );
+	DBG_PRINT( DEBUG_INFO, "SAgent[%d]:: Closed"NL, id );
 	::close(clientSocket);
 	idle = true;  // Once this is set to true, other connection (from LLRP_Mntserver) may use this object before the
 	              // phtread exit if preemption "can" happen
@@ -85,7 +77,7 @@ SAgent::disconnect
 
 	isSocketClosed = true;
 	::close(clientSocket);
-	DBG_PRINT(DEBUG_INFO, "IAgent[%d]:: close socket"NL, id );
+	DBG_PRINT(DEBUG_INFO, "SAgent[%d]:: close socket"NL, id );
 
 	// Tell the controller not to send more indication to here anymore
 	//AkMsgProcessor::getInstance()->unsetController( this );
@@ -96,7 +88,7 @@ SAgent::disconnect
 	// inform the AkMntServer that it is going idle
 	//AkMntServer::getInstance()->complete( this );
 
-} // IAgent::disconnect()
+} // SAgent::disconnect()
 
 //=============================================================================
 // setConnection
@@ -110,12 +102,12 @@ SAgent::setConnection
 	SOCKET  connectClient
 )
 {
-	DBG_PRINT(DEBUG_INFO, "IAgent[%d]:: Socket %d assigned"NL, id, connectClient );
+	DBG_PRINT(DEBUG_INFO, "SAgent[%d]:: Socket %d assigned"NL, id, connectClient );
 
 	clientSocket = connectClient;
 	// sem.give();				 // Release the thread
 
-} // IAgent::setConnection()
+} // SAgent::setConnection()
 
 char *
 SAgent::scgi_getenv(char *r, const unsigned long rlen, const char * const name)
@@ -146,8 +138,9 @@ SAgent::scgi_process (const int fd)
     unsigned long rlen;
     long long cl;
 
-    assert(fd == STDOUT_FILENO); /*(required for response sent with printf())*/
+    // assert(fd == STDOUT_FILENO); /*(required for response sent with printf())*/
     fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
+
 
     do {
         struct pollfd pfd = { fd, POLLIN, 0 };
@@ -265,7 +258,7 @@ SAgent::scgi_process (const int fd)
 				printf("Status: 200 OK\r\n\r\n");
 				num_requests--;
 			} else {
-				printf("Status: 200 OK\r\n\r\n");
+				::send(fd, "Status: 200 OK\r\n\r\n", strlen("Status: 200 OK\r\n\r\n"), 0);
 			}
 		} else {
 			printf("Status: 500 Internal Foo\r\n\r\n");
@@ -279,15 +272,22 @@ SAgent::scgi_process (const int fd)
 			p = scgi_getenv(r, rlen, "X_LIGHTTPD_FCGI_AUTH");
 			printf("%s", p ? p : "(no value)");
 		} else {
-			rd = recv(fd, buf, 100, 0);
-			if ( rd <= 0)
-			{
-				printf("test123");
-			}
+			//rd = recv(fd, buf, 100, 0);
+			//if ( rd <= 0)
+			//{
+			//	printf("test123");
+			//}
+			::send(fd, "120", strlen("120"), 0);
+			//for (int j = 0; j < 10; j++)
+			//{
+			//	sleep(3);
+			//	::send(fd, "120", strlen("150"), 0);
+			//}
+
 		}
     }
 
-    fflush(stdout);
+    //fflush(stdout);
     if (0 == num_requests) finished = 1;
 }
 

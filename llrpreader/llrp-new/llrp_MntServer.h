@@ -25,6 +25,7 @@
 #include "llrp_Controller.h"
 #include "llrp_MntAgent.h"
 #include "iAgent.h"
+#include "sAgent.h"
 
 #include "ltkcpp.h"
 
@@ -110,6 +111,7 @@ private:
     /// Server port for maintenance terminal
     static const int SERVER_PORT = 5084;
     static const int ISERVER_PORT = 6084;
+	static const int SSERVER_PORT = 9998;
 
     /// Private constructor
     ///
@@ -124,7 +126,10 @@ private:
     void	socketBind();
     void	socketListen();
     void	socketAccept();
-    void	socketDeliver();
+
+	template <class T, class P>
+    void	socketDeliver(P &pool, int fd);
+
     void	isocketDeliver();
 
 	INT32	initialize(void);
@@ -195,14 +200,17 @@ private:
     SocketState	socketState;
     	SOCKET	listenSocket;
     	SOCKET  ilistenSocket;
+		SOCKET  slistenSocket;
     	SOCKET	clientSocket;
     	SOCKET	iclientSocket;
+    	SOCKET	sclientSocket;
 
     struct sockaddr_in	saServer;
     struct sockaddr_in  pin;
     
     std::vector<LLRP_MntAgent*>	agentPool;
     std::vector<IAgent*>		iagentPool;
+	std::vector<SAgent*>		sagentPool;
 
 	// static const CTypeRegistry *  llrp_pTypeRegistry;
 

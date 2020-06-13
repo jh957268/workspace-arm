@@ -110,6 +110,7 @@ IAgent_Executor::main( OwTask * )
 						clientFd[j] = -1;
 					}
 				}
+				Do_Callback(tagCount, antID);
 				if (0 == found)
 				{
 					executor_start_flag = 0;
@@ -287,16 +288,18 @@ IAgent_Executor::RemoveCallbackHandler
 }
 
 void
-IAgent_Executor::callbackHandler::TagEventCallback(const char *tag_data)
+IAgent_Executor::callbackHandler::TagEventCallback(uint8_t *tag_data, int tag_cnt, int ant_id)
 {}
 
 void
-IAgent_Executor::Do_Callback(void)
+IAgent_Executor::Do_Callback(int tag_cnt, int ant_id)
 {
+	TakeMutex();
 	for ( int i = 0; i < moRegistry.size(); i++ )
     {
-		moRegistry[i]->TagEventCallback((const char *)ttagrbuf);
+		moRegistry[i]->TagEventCallback(ttagrbuf, tag_cnt, ant_id);
     }
+	GiveMutex();
 	
 }
 

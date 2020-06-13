@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include <signal.h>
 #include "CCLI.h"
 
 #include "iReaderapi.h"
@@ -13,6 +14,23 @@ char recordrbuf[2048];
 #define DATABASE_USER_MAGIC	0xFFDD
 
 int inserttag_main(IReader *handle);
+
+volatile sig_atomic_t done = 0;
+static FILE *fp;
+
+void term(int signum)
+{
+	fp = fopen("/home/rock/upload/llrp.log", "a");
+	if (fp == NULL)
+	{
+		exit(-1);
+	}
+	fprintf(fp, "receive signal SIG NUM = %d\n", signum);
+	fclose(fp);
+	//fprintf(fp, "receive signal SIGTERM\n");
+	IReaderApiClose(CCLI::handle);
+    done = 1;
+}
 
 int main(void) 
 {
@@ -35,7 +53,23 @@ int main(void)
 	}
 	std::string cgi_string(cgi_buffer);
 
-#if 1
+#if 0
+
+	fp = fopen("/home/rock/upload/llrp.log", "a");
+	if (fp == NULL)
+	{
+		exit(-1);
+	}
+	fprintf(fp, "Open log...\n");
+	fclose(fp);
+    struct sigaction action;
+    memset(&action, 0, sizeof(struct sigaction));
+    action.sa_handler = term;
+    sigaction(SIGTERM, &action, NULL);
+    sigaction(SIGHUP, &action, NULL);
+    sigaction(SIGUSR1, &action, NULL);
+    sigaction(SIGKILL, &action, NULL);
+    sigaction(SIGINT, &action, NULL);
 
 	CCLI::handle = IReaderApiInit();
 
@@ -55,7 +89,12 @@ int main(void)
 	}
 #endif
 	CCLI::process_cli_command(cgi_string);
-	IReaderApiClose(CCLI::handle);
+
+	if (done == 0)
+	{
+		IReaderApiClose(CCLI::handle);
+	}
+	//fclose(fp);
 	return 0;
 	
 

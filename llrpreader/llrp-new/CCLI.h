@@ -39,7 +39,7 @@ class CCLI:
 		static int process_antmap(ArgvType &argv);		
 		static int process_rescanchn(ArgvType &argv);
 		static int process_getregion(ArgvType &argv);
-		static int process_getsearchtimeout(ArgvType &argv);
+		int process_getsearchtimeout(ArgvType &argv);
 		static int process_setsearchtimeout(ArgvType &argv);
 		static int process_starttagtodb(ArgvType &argv);
 		static int process_stoptagtodb(ArgvType &argv);

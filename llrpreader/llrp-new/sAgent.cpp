@@ -270,7 +270,7 @@ SAgent::scgi_process (const int fd)
 				num_requests--;
 			} else {
 				cgi_string = p;
-				// printf("Status: 200 OK\r\n\r\n");		// Let CCLI to print this message
+				//printf("Status: 200 OK\r\n\r\n");		// Let CCLI to print this message
 			}
 		} else {
 			printf("Status: 500 Internal Foo\r\n\r\n");
@@ -301,7 +301,7 @@ SAgent::scgi_process (const int fd)
 		}
     }
 
-    fflush(stdout);
+    //fflush(stdout);
     if (0 == num_requests) finished = 1;
 }
 

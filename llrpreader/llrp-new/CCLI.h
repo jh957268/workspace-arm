@@ -31,7 +31,7 @@ class CCLI:
 	
 		void    process_cli_command(std::string cmd_string);
 		
-		int process_seltag(ArgvType  &argv);
+		int 	   process_seltag(ArgvType  &argv);
 		static int process_inserttag(ArgvType &argv);
 		static int process_startmonitor(ArgvType  &argv);
 		static int process_stopmonitor(ArgvType &argv);
@@ -39,16 +39,16 @@ class CCLI:
 		static int process_antmap(ArgvType &argv);		
 		static int process_rescanchn(ArgvType &argv);
 		static int process_getregion(ArgvType &argv);
-		int process_getsearchtimeout(ArgvType &argv);
+		int 	   process_getsearchtimeout(ArgvType &argv);
 		static int process_setsearchtimeout(ArgvType &argv);
 		static int process_starttagtodb(ArgvType &argv);
 		static int process_stoptagtodb(ArgvType &argv);
-		static int process_startstreamtag(ArgvType &argv);
-		static int process_stopstreamtag(ArgvType &argv);
+		int 	   process_startstreamtag(ArgvType &argv);
+		int 	   process_stopstreamtag(ArgvType &argv);
 		static int process_readtagonce(ArgvType &argv);
 		static int process_getmoduletemperature(ArgvType &argv);
 		static IReader *handle;
-		void  TagEventCallback(const char *tag_data);
+		void  TagEventCallback(uint8_t *tag_data, int tag_cnt, int ant_id);
 
     private:
 		static char ttagrbuf[2048];

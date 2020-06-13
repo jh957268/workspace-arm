@@ -8,10 +8,18 @@ char CCLI::antmap[1280] = {0};
 #define DATABASE_MAGIC		0xFFEE
 #define DATABASE_USER_MAGIC	0xFFDD
 
-struct cli_function	scgi_cli_function_list[] =
+struct cli_Funct
 {
+	const char *pCmd;
+	int (CCLI::* const do_funct)( ArgvType  &argv );
+	const char  *pHelp;	
+};
+
+static cli_Funct cli_function_list[] =
+{
+	
+	{"seltag", &CCLI::process_seltag, "select * from DB"},
 #if 0	
-	{"seltag", CCLI::process_seltag, "select * from DB"},
 	{"inserttag", CCLI::process_inserttag, "insert * from DB"},
 	{"startmonitor", CCLI::process_startmonitor, "Start Monitoring"},
 	{"stoptmonitor", CCLI::process_stopmonitor, "Stop Monitoring"},
@@ -368,6 +376,7 @@ CCLI::process_inserttag(ArgvType  &argv)
 	printf("Command sucess");
 	return 0;	
 }
+#endif
 
 int 
 CCLI::process_seltag(ArgvType  &argv)
@@ -379,9 +388,12 @@ CCLI::process_seltag(ArgvType  &argv)
 	int ret;
 	
 	int table = atoi(argv[1]);      // table is 0  or 1 (user asset monitoring db)
-	int offset = atoi(argv[2]);;
+	int offset = atoi(argv[2]);
 
-	ret = IReaderApiDBSelectAll(handle, 30, offset, table);    // select all limit 0 offset 0 from table
+	IAgent_Executor::getInstance()->SetCallbackHandler(this);
+
+	//ret = IReaderApiDBSelectAll(handle, 30, offset, table);    // select all limit 0 offset 0 from table
+	ret = 0;
 	if (IREADER_SUCCESS != ret)
 	{
 		//printf("command fails\n");
@@ -392,7 +404,8 @@ CCLI::process_seltag(ArgvType  &argv)
 	while (1)
 	{
 		ttagCount = 0;
-		ret = IReaderApiGetTagDBRecord(handle, db_record, &ttagCount);
+		//ret = IReaderApiGetTagDBRecord(handle, db_record, &ttagCount);
+		ret = 0;
 
 		if (IREADER_SUCCESS != ret)
 		{
@@ -421,7 +434,11 @@ CCLI::process_seltag(ArgvType  &argv)
 	printf("%s", ttagrbuf);
 	return (0);
 }
-#endif
+
+void
+CCLI::TagEventCallback (const char *tag_data)
+{}
+
 
 void 
 CCLI::process_cli_command(std::string cmd_string)
@@ -447,15 +464,15 @@ CCLI::process_cli_command(std::string cmd_string)
 		argc++;
 	}
 
-	for (unsigned int i = 0; i < (sizeof(scgi_cli_function_list)/sizeof(struct cli_function)); i++)
+	for (unsigned int i = 0; i < (sizeof(cli_function_list)/sizeof(struct cli_Funct)); i++)
 	{
-		struct cli_function *pCLI_function;
+		struct cli_Funct *pCLI_function;
 
-		pCLI_function = &scgi_cli_function_list[i];
+		pCLI_function = &cli_function_list[i];
 
 		if (strcmp(pCLI_function->pCmd, cmdArray[0]) == 0)
 		{
-			pCLI_function->pfunction(parmList);
+			(this->*(pCLI_function->do_funct))(parmList);
 			return;
 		}
 	}	

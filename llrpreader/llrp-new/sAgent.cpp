@@ -46,22 +46,33 @@ SAgent::main
 	//char data[128];
 	
 	IAgent_Executor::getInstance()->SetCallbackHandler(this);
-	int fd;
+	int fd, stdout_save;
 
 	fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) & ~O_NONBLOCK);
 
 	//close(STDOUT_FILENO); /*(so that accept() returns fd to STDOUT_FILENO)*/
-
+	stdout_save = dup(STDOUT_FILENO);
+	close(STDOUT_FILENO);
+    fd = dup(clientSocket);
+    //dup2(clientSocket, fd);
+    assert(fd == STDOUT_FILENO);
 	while (true)
 	{
-        fd = clientSocket;
-        //dup2(clientSocket, fd);
-        //assert(fd == STDOUT_FILENO);
+		cgi_string.clear();
         scgi_process(fd);
+
+        if (0 != cgi_string.length())
+        {
+			cliObj.process_cli_command(cgi_string);
+        }
         break;
 	}
+    ::close(clientSocket);
+    dup2(stdout_save, 1);
+    close (stdout_save);
+
 	DBG_PRINT( DEBUG_INFO, "SAgent[%d]:: Closed"NL, id );
-	::close(clientSocket);
+	// ::close(clientSocket);
 	idle = true;  // Once this is set to true, other connection (from LLRP_Mntserver) may use this object before the
 	              // phtread exit if preemption "can" happen
 }
@@ -258,7 +269,8 @@ SAgent::scgi_process (const int fd)
 				printf("Status: 200 OK\r\n\r\n");
 				num_requests--;
 			} else {
-				::send(fd, "Status: 200 OK\r\n\r\n", strlen("Status: 200 OK\r\n\r\n"), 0);
+				cgi_string = p;
+				// printf("Status: 200 OK\r\n\r\n");		// Let CCLI to print this message
 			}
 		} else {
 			printf("Status: 500 Internal Foo\r\n\r\n");
@@ -277,17 +289,19 @@ SAgent::scgi_process (const int fd)
 			//{
 			//	printf("test123");
 			//}
-			::send(fd, "120", strlen("120"), 0);
+			//printf("180");
+			//std::string cgi_string(r);
+			//cliObj.process_cli_command(cgi_string);
 			//for (int j = 0; j < 10; j++)
 			//{
-			//	sleep(3);
-			//	::send(fd, "120", strlen("150"), 0);
+			//	OwTask::sleep(1000);
+			//	::send(fd, "130", strlen("150"), 0);
 			//}
 
 		}
     }
 
-    //fflush(stdout);
+    fflush(stdout);
     if (0 == num_requests) finished = 1;
 }
 

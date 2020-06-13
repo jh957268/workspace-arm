@@ -30,8 +30,8 @@ static cli_Funct cli_function_list[] =
 	//{"antmap", CCLI::process_antmap, "antmap"},
 	//{"rescanchn", CCLI::process_rescanchn, "rescanchn <1..8>"},
 	//{"getregion", CCLI::process_getregion, "getregion"},
-	//{"startstreamtag", CCLI::process_startstreamtag, "Start straming tags"},
-	//{"stopstreamtag", CCLI::process_stopstreamtag, "Stop straming tags"},	
+	{"startstreamtag", &CCLI::process_startstreamtag, "Start straming tags"},
+	{"stopstreamtag", &CCLI::process_stopstreamtag, "Stop straming tags"},	
 	//{"readtagonce", CCLI::process_readtagonce, "read tags once"},	
 	{"getsearchtimeout", &CCLI::process_getsearchtimeout, "getsearchtimeout"},
 	//{"setsearchtimeout", CCLI::process_setsearchtimeout, "setsearchtimeout"},
@@ -108,10 +108,13 @@ CCLI::process_readtagonce(ArgvType  &argv)
 	printf("%s", recordrbuf);
 	return 0;
 }
+#endif
 
 int
 CCLI::process_stopstreamtag(ArgvType  &argv)
 {
+	IAgent_Executor::getInstance()->SetCallbackHandler(this);
+#if 0	
 	int ret = IReaderApiStartExecutor(handle, 0, 0);
 	if (ret != 0)
 	{
@@ -121,12 +124,17 @@ CCLI::process_stopstreamtag(ArgvType  &argv)
 	{
 		printf("ok");
 	}
+#endif	
 	return 0;
 }
 
 int
 CCLI::process_startstreamtag(ArgvType  &argv)
 {
+	
+	IAgent_Executor::getInstance()->SetCallbackHandler(this);
+
+#if 0	
 	int ant_id, ttagCount;
 	struct taginfo_rssi *pTaginfo_rssi;
 	char pcbits[8], epcdata[32], rssidata[20];
@@ -177,9 +185,11 @@ CCLI::process_startstreamtag(ArgvType  &argv)
 			pTaginfo_rssi++;
 		}
 	}
+#endif	
 	return 0;
 }
 
+#if 0
 int
 CCLI::process_starttagtodb(ArgvType  &argv)
 {
@@ -250,6 +260,7 @@ CCLI::process_getsearchtimeout(ArgvType  &argv)
 {
 	int timeout = IReader::getInstance()->IReaderGetSearchTimeout();
 	printf("Status: 200 OK\r\n\r\n");
+	fflush(stdout);
 	printf("%d", timeout);
 	fflush(stdout);
 	return 0;	
@@ -432,8 +443,43 @@ CCLI::process_seltag(ArgvType  &argv)
 }
 
 void
-CCLI::TagEventCallback (const char *tag_data)
-{}
+CCLI::TagEventCallback (uint8_t *tag_data, int ttagCount, int ant_id)
+{
+	struct taginfo_rssi *pTaginfo_rssi;
+	char pcbits[8], epcdata[32], rssidata[20];
+	short rssi;
+	
+	pTaginfo_rssi = (struct taginfo_rssi *)tag_data;
+	time_t now = time(NULL);
+	for (int i = 0; i < ttagCount; i++)
+	{
+		printf("Content-Type: text/event-stream\r\n");
+		printf("Cache-Control: no-cache\n\n");
+		sprintf(pcbits,"%02x %02x", u8(pTaginfo_rssi->tagid[0]), u8(pTaginfo_rssi->tagid[1]));
+
+		sprintf(epcdata, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+									u8(pTaginfo_rssi->tagid[2]),
+									u8(pTaginfo_rssi->tagid[3]),
+									u8(pTaginfo_rssi->tagid[4]),
+									u8(pTaginfo_rssi->tagid[5]),
+									u8(pTaginfo_rssi->tagid[6]),
+									u8(pTaginfo_rssi->tagid[7]),
+									u8(pTaginfo_rssi->tagid[8]),
+									u8(pTaginfo_rssi->tagid[9]),
+									u8(pTaginfo_rssi->tagid[10]),
+									u8(pTaginfo_rssi->tagid[11]),
+									u8(pTaginfo_rssi->tagid[12]),
+									u8(pTaginfo_rssi->tagid[13])
+									);
+
+		rssi = pTaginfo_rssi->tagid[14];
+		rssi = (rssi << 8) | ((pTaginfo_rssi->tagid[15]) & 0xff);
+		sprintf(rssidata, "%f dBm",(float)(rssi/10.0));
+		printf("data:%s~%s~%s~%d~%ld\r\n\r\n",epcdata, pcbits, rssidata, ant_id, now);
+		fflush(stdout);
+		pTaginfo_rssi++;
+	}
+}
 
 
 void 

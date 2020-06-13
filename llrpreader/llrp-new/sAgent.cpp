@@ -306,7 +306,7 @@ SAgent::scgi_process (const int fd)
 }
 
 void
-SAgent::TagEventCallback (const char *tag_data) 
+SAgent::TagEventCallback (uint8_t *tag_data, int tag_cnt, int ant_id) 
 {}
 
 

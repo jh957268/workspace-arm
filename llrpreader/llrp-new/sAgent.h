@@ -62,7 +62,7 @@ public:
 	void  disconnect();
 	void  scgi_process(const int fd);
 	char * scgi_getenv(char *r, const unsigned long rlen, const char * const name);
-	void  TagEventCallback(const char *tag_data);
+	void  TagEventCallback(uint8_t *tag_data, int tag_cnt, int ant_id);
 	
 private:
 

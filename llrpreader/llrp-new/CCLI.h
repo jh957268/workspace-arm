@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include "iAgent_executor.h"
  
 #include "iReaderapi.h"
  
@@ -20,23 +21,17 @@ typedef const vector<const char*> ArgvType;
 typedef int (*cliFuncPtr)(ArgvType  &argv);
 typedef char CHARARRY[40];
 
-struct cli_function
-{
-	const char *pCmd;
-	cliFuncPtr	pfunction;
-	const char  *pHelp;
-};
-
-class CCLI
+class CCLI:
+	public IAgent_Executor::callbackHandler
 {
     public:
 		        CCLI();
 				~CCLI();
 
 	
-		static  void    process_cli_command(std::string cmd_string);
+		void    process_cli_command(std::string cmd_string);
 		
-		static int process_seltag(ArgvType  &argv);
+		int process_seltag(ArgvType  &argv);
 		static int process_inserttag(ArgvType &argv);
 		static int process_startmonitor(ArgvType  &argv);
 		static int process_stopmonitor(ArgvType &argv);
@@ -53,6 +48,7 @@ class CCLI
 		static int process_readtagonce(ArgvType &argv);
 		static int process_getmoduletemperature(ArgvType &argv);
 		static IReader *handle;
+		void  TagEventCallback(const char *tag_data);
 
     private:
 		static char ttagrbuf[2048];

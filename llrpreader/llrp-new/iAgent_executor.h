@@ -38,7 +38,7 @@ public:
 	
 	struct callbackHandler
 	{
-		virtual void	TagEventCallback(const char *tag_data);
+		virtual void	TagEventCallback(uint8_t *tag_data, int tag_cnt, int ant_id);
 	};
 
     /// The main program for the ROSpecExecutor.  Inherited from OwTask.
@@ -51,7 +51,7 @@ public:
     void    stop_executor(int fd);
 	void 	SetCallbackHandler( callbackHandler*  handler );
 	void 	RemoveCallbackHandler( callbackHandler*  handler );
-	void	Do_Callback();
+	void	Do_Callback(int tag_cnt, int ant_id);
 	int     TakeMutex(void);
 	int     GiveMutex(void);	
 

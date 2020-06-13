@@ -24,7 +24,7 @@ static const char  *pcMSG_INVALID_CMD = "Invalid command";
 
 typedef const vector<const char*> ArgvType;
 typedef int (*cliFuncPtr)(ArgvType  &argv);
-typedef char CHARARRY[20];
+typedef char CHARARRY[40];
 
 int process_show_agent_status(ArgvType  &argv);
 int process_test_reader(ArgvType  &argv);

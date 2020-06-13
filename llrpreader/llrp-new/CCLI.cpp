@@ -1,4 +1,5 @@
 #include "CCLI.h"
+#include <algorithm>
 
 IReader* CCLI::handle = 0;
 char CCLI::ttagrbuf[2048] = {0};
@@ -19,23 +20,23 @@ static cli_Funct cli_function_list[] =
 {
 	
 	{"seltag", &CCLI::process_seltag, "select * from DB"},
-#if 0	
-	{"inserttag", CCLI::process_inserttag, "insert * from DB"},
-	{"startmonitor", CCLI::process_startmonitor, "Start Monitoring"},
-	{"stoptmonitor", CCLI::process_stopmonitor, "Stop Monitoring"},
-	{"starttagtodb", CCLI::process_starttagtodb, "Start read tag to db"},
-	{"stoptagtodb", CCLI::process_stoptagtodb, "Stop read tag to db"},		
-	{"setantpower", CCLI::process_setantpower, "setantpower <ant> <power>"},
-	{"antmap", CCLI::process_antmap, "antmap"},
-	{"rescanchn", CCLI::process_rescanchn, "rescanchn <1..8>"},
-	{"getregion", CCLI::process_getregion, "getregion"},
-	{"startstreamtag", CCLI::process_startstreamtag, "Start straming tags"},
-	{"stopstreamtag", CCLI::process_stopstreamtag, "Stop straming tags"},	
-	{"readtagonce", CCLI::process_readtagonce, "read tags once"},	
-	{"getsearchtimeout", CCLI::process_getsearchtimeout, "getsearchtimeout"},
-	{"setsearchtimeout", CCLI::process_setsearchtimeout, "setsearchtimeout"},
-	{"getmoduletemp", CCLI::process_getmoduletemperature, "getmoduletemp"}
-#endif	
+	
+	//{"inserttag", CCLI::process_inserttag, "insert * from DB"},
+	//{"startmonitor", CCLI::process_startmonitor, "Start Monitoring"},
+	//{"stoptmonitor", CCLI::process_stopmonitor, "Stop Monitoring"},
+	//{"starttagtodb", CCLI::process_starttagtodb, "Start read tag to db"},
+	//{"stoptagtodb", CCLI::process_stoptagtodb, "Stop read tag to db"},		
+	//{"setantpower", CCLI::process_setantpower, "setantpower <ant> <power>"},
+	//{"antmap", CCLI::process_antmap, "antmap"},
+	//{"rescanchn", CCLI::process_rescanchn, "rescanchn <1..8>"},
+	//{"getregion", CCLI::process_getregion, "getregion"},
+	//{"startstreamtag", CCLI::process_startstreamtag, "Start straming tags"},
+	//{"stopstreamtag", CCLI::process_stopstreamtag, "Stop straming tags"},	
+	//{"readtagonce", CCLI::process_readtagonce, "read tags once"},	
+	{"getsearchtimeout", &CCLI::process_getsearchtimeout, "getsearchtimeout"},
+	//{"setsearchtimeout", CCLI::process_setsearchtimeout, "setsearchtimeout"},
+	//{"getmoduletemp", CCLI::process_getmoduletemperature, "getmoduletemp"}
+	
 };
 
 CCLI::CCLI()
@@ -242,24 +243,19 @@ CCLI::process_getregion(ArgvType  &argv)
 	}
 	return 0;
 }
+#endif
 
 int
 CCLI::process_getsearchtimeout(ArgvType  &argv)
 {
-	int timeout;
-	
-	int ret = IReaderApiGetSearchTimeout(handle, &timeout);
-	if (IREADER_SUCCESS != ret)
-	{
-		printf("0");
-	}
-	else
-	{
-		printf("%d", timeout);
-	}
+	int timeout = IReader::getInstance()->IReaderGetSearchTimeout();
+	printf("Status: 200 OK\r\n\r\n");
+	printf("%d", timeout);
+	fflush(stdout);
 	return 0;	
 }
 
+#if 0
 int
 CCLI::process_setsearchtimeout(ArgvType  &argv)
 {
@@ -446,6 +442,7 @@ CCLI::process_cli_command(std::string cmd_string)
 	CHARARRY cmdArray[10];
 	std::vector<const char *>	parmList;
 
+	std::replace(cmd_string.begin(), cmd_string.end(), '&', ' ');
 	std::stringstream os(cmd_string);	//a standard stringstream which parses 's'
 	std::string temp;                 	//a temporary string
 	

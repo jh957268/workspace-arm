@@ -28,6 +28,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "iAgent_executor.h"
+#include "CCLI.h"
 
 #ifndef MSG_DONTWAIT
 #define MSG_DONTWAIT 0
@@ -74,6 +75,8 @@ private:
     char            tagbuff[1024];
 	char 			buf[1024];
 	int 			finished;
+	CCLI			cliObj;
+	std::string		cgi_string;
 
 };
 

@@ -220,8 +220,38 @@ int
 main (void)
 {
     int fd, conn_fd;
-    fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) & ~O_NONBLOCK);
-    close(STDOUT_FILENO); /*(so that accept() returns fd to STDOUT_FILENO)*/
+    //fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) & ~O_NONBLOCK);
+    //close(STDOUT_FILENO); /*(so that accept() returns fd to STDOUT_FILENO)*/
+
+#if 0
+    static FILE *fp;
+
+    fp = fopen("/home/joohong/upload/llrp.log", "a");
+    if (fp == NULL)
+    {
+    	exit(-1);
+    }
+    //fprintf(fp, "receive signal SIG NUM = %d\n", signum);
+    //fclose(fp);
+    fd = fileno(fp);
+
+    int stdout_copy = dup(STDOUT_FILENO);
+
+    close(1); /* close the stdout associated with screen */
+
+    int fd1 = dup(fd); /* one.txt is new stdout for the process */
+
+    printf("This is dup test-1\n");
+    fflush(stdout);
+     close(fd);
+
+    dup2(stdout_copy, 1);
+    close (stdout_copy);
+    printf("This is dup test-2\n");
+    fflush(stdout);
+    exit(0);
+
+#endif
 
     int sockfd, connfd, len;
      struct sockaddr_in servaddr, cli;
@@ -266,8 +296,9 @@ main (void)
         	perror("accept STDIN");
             continue;
         }
-        fd = STDOUT_FILENO;
-        dup2(conn_fd, fd);
+        // fd = STDOUT_FILENO;
+        close(STDOUT_FILENO);
+        fd = dup(conn_fd);
         assert(fd == STDOUT_FILENO);
         scgi_process(fd);
     } while (fd > 0 ? 0 == close(fd) && !finished : errno == EINTR);

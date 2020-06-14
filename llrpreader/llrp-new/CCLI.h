@@ -49,11 +49,15 @@ class CCLI:
 		static int process_getmoduletemperature(ArgvType &argv);
 		static IReader *handle;
 		void  TagEventCallback(uint8_t *tag_data, int tag_cnt, int ant_id);
+		void	   set_sock_descriptor(int sock) {fd = sock; fp = fdopen(fd, "r+");} 		
+		int		   done;
 
     private:
 		static char ttagrbuf[2048];
 		static char antmap[1280];
 		static char recordrbuf[2048];
+		int 	fd;
+		FILE	*fp;
 
 };
 

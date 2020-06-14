@@ -62,7 +62,7 @@ IAgent_Executor::main( OwTask * )
 
 				if (power < 500 || power > 3000)
 				{
-					OwTask::sleep(100);  // just make sure it does not hold the CPU
+					OwTask::sleep(200);  // just make sure it does not hold the CPU
 					continue;
 				}
 
@@ -70,12 +70,22 @@ IAgent_Executor::main( OwTask * )
 				if (status != IREADER_SUCCESS)
 				{
 					DBG_PRINT(DEBUG_INFO,"Read Tags Fails" NL);
-					OwTask::sleep(2);
+					OwTask::sleep(500);
 					continue;
 				}
 				if (tagCount == 0)
 				{
-					continue;
+					if (i == CAntenna::m_antcount)
+					{
+						OwTask::sleep(500);
+					}
+					if (HasClients())
+					{
+						continue;
+					}
+					executor_start_flag = 0;
+					break;
+
 				}
 #if 0
 				// Now report the tags through network interface.
@@ -111,12 +121,12 @@ IAgent_Executor::main( OwTask * )
 					}
 				}
 				Do_Callback(tagCount, antID);
-				if (0 == found)
+				if ((0 == found) && (0 == moRegistry.size()))
 				{
 					executor_start_flag = 0;
 					break;
 				}
-				OwTask::sleep(100);
+				OwTask::sleep(500);
 			}
 		}
 	}
@@ -127,7 +137,10 @@ IAgent_Executor::start_executor(int fd)
 {
 	executor_start_flag = 1;
 	
-	if (fd == DATABASE_MAGIC)
+	if ( -1 == fd)
+	{
+	}
+	else if (fd == DATABASE_MAGIC)
 	{
 		clientFd[MAX_TX_SOCKET - 1] = fd;
 	}
@@ -317,5 +330,21 @@ int  IAgent_Executor::GiveMutex(void)
 	m_hMutex->give();
 
     return ( 0 );
+}
+
+int IAgent_Executor::HasClients(void)
+{
+	for (int i = 0; i < MAX_TX_SOCKET; i++)
+	{
+		if (-1 != clientFd[i])
+		{
+			return 1;
+		}
+	}
+	if ( moRegistry.size())
+	{
+		return 1;
+	}
+	return 0;
 }
 

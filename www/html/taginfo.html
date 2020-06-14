@@ -146,7 +146,7 @@ function startTagInfoSSe()
 	 //alert("Start SSE now!");
 	if(typeof(EventSource) !== "undefined") 
 	{
-		source = new EventSource("/cgi-bin/execgi-bin.cgi?startstreamtag");
+		source = new EventSource("/cgi-bin/execgi-bin.scgi?startstreamtag");
 
 		source.onmessage = function(event) 
 		{

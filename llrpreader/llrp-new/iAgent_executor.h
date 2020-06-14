@@ -53,7 +53,8 @@ public:
 	void 	RemoveCallbackHandler( callbackHandler*  handler );
 	void	Do_Callback(int tag_cnt, int ant_id);
 	int     TakeMutex(void);
-	int     GiveMutex(void);	
+	int     GiveMutex(void);
+	int 	IAgent_Executor::HasClients(void);
 
 protected:
     static IAgent_Executor* spInstance; ///< Points to the instance

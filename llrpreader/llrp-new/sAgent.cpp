@@ -45,31 +45,52 @@ SAgent::main
 	//time_t now;
 	//char data[128];
 	
-	IAgent_Executor::getInstance()->SetCallbackHandler(this);
-	int fd, stdout_save;
+	//IAgent_Executor::getInstance()->SetCallbackHandler(this);
+	//int fd;
+	//int stdout_save;
+	int ret;
 
-	fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) & ~O_NONBLOCK);
+	//fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) & ~O_NONBLOCK);
 
 	//close(STDOUT_FILENO); /*(so that accept() returns fd to STDOUT_FILENO)*/
-	stdout_save = dup(STDOUT_FILENO);
-	close(STDOUT_FILENO);
-    fd = dup(clientSocket);
+	//stdout_save = dup(STDOUT_FILENO);
+	//close(STDOUT_FILENO);
+    //fd = dup(clientSocket);
     //dup2(clientSocket, fd);
-    assert(fd == STDOUT_FILENO);
+    //assert(fd == STDOUT_FILENO);
 	while (true)
 	{
 		cgi_string.clear();
-        scgi_process(fd);
+        ret = scgi_process(clientSocket);
+		
+		//if (-1 == ret)
+		//{
+		//	IAgent_Executor::getInstance()->RemoveCallbackHandler(&cliObj);
+		//}
 
         if (0 != cgi_string.length())
         {
+			cliObj.set_sock_descriptor(clientSocket);
+			cliObj.done = 0;
 			cliObj.process_cli_command(cgi_string);
         }
-        break;
+		if ( 1 == cliObj.done)
+		{
+			break;
+		}
+		// fcntl(clientSocket, F_SETFL, fcntl(clientSocket, F_GETFL) & ~O_NONBLOCK);
+		ret = recv(clientSocket, buf, 100, 0);
+		if ( ret <= 0)
+		{
+			printf("SAgent Done test123 -- %d!\n", ret);
+			perror("recv");
+			IAgent_Executor::getInstance()->RemoveCallbackHandler(&cliObj);
+			break;
+		}
 	}
     ::close(clientSocket);
-    dup2(stdout_save, 1);
-    close (stdout_save);
+    //dup2(stdout_save, 1);
+    //close (stdout_save);
 
 	DBG_PRINT( DEBUG_INFO, "SAgent[%d]:: Closed"NL, id );
 	// ::close(clientSocket);
@@ -140,7 +161,7 @@ SAgent::scgi_getenv(char *r, const unsigned long rlen, const char * const name)
     return NULL;
 }
 
-void
+int
 SAgent::scgi_process (const int fd)
 {
     ssize_t rd = 0, offset = 0;
@@ -148,6 +169,7 @@ SAgent::scgi_process (const int fd)
     char *p = NULL, *r;
     unsigned long rlen;
     long long cl;
+	int ret = 0;
 
     // assert(fd == STDOUT_FILENO); /*(required for response sent with printf())*/
     fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
@@ -303,6 +325,7 @@ SAgent::scgi_process (const int fd)
 
     //fflush(stdout);
     if (0 == num_requests) finished = 1;
+	return(ret);
 }
 
 void

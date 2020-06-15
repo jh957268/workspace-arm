@@ -63,10 +63,13 @@ SAgent::main
 		cgi_string.clear();
         ret = scgi_process(clientSocket);
 		
-		//if (-1 == ret)
-		//{
-		//	IAgent_Executor::getInstance()->RemoveCallbackHandler(&cliObj);
-		//}
+		if (-1 == ret)
+		{
+			IAgent_Executor::getInstance()->RemoveCallbackHandler(&cliObj);
+			printf("SAgent Done test123 -- %d!\n", ret);
+			perror("recv");			
+			break;
+		}
 
         if (0 != cgi_string.length())
         {
@@ -78,6 +81,7 @@ SAgent::main
 		{
 			break;
 		}
+#if 0		
 		// fcntl(clientSocket, F_SETFL, fcntl(clientSocket, F_GETFL) & ~O_NONBLOCK);
 		ret = recv(clientSocket, buf, 100, 0);
 		if ( ret <= 0)
@@ -87,6 +91,7 @@ SAgent::main
 			IAgent_Executor::getInstance()->RemoveCallbackHandler(&cliObj);
 			break;
 		}
+#endif		
 	}
     ::close(clientSocket);
     //dup2(stdout_save, 1);
@@ -172,10 +177,11 @@ SAgent::scgi_process (const int fd)
 	int ret = 0;
 
     // assert(fd == STDOUT_FILENO); /*(required for response sent with printf())*/
-    fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
+    // fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
 
 
     do {
+#if 0		
         struct pollfd pfd = { fd, POLLIN, 0 };
         switch (poll(&pfd, 1, 10)) { /* 10ms timeout */
           default: /* 1; the only pfd has revents */
@@ -200,17 +206,27 @@ SAgent::scgi_process (const int fd)
             continue;
         else
             break;
+#endif
+        do {
+            rd = recv(fd, buf+offset, sizeof(buf)-offset, 0);
+        } while (rd < 0 && errno == EINTR);
+		if (rd <= 0)
+		{
+			return (-1);
+		}
+		offset += rd;
     } while (NULL == (p = memchr(buf,':',offset)) && offset < 21);
     if (NULL == p)
-        return; /* timeout or error receiving start of netstring */
+        return (-1); /* time out or error receiving start of netstring */
     rlen = strtoul(buf, &p, 10);
     if (*buf == '-' || *p != ':' || p == buf || rlen == ULONG_MAX)
-        return; /* invalid netstring (and rlen == ULONG_MAX is too long)*/
+        return (-1); /* invalid netstring (and rlen == ULONG_MAX is too long)*/
     if (rlen > sizeof(buf) - (p - buf) - 2)
-        return; /* netstring longer than arbitrary limit we accept here */
+        return (-1); /* netstring longer than arbitrary limit we accept here */
     rlen += (p - buf) + 2;
 
-    while ((ssize_t)rlen < offset) {
+    while ((ssize_t)rlen > offset) {
+#if 0		
         struct pollfd pfd = { fd, POLLIN, 0 };
         switch (poll(&pfd, 1, 10)) { /* 10ms timeout */
           default: /* 1; the only pfd has revents */
@@ -222,22 +238,31 @@ SAgent::scgi_process (const int fd)
         }
         if (!(pfd.revents & POLLIN))
             break;
+#endif		
         do {
-            rd = recv(fd, buf+offset, sizeof(buf)-offset, MSG_DONTWAIT);
+            rd = recv(fd, buf+offset, sizeof(buf)-offset, 0);
         } while (rd < 0 && errno == EINTR);
-        if (rd > 0)
-            offset += rd;
+		
+		if (rd <= 0)
+		{
+			return (-1);
+		}
+        // if (rd > 0)
+        offset += rd;
+#if 0		
         else if (0 == rd)
             break;
         else if (errno == EAGAIN || errno == EWOULDBLOCK)
             continue;
         else
             break;
+#endif
+		
     }
     if (offset < (ssize_t)rlen)
-        return; /* timeout or error receiving netstring */
+        return (-1); /* timeout or error receiving netstring */
     if (buf[rlen-1] != ',')
-        return; /* invalid netstring */
+        return(-1); /* invalid netstring */
     rlen -= (p - buf) + 2;
     r = p+1;
 
@@ -246,18 +271,18 @@ SAgent::scgi_process (const int fd)
     /* SCGI request must contain "SCGI" header with value "1" */
     p = scgi_getenv(r, rlen, "SCGI");
     if (NULL == p || p[0] != '1' || p[1] != '\0')
-        return; /* missing or invalid SCGI header */
+        return (-1); /* missing or invalid SCGI header */
 
     /* CONTENT_LENGTH must be first header in SCGI request; always required */
     if (0 != strcmp(r, "CONTENT_LENGTH"))
-        return; /* missing CONTENT_LENGTH */
+        return (-1); /* missing CONTENT_LENGTH */
 
     errno = 0;
     cl = strtoll(r+sizeof("CONTENT_LENGTH"), &p, 10);
     if (*p != '\0' || p == r+sizeof("CONTENT_LENGTH") || cl < 0 || 0 != errno)
-        return; /* invalid CONTENT_LENGTH */
+        return (-1); /* invalid CONTENT_LENGTH */
 
-    fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) & ~O_NONBLOCK);
+    // fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) & ~O_NONBLOCK);
 
     /* read,discard request body (currently ignored in these SCGI unit tests)
      * (make basic effort to read body; ignore any timeouts or errors here) */

@@ -29,7 +29,8 @@ class CCLI:
 				~CCLI();
 
 	
-		void    process_cli_command(std::string cmd_string);
+		void    process_cli_command(std::string &cmd_string);
+		// void    process_cli_command(const char *cmd);
 		
 		int 	   process_seltag(ArgvType  &argv);
 		static int process_inserttag(ArgvType &argv);

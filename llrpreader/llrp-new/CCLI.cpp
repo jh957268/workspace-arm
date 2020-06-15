@@ -506,7 +506,7 @@ CCLI::TagEventCallback (uint8_t *tag_data, int ttagCount, int ant_id)
 
 
 void 
-CCLI::process_cli_command(std::string cmd_string)
+CCLI::process_cli_command(std::string &cmd_string)
 {
 	CHARARRY cmdArray[10];
 	std::vector<const char *>	parmList;

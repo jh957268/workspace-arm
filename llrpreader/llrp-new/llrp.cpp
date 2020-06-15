@@ -17,6 +17,7 @@
 #include "pwm.h"
 #include "CSqlite.h"
 #include "CAntenna.h"
+#include <signal.h>
 
 using namespace std;
 
@@ -61,6 +62,11 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
    return 0;
 }
 
+void signal_callback_handler(int signum){
+
+        printf("Caught signal SIGPIPE %d\n",signum);
+}
+
 int main(int argc, char* argv[])
 {
 	string input_string = "";
@@ -81,6 +87,11 @@ int main(int argc, char* argv[])
 #endif
 
 	printBanner();
+
+	// From GDB command, type "handle SIGPIPE nostop"  (when debugging, if remote close socket, the send command will break and GDB will stop
+	// without this command
+	// sigaction(SIGPIPE, &(struct sigaction){sigpipe_handler}, NULL);
+	// signal(SIGPIPE, signal_callback_handler);
 
 	 derived *d = new derived();
 	 base *b = d;

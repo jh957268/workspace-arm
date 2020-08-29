@@ -1,5 +1,8 @@
 #include "CCLI.h"
 #include <algorithm>
+#include <string>
+#include <iostream>
+#include <sstream>
 
 IReader* CCLI::handle = 0;
 char CCLI::ttagrbuf[2048] = {0};
@@ -472,10 +475,15 @@ CCLI::TagEventCallback (uint8_t *tag_data, int ttagCount, int ant_id)
 	pTaginfo_rssi = (struct taginfo_rssi *)&tag_data[9];
 	time_t now = time(NULL);
 	//fprintf(fp, "Status: 200 OK\r\n\r\n");
+	
+	std::stringstream oStream;
+	
+	oStream << "{" << "\"lastseen\":" << "\"" << now << "\"" << ","  << "\"antid\":" << "\"" << ant_id << "\"" << "," << "\"tagitem\":[";
+	
 	for (int i = 0; i < ttagCount; i++)
 	{
-		fprintf(fp, "Content-Type: text/event-stream\r\n");
-		fprintf(fp, "Cache-Control: no-cache\r\n");
+		//fprintf(fp, "Content-Type: text/event-stream\r\n");
+		//fprintf(fp, "Cache-Control: no-cache\r\n");
 		sprintf(pcbits,"%02x %02x", u8(pTaginfo_rssi->tagid[0]), u8(pTaginfo_rssi->tagid[1]));
 
 		sprintf(epcdata, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
@@ -496,12 +504,25 @@ CCLI::TagEventCallback (uint8_t *tag_data, int ttagCount, int ant_id)
 		rssi = pTaginfo_rssi->tagid[14];
 		rssi = (rssi << 8) | ((pTaginfo_rssi->tagid[15]) & 0xff);
 		sprintf(rssidata, "%f dBm",(float)(rssi/10.0));
-		fprintf(fp, "data:%s~%s~%s~%d~%ld\r\n\r\n",epcdata, pcbits, rssidata, ant_id, now);
-		fflush(fp);
+		
+		oStream << "{" << "\"epc\":" << "\"" << epcdata << "\"," << "\"pcbits\":" << "\"" << pcbits << "\","<< "\"rssi\":" << "\"" << rssidata << "\"}";
+		if (i < (ttagCount - 1))
+		{
+			oStream << ",";
+		}
+		
+		//fprintf(fp, "data:%s~%s~%s~%d~%ld\r\n\r\n",epcdata, pcbits, rssidata, ant_id, now);
+		//fflush(fp);
 		//printf("data:%s~%s~%s~%d~%ld---%d\r\n\r\n",epcdata, pcbits, rssidata, ant_id, now, fd);
 		//fflush(stdout);
 		pTaginfo_rssi++;
 	}
+	oStream << "]}";
+	// std::cout << "data:" << oStream.str() << "\r\n\r\n";
+	fprintf(fp, "Content-Type: text/event-stream\r\n");
+	fprintf(fp, "Cache-Control: no-cache\r\n");
+	fprintf(fp, "data:%s\r\n\r\n",oStream.str().c_str());
+	fflush(fp);
 }
 
 

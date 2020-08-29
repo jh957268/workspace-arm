@@ -135,6 +135,74 @@ function displayTagInfo(tagInfo)
 	tagCount++;
 }
 
+function displayJSONTagInfo(tagInfo)
+{
+	var atable = document.getElementById("ant_table");
+	var trow;
+	var cell;
+	var epcData, pcbits, rssi, antid;
+	var found;
+	
+	var obj = JSON.parse(tagInfo);	
+	var timeSeen = obj.lastseen;
+	antid = obj.antid;
+    for (var i = 0; i < obj.tagitem.length; i++)
+	{
+		epcData = obj.tagitem[i].epc;
+		pcbits = obj.tagitem[i].pcbits;
+		rssi = obj.tagitem[i].rssi;
+		found = 0;
+
+		for (tbl_row = 1; tbl_row <= tagCount; tbl_row++)
+		{
+			if ( (atable.rows[tbl_row].cells[1].innerHTML.localeCompare(epcData) == 0) && (atable.rows[tbl_row].cells[4].innerHTML.localeCompare(antid) == 0))
+			{
+				atable.rows[tbl_row].cells[5].innerHTML = timeSeen;
+				atable.rows[tbl_row].cells[2].innerHTML = pcbits;
+				atable.rows[tbl_row].cells[3].innerHTML = rssi;		
+				var cnt = 1*atable.rows[tbl_row].cells[6].innerHTML;
+				cnt = cnt+1;
+				atable.rows[tbl_row].cells[6].innerHTML = cnt;
+				found = 1;
+				break;
+			}
+		}
+		if (found == 1)
+		{
+			continue;
+		}
+		// for (tbl_row = 1; tbl_row <= 2; tbl_row++)
+		tbl_row = tagCount + 1;
+		{
+			trow = atable.insertRow(tbl_row);
+			if ( tbl_row == 0 || (tbl_row && !(tbl_row%2)))
+			{
+				trow.style.backgroundColor = "#cbccc6";
+			}
+			else
+			{
+				trow.style.backgroundColor = "#DFEFE9";	
+			}
+
+			cell = trow.insertCell(0);
+			cell.innerHTML = tbl_row;
+			cell = trow.insertCell(1);
+			cell.innerHTML = epcData;
+			cell = trow.insertCell(2);
+			cell.innerHTML = pcbits;
+			cell = trow.insertCell(3);
+			cell.innerHTML = rssi;
+			cell = trow.insertCell(4);
+			cell.innerHTML = antid;		
+			cell = trow.insertCell(5);
+			cell.innerHTML = timeSeen;
+			cell = trow.insertCell(6);
+			cell.innerHTML = 1;		
+		}
+		tagCount++;
+	}
+}
+
 var source;
 var isOpenOnce = false;
 function startTagInfoSSe()
@@ -151,8 +219,8 @@ function startTagInfoSSe()
 		source.onmessage = function(event) 
 		{
 			// document.getElementById("result").innerHTML += event.data + "<br>";
-			displayTagInfo(event.data);
-			
+			// displayTagInfo(event.data);			
+			displayJSONTagInfo(event.data);
 		}
 	} else {
 		document.getElementById("result").innerHTML = "Sorry, your browser does not support server-sent events...";

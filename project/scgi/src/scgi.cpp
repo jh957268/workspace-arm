@@ -215,6 +215,148 @@ scgi_process (const int fd)
     if (0 == num_requests) finished = 1;
 }
 
+class base {
+  public:
+    base()
+    { cout<<"Constructing base \n"; }
+    ~base()
+    { cout<<"Destructing base \n"; }
+};
+
+class base1 {
+  public:
+    base1()
+    { cout<<"Constructing base 1\n"; }
+   virtual ~base1()
+    { cout<<"Destructing base 1 \n"; }
+};
+
+class derived: public base {
+  public:
+    derived()
+    { cout<<"Constructing derived \n"; }
+    ~derived()
+    { cout<<"Destructing derived \n"; }
+};
+
+class derived1: public base1 {
+  public:
+    derived1()
+    { cout<<"Constructing derived 1 \n"; }
+    ~derived1()
+    { cout<<"Destructing derived 1\n"; }
+};
+
+#define millis()	1000
+
+class elapsedMillis
+{
+private:
+	unsigned long ms;
+public:
+	elapsedMillis(void) { ms = millis(); }
+	elapsedMillis(unsigned long val) { ms = millis() - val; }
+	elapsedMillis(const elapsedMillis &orig) { ms = orig.ms; }
+	operator unsigned long () const { return millis() - ms; }
+	elapsedMillis & operator = (const elapsedMillis &rhs) { ms = rhs.ms; return *this; }
+	elapsedMillis & operator = (unsigned long val) { ms = millis() - val; return *this; }
+	elapsedMillis & operator -= (unsigned long val)      { ms += val ; return *this; }
+	elapsedMillis & operator += (unsigned long val)      { ms -= val ; return *this; }
+	elapsedMillis operator - (int val) const           { elapsedMillis r(*this); r.ms += val; return r; }
+	elapsedMillis operator - (unsigned int val) const  { elapsedMillis r(*this); r.ms += val; return r; }
+	elapsedMillis operator - (long val) const          { elapsedMillis r(*this); r.ms += val; return r; }
+	elapsedMillis operator - (unsigned long val) const { elapsedMillis r(*this); r.ms += val; return r; }
+	elapsedMillis operator + (int val) const           { elapsedMillis r(*this); r.ms -= val; return r; }
+	elapsedMillis operator + (unsigned int val) const  { elapsedMillis r(*this); r.ms -= val; return r; }
+	elapsedMillis operator + (long val) const          { elapsedMillis r(*this); r.ms -= val; return r; }
+	elapsedMillis operator + (unsigned long val) const { elapsedMillis r(*this); r.ms -= val; return r; }
+};
+
+
+#include <iostream>
+#include <vector>
+
+std::vector<std::string> unique_names(const std::vector<std::string>& names1, const std::vector<std::string>& names2)
+{
+    // throw std::logic_error("Waiting to be implemented");
+	int found = 0;
+
+    //std::vector<std::string> names3 = names1;
+    std::vector<std::string> names3;
+    for (std::vector<std::string>::const_iterator it = names1.begin() ; it != names1.end(); ++it)
+    {
+    	found = 0;
+        for (std::vector<std::string>::iterator it3 = names3.begin() ; it3 != names3.end(); ++it3)
+        {
+        	if (*it == *it3)
+        	{
+        		found = 1;;
+        	}
+        }
+        if ( 0 == found)
+        {
+        	names3.push_back(*it);
+        }
+
+    }
+    for (std::vector<std::string>::const_iterator it = names2.begin() ; it != names2.end(); ++it)
+    {
+    	std::string name = *it;
+    	found = 0;
+        for (std::vector<std::string>::iterator it1 = names3.begin() ; it1 != names3.end(); ++it1)
+        {
+        	if (*it1 == name)
+        	{
+        		found = 1;
+        		break;
+        	}
+        }
+        if ( 0 == found)
+        {
+    		names3.push_back(name);
+        }
+    }
+    return names3;
+}
+
+struct MyException : public exception {
+   const char * what () const throw () {
+      return "C++ Exception";
+   }
+};
+
+
+class TextInput
+{
+public:
+
+	virtual ~TextInput(){}
+    virtual void add(char c) { }
+
+    virtual std::string getValue() { return NULL; }
+};
+
+class NumericInput : public TextInput
+{
+public:
+     NumericInput() {val = "0";}
+
+    std::string val;
+
+    void add(char c)
+    {
+        if (isdigit(c))
+        {
+           char arr[4];
+
+           sprintf(arr, "%c", c);
+           val += std::string(arr);
+        }
+    }
+    std::string getValue() { return (val); }
+};
+
+
 #define SA struct sockaddr
 int
 main (void)
@@ -222,6 +364,75 @@ main (void)
     int fd, conn_fd;
     //fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) & ~O_NONBLOCK);
     //close(STDOUT_FILENO); /*(so that accept() returns fd to STDOUT_FILENO)*/
+
+    std::string str("1234");
+
+    std::cout << str << '\n';
+
+    TextInput* input = new NumericInput();
+    input->add('1');
+    input->add('a');
+    input->add('0');
+    std::cout << input->getValue();
+
+    try {
+       throw MyException();
+    } catch(MyException& e) {
+       std::cout << "MyException caught" << std::endl;
+       std::cout << e.what() << std::endl;
+    } catch(std::exception& e) {
+       //Other errors
+    }
+
+    try
+    {
+      throw 20;
+    }
+    catch (int e)
+    {
+      cout << "An exception occurred. Exception Nr. " << e << '\n';
+    }
+
+    std::vector<std::string> names1 = {"Ava", "Emma", "Olivia"};
+    std::vector<std::string> names2 = {"Olivia", "Sophia", "Emma"};
+
+    std::vector<std::string> result = unique_names(names1, names2);
+    for(auto element : result)
+    {
+        std::cout << element << ' '; // should print Ava Emma Olivia Sophia
+    }
+
+
+    elapsedMillis blink;
+    elapsedMillis led;
+
+    blink = 100;
+    led = 500;
+    if (blink > 250)
+    {
+    	printf("Blink elapsed\n");
+    }
+
+    if (blink < 50)
+    {
+    	printf("Blink smaller\n");
+    }
+
+    blink = led;
+
+     derived *d = new derived();
+	 base *b = d;
+	 delete b;
+
+	 d = new derived();
+	 delete d;
+
+     derived1 *d1 = new derived1();
+	 base1 *b1 = d1;
+	 delete b1;
+
+	 d1 = new derived1();
+	 delete d1;
 
 #if 0
     static FILE *fp;
